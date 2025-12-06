@@ -1,0 +1,310 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== Evilink Devs Landing ===== */
+
+:root {
+  --bg: #020617;
+  --bg-soft: #020617;
+  --bg-card: #020617;
+  --bg-card-soft: #020617;
+  --fg: #e5e7eb;
+  --fg-muted: #9ca3af;
+  --accent: #22c55e;
+  --accent-soft: rgba(34, 197, 94, 0.12);
+  --border-subtle: rgba(148, 163, 184, 0.35);
+}
+
+/* Layout general */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #0b1120, #020617 55%);
+  color: var(--fg);
+}
+
+.page {
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+/* Navbar */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 0%, #4ade80, #16a34a 40%, #14532d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #ecfdf5;
+  box-shadow: 0 0 25px rgba(34, 197, 94, 0.65);
+}
+
+.brand-title {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 2.5rem 0 2rem;
+}
+
+.hero-text h1 {
+  font-size: clamp(2.1rem, 3vw, 2.8rem);
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+.hero-text p {
+  margin: 0;
+  color: var(--fg-muted);
+  max-width: 34rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    background 0.12s ease-out, border-color 0.12s ease-out;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #022c22;
+  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(34, 197, 94, 0.55);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--fg);
+  border-color: rgba(148, 163, 184, 0.5);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(248, 250, 252, 0.7);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.hero-note {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+
+/* Hero card */
+.hero-card {
+  border-radius: 1.25rem;
+  border: 1px solid var(--border-subtle);
+  padding: 1.4rem 1.35rem;
+  background: radial-gradient(circle at top, #0f172a, #020617 60%);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
+}
+
+.hero-card h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+
+.hero-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.9rem;
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+}
+
+.hero-card li::before {
+  content: "▹";
+  color: var(--accent);
+  margin-right: 0.4rem;
+}
+
+.hero-card-foot {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+}
+
+/* Sections */
+.section {
+  padding: 2.5rem 0 2rem;
+}
+
+.section-soft {
+  border-top: 1px solid rgba(15, 23, 42, 0.9);
+  margin-top: 0.75rem;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-intro {
+  max-width: 42rem;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+  gap: 1.4rem;
+  margin-top: 1.75rem;
+}
+
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--border-subtle);
+  padding: 1.3rem 1.25rem 1.2rem;
+  background: radial-gradient(circle at top, #020617, #020617 65%);
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.card p {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 0.9rem;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--fg-muted);
+}
+
+.card-list li::before {
+  content: "•";
+  color: var(--accent);
+  margin-right: 0.35rem;
+}
+
+.card-actions {
+  margin-top: 0.5rem;
+}
+
+.link-disabled {
+  font-size: 0.86rem;
+  color: var(--fg-muted);
+  text-decoration: none;
+  cursor: default;
+}
+
+.card-muted {
+  background: radial-gradient(circle at top, #020617, #020617 65%);
+  border-style: dashed;
+}
+
+.card-tag {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid rgba(15, 23, 42, 0.9);
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+}
+
+.footer-note {
+  margin-top: 0.4rem;
+}
+
+/* Responsivo */
+@media (max-width: 840px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-card {
+    margin-top: 1.25rem;
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
