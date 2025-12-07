@@ -1,67 +1,105 @@
-@import "tailwindcss";
+/* =========================================================
+   RESET BÁSICO + THEME
+   ========================================================= */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* ===== Evilink Devs Landing ===== */
-
-:root {
-  --bg: #020617;
-  --bg-soft: #020617;
-  --bg-card: #020617;
-  --bg-card-soft: #020617;
-  --fg: #e5e7eb;
-  --fg-muted: #9ca3af;
-  --accent: #22c55e;
-  --accent-soft: rgba(34, 197, 94, 0.12);
-  --border-subtle: rgba(148, 163, 184, 0.35);
-}
-
-/* Layout general */
+html,
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #0b1120, #020617 55%);
-  color: var(--fg);
+  padding: 0;
 }
+
+body {
+  /* Fondo principal oscuro pero no negro absoluto */
+  background: #111418;
+  color: #f5f5f5;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Enlaces base */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Para que las imágenes no revienten el layout */
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   PALETA DE COLORES (evi_link devs)
+   ========================================================= */
+
+:root {
+  color-scheme: dark;
+
+  /* Fondo */
+  --bg: #111418;
+  --bg-soft: #171b21;
+  --bg-softer: #1d2229;
+
+  /* Texto */
+  --text-primary: #f5f5f5;
+  --text-muted: #a3aab9;
+  --text-soft: #7b8392;
+
+  /* Bordes / líneas */
+  --border-subtle: #262c37;
+
+  /* Marca */
+  /* Midnight green modernizado (interior) */
+  --accent-emerald: #2e4f46;
+  --accent-emerald-bright: #3f7f6a;
+
+  /* Champagne gold mate (detalles) */
+  --accent-gold: #d5c7a1;
+  --accent-gold-soft: #b8aa85;
+
+  /* Estados */
+  --accent-focus: #3f7f6a;
+  --accent-disabled: #3a414f;
+
+  /* Sombra ligera para tarjetas */
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* =========================================================
+   LAYOUT GENERAL
+   ========================================================= */
 
 .page {
   min-height: 100vh;
   max-width: 1120px;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+  padding: 2.5rem 1.5rem 3rem;
 }
 
-/* Navbar */
+/* En pantallas medianas/grandes, un poco más de respiro lateral */
+@media (min-width: 1024px) {
+  .page {
+    padding: 3rem 0 3.5rem;
+  }
+}
+
+/* =========================================================
+   NAVBAR / BRANDING
+   ========================================================= */
+
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .nav-left {
@@ -70,241 +108,350 @@ body {
   gap: 0.75rem;
 }
 
+/* Círculo con inicial (luego ahí puedes meter el isotipo) */
 .logo-circle {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 0%, #4ade80, #16a34a 40%, #14532d);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #ecfdf5;
-  box-shadow: 0 0 25px rgba(34, 197, 94, 0.65);
+  text-transform: lowercase;
+  /* Fondo tipo “halo” emerald + champagne */
+  background: radial-gradient(circle at 30% 20%, var(--accent-gold) 0%, var(--accent-emerald-bright) 55%, #121518 100%);
+  color: #111418;
+  box-shadow: 0 0 0 1px rgba(213, 199, 161, 0.5);
+  letter-spacing: 0.05em;
+}
+
+/* Contenedor de la marca (texto) */
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+
+.logo-circle {
+  width: 54px;
+  height: 54px;
+  font-size: 1.35rem;
+  font-weight: 700;
 }
 
 .brand-title {
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-size: 1.45rem; /* Subimos tamaño */
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
 }
 
 .brand-subtitle {
-  font-size: 0.75rem;
-  color: var(--fg-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-top: 0.2rem;
 }
 
-/* Hero */
+/* =========================================================
+   HERO
+   ========================================================= */
+
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  align-items: center;
-  padding: 2.5rem 0 2rem;
+  margin-bottom: 3.5rem;
 }
 
-.hero-text h1 {
-  font-size: clamp(2.1rem, 3vw, 2.8rem);
-  line-height: 1.15;
-  margin: 0 0 1rem;
+/* Desktop: texto + tarjeta lado a lado */
+@media (max-width: 600px) {
+  .logo-circle {
+    width: 46px;
+    height: 46px;
+    font-size: 1.2rem;
+  }
+
+  .brand-title {
+    font-size: 1.25rem;
+  }
 }
 
-.hero-text p {
+.hero-text {
+  flex: 1.4;
+}
+
+.hero h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.1rem, 3vw, 2.6rem);
+  line-height: 1.2;
+}
+
+.hero p {
   margin: 0;
-  color: var(--fg-muted);
-  max-width: 34rem;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  max-width: 36rem;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.75rem;
+  margin: 1.75rem 0 1rem;
 }
+
+.hero-note {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
 
 .btn-primary,
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.7rem 1.4rem;
+  gap: 0.35rem;
+  padding: 0.65rem 1.25rem;
   border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
   border: 1px solid transparent;
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
-    background 0.12s ease-out, border-color 0.12s ease-out;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
+    transform 0.12s ease, box-shadow 0.18s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #022c22;
-  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+  background: linear-gradient(
+    135deg,
+    var(--accent-emerald-bright),
+    var(--accent-emerald)
+  );
+  color: #0b1012;
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(34, 197, 94, 0.55);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--fg);
-  border-color: rgba(148, 163, 184, 0.5);
+  color: var(--accent-gold);
+  border-color: rgba(213, 199, 161, 0.55);
 }
 
 .btn-secondary:hover {
-  border-color: rgba(248, 250, 252, 0.7);
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(213, 199, 161, 0.07);
 }
 
-.hero-note {
-  margin-top: 0.9rem;
-  font-size: 0.85rem;
-  color: var(--fg-muted);
-}
+/* =========================================================
+   HERO CARD (STACK)
+   ========================================================= */
 
-/* Hero card */
 .hero-card {
-  border-radius: 1.25rem;
+  flex: 1;
+  background: radial-gradient(circle at top left, #1f262f 0%, #15191f 55%, #12161a 100%);
+  border-radius: 1.2rem;
+  padding: 1.25rem 1.4rem;
   border: 1px solid var(--border-subtle);
-  padding: 1.4rem 1.35rem;
-  background: radial-gradient(circle at top, #0f172a, #020617 60%);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
+  box-shadow: var(--shadow-soft);
 }
 
 .hero-card h2 {
-  font-size: 1.05rem;
   margin: 0 0 0.75rem;
+  font-size: 1.05rem;
 }
 
 .hero-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.75rem;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
   font-size: 0.9rem;
-  color: var(--fg-muted);
 }
 
-.hero-card li::before {
-  content: "▹";
-  color: var(--accent);
-  margin-right: 0.4rem;
+.hero-card li {
+  margin-bottom: 0.2rem;
 }
 
 .hero-card-foot {
-  font-size: 0.75rem;
-  color: var(--fg-muted);
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-soft);
 }
 
-/* Sections */
+/* =========================================================
+   SECCIONES GENERALES
+   ========================================================= */
+
 .section {
-  padding: 2.5rem 0 2rem;
+  padding: 2.5rem 0 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .section-soft {
-  border-top: 1px solid rgba(15, 23, 42, 0.9);
-  margin-top: 0.75rem;
+  background: #141921;
+  border-radius: 1.5rem;
+  padding: 2.5rem 1.5rem;
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
 }
 
 .section-intro {
-  max-width: 42rem;
-  color: var(--fg-muted);
-  font-size: 0.95rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.96rem;
+  color: var(--text-muted);
+  max-width: 40rem;
 }
 
-/* Cards */
+/* =========================================================
+   CARDS (PROYECTOS / APIs)
+   ========================================================= */
+
 .cards {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
-  gap: 1.4rem;
   margin-top: 1.75rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Desktop: dos columnas */
+@media (min-width: 800px) {
+  .cards {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
 }
 
 .card {
-  border-radius: 1rem;
+  background: var(--bg-soft);
+  border-radius: 1.2rem;
   border: 1px solid var(--border-subtle);
-  padding: 1.3rem 1.25rem 1.2rem;
-  background: radial-gradient(circle at top, #020617, #020617 65%);
+  padding: 1.25rem 1.4rem 1.2rem;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+.card-muted {
+  background: #161a21;
 }
 
 .card h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
 }
 
 .card p {
   margin: 0;
-  color: var(--fg-muted);
-  font-size: 0.9rem;
+  font-size: 0.93rem;
+  color: var(--text-muted);
 }
 
 .card-list {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0 0.5rem;
-  font-size: 0.88rem;
-  color: var(--fg-muted);
+  margin: 0.7rem 0 0.9rem;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
-.card-list li::before {
-  content: "•";
-  color: var(--accent);
-  margin-right: 0.35rem;
+.card-list li {
+  margin-bottom: 0.25rem;
 }
 
 .card-actions {
-  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-start;
 }
 
+/* Link deshabilitado estilo “coming soon” */
 .link-disabled {
-  font-size: 0.86rem;
-  color: var(--fg-muted);
-  text-decoration: none;
-  cursor: default;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  cursor: not-allowed;
+  border-bottom: 1px dotted var(--text-soft);
 }
 
-.card-muted {
-  background: radial-gradient(circle at top, #020617, #020617 65%);
-  border-style: dashed;
-}
-
+/* Tag “roadmap” */
 .card-tag {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: var(--fg-muted);
+  color: var(--accent-gold-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
-/* Footer */
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
 .footer {
-  border-top: 1px solid rgba(15, 23, 42, 0.9);
-  margin-top: 2rem;
-  padding-top: 1.4rem;
-  font-size: 0.8rem;
-  color: var(--fg-muted);
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.84rem;
+  color: var(--text-soft);
+}
+
+.footer p {
+  margin: 0;
 }
 
 .footer-note {
-  margin-top: 0.4rem;
+  margin-top: 0.35rem;
+  max-width: 40rem;
 }
 
-/* Responsivo */
-@media (max-width: 840px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
+/* =========================================================
+   RESPONSIVE TWEAKS
+   ========================================================= */
+
+@media (max-width: 599px) {
+  .nav {
+    margin-bottom: 2rem;
+  }
+
+  .brand-title {
+    font-size: 1rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.72rem;
   }
 
   .hero-card {
-    margin-top: 1.25rem;
+    padding: 1.1rem 1.1rem;
   }
 
-  .cards {
-    grid-template-columns: minmax(0, 1fr);
+  .section-soft {
+    padding-inline: 1.1rem;
   }
 }
+
+/* --- LOGO EN HERO --- */
+.logo-block {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 20px;
+  padding-left: 10px;
+}
+
+.logo-block img {
+  height: 200px;     /* Ajusta entre 120–160 a tu gusto */
+  width: 250;
+  object-fit: contain;
+  display: block;
+  image-rendering: high-quality;
+}
+

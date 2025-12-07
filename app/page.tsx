@@ -4,23 +4,22 @@ export default function Home() {
     <main className="page">
       {/* NAVBAR */}
       <header className="nav">
-        <div className="nav-left">
-          <div className="logo-circle">E</div>
-          <div className="brand">
-            <span className="brand-title">Evilink Devs</span>
-            <span className="brand-subtitle">Backend · APIs · Automation</span>
-          </div>
-        </div>
+       <div className="logo-block">
+        <img src="/logo-horizontal.png" alt="evi_link devs logo" />
+       </div>
       </header>
+
 
       {/* HERO */}
       <section className="hero">
         <div className="hero-text">
           <h1>
-            Construyendo APIs y productos<br />para el siguiente nivel.
+            Construyendo APIs y productos
+            <br />
+            para el siguiente nivel.
           </h1>
           <p>
-            Evilink Devs es un estudio de desarrollo enfocado en crear
+            evi_link devs es un estudio de desarrollo enfocado en crear
             APIs, automatizaciones y servicios backend listos para
             producción. Hechos a mano, con obsesión por el detalle.
           </p>
@@ -62,7 +61,7 @@ export default function Home() {
       <section id="products" className="section">
         <h2>Proyectos y APIs</h2>
         <p className="section-intro">
-          Evilink Devs funciona como laboratorio y fábrica de productos.
+          evi_link devs funciona como laboratorio y fábrica de productos.
           Estas son las primeras piezas del ecosistema.
         </p>
 
@@ -104,9 +103,9 @@ export default function Home() {
 
       {/* ABOUT / FOOTER */}
       <section className="section section-soft">
-        <h2>Sobre Evilink Devs</h2>
+        <h2>Sobre evi_link devs</h2>
         <p className="section-intro">
-          Evilink Devs nace como un estudio independiente de desarrollo,
+          evi_link devs nace como un estudio independiente de desarrollo,
           enfocado en servicios backend y APIs listos para producción:
           performance, observabilidad y soporte como prioridades.
         </p>
@@ -117,7 +116,7 @@ export default function Home() {
       </section>
 
       <footer className="footer">
-        <p>© {new Date().getFullYear()} Evilink Devs. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} evi_link devs. All rights reserved.</p>
         <p className="footer-note">
           Sitio y APIs en desarrollo activo. Este proyecto se construye en paralelo
           a otras responsabilidades profesionales, sin afiliación con terceros.
