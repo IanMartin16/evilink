@@ -29,7 +29,7 @@ export default function Home() {
               Ver proyectos
             </a>
             <a
-              href="https://curpify.com.mx"
+              href="https://curpify.com"
               className="btn-secondary"
               target="_blank"
               rel="noreferrer"
