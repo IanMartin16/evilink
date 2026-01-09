@@ -1,4 +1,6 @@
 // components/cryptolink/DocsRenderer.tsx
+"use client";
+
 import Link from "next/link";
 
 type Props = {
