@@ -158,6 +158,8 @@ curl -N "${baseUrl}/v1/stream/prices?symbols=BTC,ETH&fiat=MXN" \\
 
       {/* PURCHASE (sección separada) */}
       <section id="purchase" className={styles.section}>
+        <PurchaseStatusBanner />
+
         <h2 className={styles.h2}>Comprar</h2>
         <p className={styles.p}>Te enviamos tu API Key por correo en cuanto se confirme el pago.</p>
         <PurchaseWidget />
