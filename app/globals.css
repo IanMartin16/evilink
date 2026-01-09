@@ -1,450 +1,45 @@
-/* =========================================================
-   RESET BÁSICO + THEME
-   ========================================================= */
+/* app/globals.css */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
+/* --------- RESET --------- */
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
   margin: 0;
-  padding: 0;
+  color: var(--text);
+  background:
+    radial-gradient(900px 450px at 15% 10%, rgba(0,229,168,.12), transparent 0%),
+    radial-gradient(700px 380px at 85% 15%, rgba(0,179,122,.10), transparent 0%),
+    radial-gradient(800px 500px at 50% 95%, rgba(0,120,90,.08), transparent 0%),
+    var(--bg0);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
 }
 
-body {
-  /* Fondo principal oscuro pero no negro absoluto */
-  background: #111418;
-  color: #f5f5f5;
-  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+/* NO blur global. NO overlays. */
+img{ max-width: 100%; display: block; }
+a{ color: inherit; text-decoration: none; }
+a:hover{ opacity: .95; }
 
-/* Enlaces base */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Para que las imágenes no revienten el layout */
-img,
-svg {
-  max-width: 100%;
-  height: auto;
-}
-
-/* =========================================================
-   PALETA DE COLORES (evi_link devs)
-   ========================================================= */
-
-:root {
-  color-scheme: dark;
-
-  /* Fondo */
-  --bg: #111418;
-  --bg-soft: #171b21;
-  --bg-softer: #1d2229;
-
-  /* Texto */
-  --text-primary: #f5f5f5;
-  --text-muted: #a3aab9;
-  --text-soft: #7b8392;
-
-  /* Bordes / líneas */
-  --border-subtle: #262c37;
-
-  /* Marca */
-  /* Midnight green modernizado (interior) */
-  --accent-emerald: #2e4f46;
-  --accent-emerald-bright: #3f7f6a;
-
-  /* Champagne gold mate (detalles) */
-  --accent-gold: #d5c7a1;
-  --accent-gold-soft: #b8aa85;
-
-  /* Estados */
-  --accent-focus: #3f7f6a;
-  --accent-disabled: #3a414f;
-
-  /* Sombra ligera para tarjetas */
-  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* =========================================================
-   LAYOUT GENERAL
-   ========================================================= */
-
-.page {
+/* --------- LAYOUT BASE --------- */
+.page{
   min-height: 100vh;
-  max-width: 1120px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 3rem;
+  padding: 26px 18px 42px;
 }
 
-/* En pantallas medianas/grandes, un poco más de respiro lateral */
-@media (min-width: 1024px) {
-  .page {
-    padding: 3rem 0 3.5rem;
-  }
+/* --------- NAVBAR --------- */
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
-/* =========================================================
-   NAVBAR / BRANDING
-   ========================================================= */
-
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2.5rem;
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Círculo con inicial (luego ahí puedes meter el isotipo) */
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  text-transform: lowercase;
-  /* Fondo tipo “halo” emerald + champagne */
-  background: radial-gradient(circle at 30% 20%, var(--accent-gold) 0%, var(--accent-emerald-bright) 55%, #121518 100%);
-  color: #111418;
-  box-shadow: 0 0 0 1px rgba(213, 199, 161, 0.5);
-  letter-spacing: 0.05em;
-}
-
-/* Contenedor de la marca (texto) */
-.brand {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-
-.logo-circle {
-  width: 54px;
-  height: 54px;
-  font-size: 1.35rem;
-  font-weight: 700;
-}
-
-.brand-title {
-  font-size: 1.45rem; /* Subimos tamaño */
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: lowercase;
-}
-
-.brand-subtitle {
-  font-size: 0.78rem;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  margin-top: 0.2rem;
-}
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.hero {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 3.5rem;
-}
-
-/* Desktop: texto + tarjeta lado a lado */
-@media (max-width: 600px) {
-  .logo-circle {
-    width: 46px;
-    height: 46px;
-    font-size: 1.2rem;
-  }
-
-  .brand-title {
-    font-size: 1.25rem;
-  }
-}
-
-.hero-text {
-  flex: 1.4;
-}
-
-.hero h1 {
-  margin: 0 0 1.25rem;
-  font-size: clamp(2.1rem, 3vw, 2.6rem);
-  line-height: 1.2;
-}
-
-.hero p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.98rem;
-  max-width: 36rem;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 1.75rem 0 1rem;
-}
-
-.hero-note {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-soft);
-}
-
-/* =========================================================
-   BOTONES
-   ========================================================= */
-
-.btn-primary,
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
-    transform 0.12s ease, box-shadow 0.18s ease;
-}
-
-.btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--accent-emerald-bright),
-    var(--accent-emerald)
-  );
-  color: #0b1012;
-  box-shadow: var(--shadow-soft);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--accent-gold);
-  border-color: rgba(213, 199, 161, 0.55);
-}
-
-.btn-secondary:hover {
-  background: rgba(213, 199, 161, 0.07);
-}
-
-/* =========================================================
-   HERO CARD (STACK)
-   ========================================================= */
-
-.hero-card {
-  flex: 1;
-  background: radial-gradient(circle at top left, #1f262f 0%, #15191f 55%, #12161a 100%);
-  border-radius: 1.2rem;
-  padding: 1.25rem 1.4rem;
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-soft);
-}
-
-.hero-card h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.05rem;
-}
-
-.hero-card ul {
-  margin: 0 0 0.75rem;
-  padding-left: 1.1rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.hero-card li {
-  margin-bottom: 0.2rem;
-}
-
-.hero-card-foot {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-soft);
-}
-
-/* =========================================================
-   SECCIONES GENERALES
-   ========================================================= */
-
-.section {
-  padding: 2.5rem 0 2.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.section-soft {
-  background: #141921;
-  border-radius: 1.5rem;
-  padding: 2.5rem 1.5rem;
-  margin-top: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.section h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.3rem;
-}
-
-.section-intro {
-  margin: 0.25rem 0 0;
-  font-size: 0.96rem;
-  color: var(--text-muted);
-  max-width: 40rem;
-}
-
-/* =========================================================
-   CARDS (PROYECTOS / APIs)
-   ========================================================= */
-
-.cards {
-  margin-top: 1.75rem;
-  display: grid;
-  gap: 1.25rem;
-}
-
-/* Desktop: dos columnas */
-@media (min-width: 800px) {
-  .cards {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  }
-}
-
-.card {
-  background: var(--bg-soft);
-  border-radius: 1.2rem;
-  border: 1px solid var(--border-subtle);
-  padding: 1.25rem 1.4rem 1.2rem;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
-}
-
-.card-muted {
-  background: #161a21;
-}
-
-.card h3 {
-  margin: 0 0 0.6rem;
-  font-size: 1rem;
-}
-
-.card p {
-  margin: 0;
-  font-size: 0.93rem;
-  color: var(--text-muted);
-}
-
-.card-list {
-  margin: 0.7rem 0 0.9rem;
-  padding-left: 1.1rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.card-list li {
-  margin-bottom: 0.25rem;
-}
-
-.card-actions {
-  display: flex;
-  justify-content: flex-start;
-}
-
-/* Link deshabilitado estilo “coming soon” */
-.link-disabled {
-  font-size: 0.9rem;
-  color: var(--text-soft);
-  cursor: not-allowed;
-  border-bottom: 1px dotted var(--text-soft);
-}
-
-/* Tag “roadmap” */
-.card-tag {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: var(--accent-gold-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-.footer {
-  margin-top: 2.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  font-size: 0.84rem;
-  color: var(--text-soft);
-}
-
-.footer p {
-  margin: 0;
-}
-
-.footer-note {
-  margin-top: 0.35rem;
-  max-width: 40rem;
-}
-
-/* =========================================================
-   RESPONSIVE TWEAKS
-   ========================================================= */
-
-@media (max-width: 599px) {
-  .nav {
-    margin-bottom: 2rem;
-  }
-
-  .brand-title {
-    font-size: 1rem;
-  }
-
-  .brand-subtitle {
-    font-size: 0.72rem;
-  }
-
-  .hero-card {
-    padding: 1.1rem 1.1rem;
-  }
-
-  .section-soft {
-    padding-inline: 1.1rem;
-  }
-}
-
-/* --- LOGO EN HERO --- */
-.logo-block {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding-top: 20px;
-  padding-left: 10px;
+.logo-block{
+  display:flex;
+  align-items:center;
+  gap: 10px;
 }
 
 .logo-block img {
@@ -455,3 +50,339 @@ svg {
   image-rendering: high-quality;
 }
 
+/* si luego quieres links en nav (Productos / Sobre) */
+.nav-links{
+  display:flex;
+  gap: 16px;
+  align-items:center;
+}
+
+.nav-links a{
+  color: rgba(255,255,255,.78);
+  font-size: 20px;
+}
+.nav-links a:hover{ color: rgba(255,255,255,.95); }
+
+/* --------- HERO --------- */
+.hero{
+  display:grid;
+  grid-template-columns: 1.25fr .85fr;
+  gap: 18px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.hero-text h1{
+  font-size: 46px;
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.hero-text p{
+  margin: 12px 0 0;
+  max-width: 64ch;
+  color: var(--muted);
+}
+
+.hero-actions{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-primary, .btn-secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.90);
+}
+
+.btn-primary{
+  background: var(--accent);
+  border-color: 1px solid rgba(255, 255, 255, .10);
+  color: #042019;
+  font-weight: 550;
+}
+.btn-primary:hover{ filter: brightness(1.55); }
+
+.btn-secondary:hover{
+  border-color: rgba(255, 255, 255, 0);
+}
+
+.hero-note{
+  margin-top: 12px;
+  color: rgba(255,255,255,.60);
+  font-size: 13px;
+}
+
+.hero-card{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.hero-card h2{
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.hero-card ul{
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(255,255,255,.75);
+}
+
+.hero-card-foot{
+  margin-top: 10px;
+  color: rgba(255,255,255,.65);
+  font-size: 13px;
+}
+
+/* --------- SECTIONS --------- */
+.section{
+  margin-top: 34px;
+}
+
+.section h2{
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.section-intro{
+  margin: 0;
+  color: var(--muted);
+  max-width: 80ch;
+}
+
+/* --------- PRODUCT CARDS --------- */
+.cards{
+  margin-top: 16px;
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.card{
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.18);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.card h3{
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.card p{
+  margin: 0;
+  color: rgba(255,255,255,.72);
+}
+
+.card-list{
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: rgba(255,255,255,.75);
+}
+
+.card-actions{
+  margin-top: 12px;
+  display:flex;
+  gap: 12px;
+  align-items:center;
+}
+
+.link-disabled{
+  color: rgba(255,255,255,.45);
+  pointer-events: none;
+}
+
+.card-muted{
+  background: rgba(255,255,255,.04);
+}
+
+.card-tag{
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(255,255,255,.60);
+}
+
+/* --------- SOFT SECTION --------- */
+.section-soft{
+  border-top: 1px solid rgba(255,255,255,.10);
+  padding-top: 22px;
+}
+
+/* --------- FOOTER --------- */
+.footer{
+  margin-top: 34px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.55);
+  font-size: 13px;
+}
+
+.footer-note{
+  margin-top: 10px;
+  color: rgba(255,255,255,.45);
+  max-width: 95ch;
+}
+
+/* --------- RESPONSIVE --------- */
+@media (max-width: 900px){
+  .hero{ grid-template-columns: 1fr; }
+  .cards{ grid-template-columns: 1fr; }
+  .hero-text h1{ font-size: 38px; }
+}
+
+/* =========================
+   EVILINK THEME OVERRIDES
+   Midnight + Champagne
+   (Pega esto al FINAL de globals.css)
+   ========================= */
+
+:root{
+  --bg0: #050d0b;         /* midnight base (más oscuro) */
+  --bg1: #071413;         /* deep teal */
+  --bg2: #0b2420;         /* teal glow */
+  --accent: #17d6a3;      /* verde principal */
+  --accent-2: #0aa37f;    /* verde para hover */
+  --text: #eadbb8;        /* champagne */
+  --muted: rgba(234,219,184,.72);
+  --card: rgba(255,255,255,.05);
+  --card-strong: rgba(7,20,19,.78); /* más opaco para quitar “traslúcido raro” */
+  --border: rgba(255,255,255,.10);
+}
+
+/* Fondo general */
+html, body{
+  background:
+    radial-gradient(1200px 600px at 15% 10%, rgba(23,214,163,.16), transparent 0%),
+    radial-gradient(900px 500px at 80% 25%, rgba(11,36,32,.55), transparent 0%),
+    linear-gradient(180deg, var(--bg1), var(--bg0) 60%, #040908);
+  color: var(--text);
+}
+
+/* Texto base */
+.page{
+  color: var(--text);
+}
+.page p, .page li{
+  color: var(--muted);
+}
+
+/* Links */
+.page a{
+  color: var(--accent);
+}
+.page a:hover{
+  color: var(--accent-2);
+}
+
+/* Botones (los de tu home) */
+.btn-primary{
+  background: var(--accent);
+  color: #06110f15;
+  border: 1px solid rgba(0,0,0,.25);
+}
+.btn-primary:hover{ filter: brightness(1.05); }
+
+.btn-secondary{
+  background: none;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover{
+  border-color: rgba(23, 214, 163, 0.048);
+}
+
+/* Cards / secciones para quitar el “velo” */
+.hero-card,
+.card,
+.section-soft{
+  background: var(--card-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: none; /* <- clave si traías blur y se ve “raro” */
+}
+
+
+
+/* Hs */
+.page h1, .page h2, .page h3{
+  color: var(--text);
+}
+
+/* ==== FIX: “doble tono / traslúcido raro” ==== */
+
+/* 1) Si tenías un overlay tipo ::before en .page o body, lo apagamos */
+.page::before,
+.page::after,
+.hero::before,
+.hero::after,
+.section::before,
+.section::after,
+.section-soft::before,
+.section-soft::after,
+body::before,
+body::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* 2) Evita blur/backdrop que hace “velo” */
+.hero-card,
+.card,
+.section-soft,
+.nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 3) Asegura que las secciones NO pinten un fondo semi-transparente encima del gradiente */
+.hero,
+.section,
+.section-soft {
+  background: none;
+}
+
+/* 4) Las cards sí deben tener fondo, pero más sólido (sin mezclar raro) */
+.hero-card,
+.card {
+  background: rgba(7, 20, 19, 0.88) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+
+
+/* FIX: evita que el grid se estire por contenido largo (URLs en <pre>) */
+.cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 👈 CLAVE */
+}
+
+.card {
+  min-width: 0; /* 👈 CLAVE */
+}
+
+/* FIX: code blocks no empujan el layout, hacen scroll horizontal */
+.code,
+.code pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* opcional: por si el texto largo rompe raro */
+.code pre {
+  white-space: pre;
+}

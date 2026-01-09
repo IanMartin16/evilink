@@ -1,0 +1,86 @@
+.wrap {
+  margin-top: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #061a14;
+  border-radius: 16px;
+  padding: 16px;
+  max-width: 560px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.sub {
+  opacity: .8;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input {
+  flex: 1 1 240px;
+  min-width: 220px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.25);
+  color: #e9e2cf; /* champagne */
+  outline: none;
+}
+
+.pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.pillActive {
+  border-color: rgba(63, 255, 191, .45);
+  box-shadow: 0 0 0 3px rgba(63, 255, 191, .10);
+}
+
+.buy {
+  margin-left: auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  background: #42f5b3;      /* green midnight vibe */
+  color: #042019;
+}
+
+.buy:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.err {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ffb4b4;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: .75;
+}

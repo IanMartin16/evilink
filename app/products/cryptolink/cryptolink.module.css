@@ -1,0 +1,367 @@
+.page{
+  min-height: 100vh;
+  padding: 28px 18px 40px;
+  color: rgba(255,255,255,.92);
+
+  /* Midnight green vibe (sin glass raro) */
+  background:
+    radial-gradient(900px 450px at 15% 10%, rgba(0, 229, 168, .13), transparent 0%),
+    radial-gradient(700px 380px at 85% 15%, rgba(0, 179, 122, .10), transparent 0%),
+    radial-gradient(800px 500px at 50% 90%, rgba(0, 120, 90, .08), transparent 0%),
+    #061814;
+}
+
+/* Header */
+.header{
+  max-width: 1050px;
+  margin: 0 auto 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand{
+  display: flex;
+  align-items: center;
+}
+
+.logo{
+  height: 34px; /* aquí lo haces más grande */
+  width: auto;
+  opacity: .95;
+}
+
+.headerNav{
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.headerLink{
+  color: rgba(255,255,255,.78);
+  text-decoration: none;
+  font-size: 14px;
+}
+.headerLink:hover{
+  color: rgba(255,255,255,.95);
+}
+
+/* Hero */
+.hero{
+  max-width: 1050px;
+  margin: 0 auto 6px;
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 18px;
+}
+
+@media (max-width: 900px){
+  .hero{ grid-template-columns: 1fr; }
+}
+
+.h1{
+  font-size: 44px;
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.sub{
+  margin: 10px 0 14px;
+  color: rgba(255,255,255,.72);
+  max-width: 62ch;
+}
+
+.badges{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.badge{
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.20);
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgba(255,255,255,.80);
+}
+
+/* Botones */
+.actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.88);
+}
+.btn:hover{
+  border-color: rgba(255,255,255,.22);
+}
+
+.btnPrimary{
+  background: linear-gradient(180deg, rgba(0,229,168,.95), rgba(0,179,122,.90));
+  border-color: rgba(0,229,168,.55);
+  color: #04110e;
+  font-weight: 700;
+}
+.btnPrimary:hover{
+  filter: brightness(1.03);
+}
+
+.btnGhost{
+  background: rgba(0,0,0,.18);
+}
+
+/* Secciones */
+.section{
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 18px 0;
+}
+
+.h2{
+  margin: 0 0 8px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.p{
+  margin: 0;
+  color: rgba(255,255,255,.72);
+}
+
+.panel{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  border-radius: 16px;
+  padding: 16px 16px;
+}
+
+.panelTitle{
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,.92);
+}
+
+.list{
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(255,255,255,.72);
+}
+.list li{
+  margin: 6px 0;
+}
+
+.codeBox{
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.28);
+  border-radius: 16px;
+  padding: 14px;
+  overflow: auto;
+}
+
+.pre{
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(255,255,255,.90);
+  white-space: pre;
+}
+
+.tip{
+  margin-top: 10px;
+  color: rgba(255,255,255,.60);
+  font-size: 13px;
+}
+
+/* Planes */
+.grid{
+  margin-top: 6px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 900px){
+  .grid{ grid-template-columns: 1fr; }
+}
+
+.planCard{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.planCardHighlight{
+  border-color: rgba(0,229,168,.45);
+  box-shadow: 0 0 0 1px rgba(0,229,168,.12) inset;
+}
+
+.planName{
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.planMeta{
+  margin-top: 10px;
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+}
+.planMeta span{
+  color: rgba(255,255,255,.92);
+}
+
+/* Docs layout */
+.twoCols{
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 900px){
+  .twoCols{ grid-template-columns: 1fr; }
+}
+
+.note{
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: rgba(255,255,255,.72);
+}
+
+/* Footer */
+.footer{
+  max-width: 1050px;
+  margin: 18px auto 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.55);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.footerDot{
+  opacity: .5;
+}
+
+.planTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.planBody{
+  margin-top: 10px;
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+}
+.planBody strong{
+  color: rgba(255,255,255,.92);
+  font-weight: 700;
+}
+
+.planBadge{
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: rgba(0,229,168,.92);
+  color: #04110e;
+}
+
+.planNote{
+  margin-top: 12px;
+  color: rgba(255,255,255,.55);
+  font-size: 12px;
+}
+
+.planCta{
+  margin-top: 14px;
+  display:flex;
+}
+
+.buyBtn{
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0,.25);
+  background: linear-gradient(180deg, 180deg, #f3e5c6, #d9c18e);
+  color: #06110f;
+  font-weight: 800;
+  cursor: pointer;
+}
+.buyBtn:hover{ filter: brightness(1.03); }
+.buyBtn:active{ transform: translateY(1px); }
+
+.planCta { margin-top: 14px; display: flex; }
+.planNote { margin-top: 12px; color: rgba(255,255,255,.55); font-size: 12px; }
+
+.buyBtn{
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(234,219,184,.35);
+
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+
+  /* evita estilos raros de otros botones */
+  background: none;
+  color: #1b1410;
+}
+
+.buyBtnBusiness{
+  background: linear-gradient(180deg, #eadbb8, #cdb78e);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.25),
+    0 0 0 3px rgba(234,219,184,.10);
+}
+
+.buyBtnPro{
+  background: linear-gradient(180deg, #f1e3c4, #d3bd93);
+  border-color: rgba(241,227,196,.55);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28),
+    0 0 0 3px rgba(241,227,196,.12);
+}
+
+.buyBtn:hover{
+  filter: brightness(1.03);
+}
+
+.buyBtn:active{
+  transform: translateY(1px);
+}
+
+.buyBtn:disabled{
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
