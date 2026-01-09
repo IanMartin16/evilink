@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function PurchaseStatusBanner() {
@@ -11,14 +11,26 @@ export default function PurchaseStatusBanner() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
-    if (status) {
-      // ✅ Limpia la URL para que no se quede pegado en refresh
-      router.replace(pathname);
+    if (!status) {
+      setVisible(false);
+      return;
     }
+
+    setVisible(true);
+
+    // ✅ deja el banner 5 segundos y luego limpia la URL
+    const t = setTimeout(() => {
+      setVisible(false);
+      router.replace(pathname + "#purchase"); // opcional: te manda al widget
+    }, 5000);
+
+    return () => clearTimeout(t);
   }, [status, router, pathname]);
 
-  if (!status) return null;
+  if (!status || !visible) return null;
 
   const isSuccess = status === "success";
 
@@ -43,10 +55,19 @@ export default function PurchaseStatusBanner() {
       </div>
 
       {!isSuccess && (
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
           <a className="btn-primary" href="#purchase">
             Reintentar checkout
           </a>
+
+          {/* opcional: cerrar manual */}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => router.replace(pathname + "#purchase")}
+          >
+            Cerrar
+          </button>
         </div>
       )}
     </div>

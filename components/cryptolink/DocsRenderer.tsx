@@ -151,7 +151,7 @@ export default function DocsRenderer({ docs }: Props) {
         <h2>Planes y límites</h2>
         <p className="section-intro">
           Importante: hoy hay <strong>{docs.limits.availableSymbolsToday}</strong> symbols disponibles.
-          Si tu plan dice 20/25, pero solo hay 13, define si lo vas a ajustar o aclarar.
+          En el proximo upgrade se tiene planeado elevar a 20 en el Plan PRO y 15 al Plan BUSINESS.
         </p>
 
         <div className="cards">
