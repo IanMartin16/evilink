@@ -1,4 +1,6 @@
 // app/products/cryptolink/docs/page.tsx
+"use client"
+
 import dynamic from "next/dynamic";
 import { cryptolinkDocs } from "@/lib/cryptolink/docs";
 
