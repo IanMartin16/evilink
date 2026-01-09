@@ -2,10 +2,13 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import styles from "./cryptolink.module.css";
-import PurchaseWidget from "./PurchaseWidget";
-import PurchaseStatusBanner from "./PurchaseStatusBanner";
 import PlanBuyButton from "./PlanBuyButton";
+
+const PurchaseWidget = dynamic(() => import("./PurchaseWidget"), { ssr: false });
+const PurchaseStatusBanner = dynamic(() => import("./PurchaseStatusBanner"), { ssr: false });
+
 
 type PlanKey = "BUSINESS" | "PRO";
 
