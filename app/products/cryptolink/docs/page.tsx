@@ -2,9 +2,7 @@
 import dynamic from "next/dynamic";
 import { cryptolinkDocs } from "@/lib/cryptolink/docs";
 
-const DocsRenderer = dynamic(() => import("@/components/cryptolink/DocsRenderer"), {
-  ssr: false,
-});
+const DocsRenderer = dynamic(() => import("@/components/cryptolink/DocsRenderer"), {ssr: false,});
 
 export const metadata = {
   title: "CryptoLink · Docs | evi_link devs",
