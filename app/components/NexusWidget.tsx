@@ -18,6 +18,8 @@ type Product = "curpify" | "cryptolink" | "evilink";
 type Msg = {id: string; role: "user" | "assistant"; text: string; ts: number, product: string;};
 
 const LS_KEY = "nexus_widget_state_v1";
+const LS_PRODUCT_KEY = "nexus.product";
+const LS_SESSION_KEY = "nexus.sessionId";
 
 function safeParse<T>(s: string | null): T | null {
   if (!s) return null;
@@ -75,13 +77,23 @@ function renderLiteMarkdown(text: string) {
 
 export default function NexusWidget() {
   const [open, setOpen] = useState(false);
-  const [product, setProduct] = useState<Product>("curpify");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [msgs, setMsgs] = useState<Msg[]>([
     {id:"welcome", role: "assistant", text: "Hola 👋 Soy Nexus. Pregúntame sobre Curpify, CryptoLink o evi_link.", ts: Date.now (), product: "curpify" },
   ]);
+
+  const [product, setProduct] = useState<string>(() => {
+    if (typeof window === "undefined") return "curpify";
+    return localStorage.getItem(LS_PRODUCT_KEY) || "curpify";
+  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(LS_PRODUCT_KEY, product);
+  }, [product]);
+
+
 
   const DISCLAIMER_KEY = "nexus_disclaimer_dismissed_v1";
 
@@ -114,9 +126,10 @@ export default function NexusWidget() {
   hideTimerRef.current = window.setTimeout(() => {
     setTeaserOpen(false);
     setTeaserClosing(false);
-    sessionStorage.setItem("nexus_teaser_seen", "1");
+    localStorage.setItem("nexus_teaser_seen", "1");
   }, hideAtMs);
 };
+
 
 useEffect(() => {
   if (typeof window === "undefined") return;
@@ -134,7 +147,8 @@ useEffect(() => {
   };
 }, []);  
 
-  const sessionId = useMemo(() => "web", []);
+
+  //const sessionId = useMemo(() => "web", []);
   const listRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -144,6 +158,44 @@ useEffect(() => {
     if (saved?.product) setProduct(saved.product);
     if (saved?.msgs?.length) setMsgs(saved.msgs);
   }, []);
+
+  const [sessionId] = useState<string>(() => {
+    if (typeof window === "undefined") return "web";
+    const existing = localStorage.getItem(LS_SESSION_KEY);
+    if (existing) return existing;
+    const created = crypto.randomUUID();
+    localStorage.setItem(LS_SESSION_KEY, created);
+    return created;
+  });
+
+
+  useEffect(() => {
+  if (!open) return;
+
+  (async () => {
+    try {
+      const r = await fetch(
+        `/api/nexus/history?sessionId=${encodeURIComponent(sessionId)}&product=${encodeURIComponent(product)}&limit=30`,
+        { cache: "no-store" }
+      );
+      const data = await r.json().catch(() => null);
+
+      if (data?.ok && Array.isArray(data.messages)) {
+        setMsgs(
+          data.messages.map((m: any) => ({
+            id: crypto.randomUUID(),
+            role: m.role === "assistant" ? "assistant" : "user",
+            text: String(m.text ?? ""),
+            ts: Date.parse(m.ts) || Date.now(),
+            product,
+          }))
+        );
+      }
+    } catch {
+      // si falla, no pasa nada
+    }
+  })();
+}, [open, product, sessionId]);
 
   // Save state
   useEffect(() => {
@@ -163,21 +215,61 @@ useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
-  async function send() {
-    const text = input.trim();
-    if (!text || loading) return;
+  const looksSensitive = (t: string) => {
+     const s = t.toLowerCase();
+     return (
+      s.includes("sk_live_") || s.includes("sk_test_") ||
+      s.includes("whsec_") ||
+      s.includes("bearer ") ||
+      s.includes("authorization:") ||
+      s.includes("x-api-key") ||
+      s.includes("password") ||
+      s.includes("token") ||
+      /\b\d{12,19}\b/.test(t.replace(/\s/g, "")) // posible tarjeta
+    );
+  };
 
-    const userMsg: Msg = {id:crypto.randomUUID(), role: "user", text, ts: Date.now(), product, };
-    setMsgs((m) => [...m, userMsg]);
+   async function send() {
+   const text = input.trim();
+   if (!text || loading) return;
+
+   if (looksSensitive(text)) {
+     const warn: Msg = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      text: "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo (rota la llave si ya se expuso).",
+      ts: Date.now(),
+      product,
+    };
+    setMsgs((m) => [...m, warn]);
     setInput("");
-    setLoading(true);
+    return;
+  }
 
-    try {
-      const resp = await fetch("/api/nexus/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, product, message: text }),
-      });
+   const sid = (sessionId && sessionId.trim()) ? sessionId : "web";
+   const prod = (product && product.trim()) ? product : "curpify";
+
+   console.log("SEND =>", { sid, prod, text });
+
+   const userMsg: Msg = {
+     id: crypto.randomUUID(),
+     role: "user",
+     text,
+     ts: Date.now(),
+     product: prod,
+   };
+
+   setMsgs((m) => [...m, userMsg]);
+   setInput("");
+   setLoading(true);
+
+   try {
+     const resp = await fetch("/api/nexus/chat", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ sessionId: sid, product: prod, message: text }),
+     });
+     
 
       const data = await resp.json().catch(() => ({}));
 
@@ -197,7 +289,6 @@ useEffect(() => {
   function clearChat() {
     setMsgs([{id: crypto.randomUUID(), role: "assistant", text: "Listo ✅ ¿Qué quieres preguntar ahora?", ts: Date.now(), product}]);
   }
-
 
   return (
     <>
@@ -233,74 +324,73 @@ useEffect(() => {
   </span>
   </button>
   {!open && teaserOpen && (
-  <button
-    onClick={() => {
-      setOpen(true);
-      setTeaserOpen(false);
-      setTeaserClosing(false);
-      if (typeof window !== "undefined") sessionStorage.setItem("nexus_teaser_seen", "1");
-    }}
-    style={{
-      position: "fixed",
-      right: 88,
-      bottom: 22,
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      padding: "12px 14px",
-      borderRadius: 999,
-      background: "rgba(10, 18, 14, 0.92)",
-      border: `1px solid ${EVILINK.border}`,
-      color: EVILINK.text,
-      boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
-      cursor: "pointer",
-      maxWidth: 320,
-      backdropFilter: "blur(10px)",
-      WebkitBackdropFilter: "blur(10px)",
-      zIndex: 99999,
-
-      // 👇 fade-out
-      opacity: teaserClosing ? 0 : 1,
-      transform: teaserClosing ? "translateY(6px)" : "translateY(0)",
-      transition: "opacity 700ms ease, transform 700ms ease",
-    }}
-    aria-label="Abrir Nexus"
-    title="Abrir Nexus"
-  >
-    <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
-      <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
-      <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
-    </div>
-
-    <span
-      onClick={(e) => {
-        e.stopPropagation();
-        // 👇 fade-out manual al cerrar
-        setTeaserClosing(true);
-        window.setTimeout(() => {
-          setTeaserOpen(false);
-          setTeaserClosing(false);
-          sessionStorage.setItem("nexus_teaser_seen", "1");
-        }, 700);
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => setOpen(true)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") setOpen(true);
       }}
       style={{
-        width: 28,
-        height: 28,
+        position: "fixed",
+        right: 88,
+        bottom: 22,
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "12px 14px",
         borderRadius: 999,
-        display: "grid",
-        placeItems: "center",
-        background: "rgba(255,255,255,0.06)",
+        background: "rgba(10, 18, 14, 0.92)",
         border: `1px solid ${EVILINK.border}`,
         color: EVILINK.text,
-        fontWeight: 900,
+        boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
+        cursor: "pointer",
+        maxWidth: 320,
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        animation: teaserClosing
+          ? "nexusTeaserOut 1000ms ease-in forwards"
+          : "nexusTeaserIn 260ms ease-out",
+        zIndex: 99999,
+        userSelect: "none",
       }}
-      aria-label="Cerrar mensaje"
-      title="Cerrar"
+      aria-label="Abrir Nexus"
+      title="Abrir Nexus"
     >
-      ×
-    </span>
-  </button>
-)}
+      <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
+        <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
+        <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
+      </div>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setTeaserClosing(true);
+          window.setTimeout(() => {
+            setTeaserOpen(false);
+            setTeaserClosing(false);
+          }, 650);
+        }}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 999,
+          display: "grid",
+          placeItems: "center",
+          background: "rgba(255,255,255,0.06)",
+          border: `1px solid ${EVILINK.border}`,
+          color: EVILINK.text,
+          fontWeight: 900,
+          cursor: "pointer",
+        }}
+        aria-label="Cerrar mensaje"
+        title="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+  )}
 
       {/* Overlay */}
       {open && (
@@ -411,10 +501,9 @@ useEffect(() => {
                 <div style={{ fontSize: 12, fontWeight: 800, color: EVILINK.text, lineHeight: 1.1 }}>
                   Usamos IA generativa
                 </div>
-                <div style={{ fontSize: 12, color: EVILINK.muted, marginTop: 4, lineHeight: 1.35 }}>
-                  Nexus utiliza IA para entenderte y generar respuestas. Aunque buscamos ser precisos, puede equivocarse.
-                  No compartas datos sensibles.
-                </div>
+                <span style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>
+                 ⚠️ Seguridad: no pegues passwords, tokens, llaves API o datos bancarios.
+                </span>
               </div>
 
               {/* Close */}
@@ -551,25 +640,27 @@ useEffect(() => {
           </div>
 
           {/* Animación CSS inline */}
-          <style>
-            textarea:focus {`
-            boxShadow: 0 0 0 3px rgba(43, 255, 136, 0.18);
+          <style jsx global>{`
+            textarea:focus {
+            box-shadow: 0 0 0 3px rgba(43, 255, 136, 0.18);
             border-color: rgba(43, 255, 136, 0.35);
-            `
-            }
-            {`
-            @keyframes nexusUp {
-              from { transform: translateY(18px) scale(0.98); opacity: 0.0; }
-              to { transform: translateY(0) scale(1); opacity: 1; }
-            }
-          `
           }
-          {`
+
+          @keyframes nexusUp {
+            from { transform: translateY(18px) scale(0.98); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+          }
+
           @keyframes nexusTeaserIn {
             from { transform: translateY(8px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-          `}
-          </style>
+            to   { transform: translateY(0); opacity: 1; }
+          }
+
+          @keyframes nexusTeaserOut {
+            from { transform: translateY(0); opacity: 1; }
+            to   { transform: translateY(8px); opacity: 0; }
+          }
+        `}</style>
         </div>
       )}
     </>
