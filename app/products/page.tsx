@@ -1,6 +1,8 @@
+import { PRODUCTOS } from "../data/products";
 import Link from "next/link";
 
-export default function ProductsPage() {
+
+export default function ProductosPage() {
   return (
     <main className="page">
       <header className="nav">
@@ -12,55 +14,49 @@ export default function ProductsPage() {
 
         <nav className="nav-links">
           <Link href="/">Inicio</Link>
-          <Link href="/#products">Home Products</Link>
+          <Link href="/#products">Productos Destacados</Link>
         </nav>
       </header>
-
       <section className="section">
         <h2>Productos</h2>
-        <p className="section-intro">
-          Catálogo de APIs y herramientas del ecosistema evi_link devs.
-        </p>
+        <p className="section-intro">Catálogo completo del ecosistema evi_link devs.</p>
 
         <div className="cards">
-          <article className="card">
-            <div className="card-top">
-              <h3>CryptoLink API</h3>
-              <span className="badge">BETA</span>
-            </div>
-
-            <p>
-              Precios cripto + streaming SSE en tiempo real, con límites por plan y API keys.
-            </p>
-
-            <ul className="card-list">
-              <li>✔ REST + SSE</li>
-              <li>✔ Rate limit por plan</li>
-              <li>✔ Checkout Stripe + API Key por email</li>
-            </ul>
-
-            <div className="card-actions">
-              <Link className="btn-secondary" href="/products/cryptolink">
-                Ver landing
-              </Link>
-            </div>
-          </article>
-
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Curpify API</h3>
-              <span className="badge">PRÓXIMO</span>
-            </div>
-
-            <p>Validación de CURP para integraciones en México.</p>
-            <p className="card-tag">Docs muy pronto</p>
-          </article>
+          {PRODUCTOS.map(p => (
+            <article key={p.key} className="card">
+              <div className="card-top">
+                <h3>{p.nombre}</h3>
+                <span className={`badge badge-${p.estado.replaceAll(" ", "-").toLowerCase()}`}>
+                  {p.estado}
+                </span>
+              </div>
+              <p>{p.desc}</p>
+              <ul className="card-list">
+                {p.bullets.map(b => <li key={b}>✔ {b}</li>)}
+              </ul>
+              <div className="card-actions">
+                {p.links.map(l =>
+                  l.external ? (
+                    <a key={l.href} className="btn-mini" href={l.href} target="_blank" rel="noreferrer">{l.label}</a>
+                  ) : (
+                    <a key={l.href} className="btn-mini" href={l.href}>{l.label}</a>
+                  )
+                )}
+              </div>
+              {p.tag ? <p className="card-tag">{p.tag}</p> : null}
+            </article>
+          ))}
         </div>
       </section>
 
-      <footer className="footer">
-        <p>© {new Date().getFullYear()} evi_link devs. All rights reserved.</p>
-      </footer>
+      <section id="roadmap" className="section section-soft">
+        <div className="card-top">
+        <h2>Roadmap</h2>
+        <p className="section-intro">En construcción…</p>
+        </div>
+      </section>
     </main>
   );
 }
+
+

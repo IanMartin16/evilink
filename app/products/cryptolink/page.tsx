@@ -64,13 +64,10 @@ export default function CryptoLinkPage() {
           {/* <img src="/logo-horizontal.png" alt="evi_link devs" className={styles.logo} /> */}
         </div>
 
-        <nav className={styles.headerNav}>
-          <Link className={styles.headerLink} href="/products">
-            ← Volver
-          </Link>
-          <Link className={styles.headerLink} href="/products/cryptolink/docs">
-            Docs
-          </Link>
+        <nav className="nav-links">
+          <Link href="/">Inicio</Link>
+          <Link href="/#products">← Volver</Link>
+          <Link href="/products/cryptolink/docs">Docs</Link>
         </nav>
       </header>
 
@@ -107,7 +104,7 @@ export default function CryptoLinkPage() {
 
         <div className={styles.heroRight}>
           <div className={styles.panel}>
-            <div className={styles.panelTitle}>Checklist rápido</div>
+            <div className={styles.h2}>Checklist rápido</div>
             <ul className={styles.list}>
               <li>Obtén tu API Key (por email tras checkout).</li>
               <li>Prueba REST con <code>x-api-key</code>.</li>
@@ -120,12 +117,12 @@ export default function CryptoLinkPage() {
       {/* QUICKSTART (ya NO usa className="page") */}
       <section id="quickstart" className={styles.section}>
         <h2 className={styles.h2}>Quickstart</h2>
-        <p className={styles.p}>
+        <p className={styles.list}>
           Usa tu <code>x-api-key</code>. Si aún no tienes, te la enviamos por correo tras el checkout.
         </p>
 
         <div className={styles.codeBox}>
-          <pre className={styles.pre}>
+          <pre className={styles.list}>
 {`# REST
 curl -s "${baseUrl}/v1/prices?symbols=BTC,ETH&fiat=MXN" \\
   -H "x-api-key: TU_API_KEY"

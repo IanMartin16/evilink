@@ -12,7 +12,7 @@ export default function Home() {
 
         {/* mini nav opcional */}
         <nav className="nav-links">
-          <a href="#products">Productos</a>
+          <a href="#products">Destacados</a>
           <Link href="#about">Sobre</Link>
         </nav>
       </header>
@@ -68,7 +68,7 @@ export default function Home() {
 
      {/* PRODUCTS */}
 <section id="products" className="section">
-  <h2>Productos</h2>
+  <h2>Productos Destacados</h2>
   <p className="section-intro">
     Catálogo de APIs y herramientas del ecosistema evi_link devs. Cada producto tiene su landing y documentación.
   </p>
@@ -182,9 +182,9 @@ export default function Home() {
       {/* ABOUT / FOOTER */}
       <section id="about" >
         <div className="card">
+          <h2 className="card-title">Sobre</h2>
           <div className="card-top">
             <article className="card card-muted">
-              <h2 className="card-title">Sobre</h2>
               <p>
               evi_link devs nace como un estudio independiente de desarrollo, enfocado
               en servicios backend y APIs listos para producción: performance,

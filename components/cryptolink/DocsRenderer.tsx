@@ -167,10 +167,11 @@ export default function DocsRenderer({ docs }: Props) {
         </div>
       </section>
 
-      <section id="errors" className="section section-soft">
-        <h2>Errores y debugging</h2>
-        <div className="cards">
-          <article className="card">
+      <section id="errors">
+        <div className="card">
+          <h2 className="card-title">Errores y debugging</h2>
+          <div className="card-top">
+          <article className="card card-muted">
             <h3>Headers útiles</h3>
             <ul className="card-list">
               <li>• <code>X-Plan</code></li>
@@ -185,6 +186,7 @@ export default function DocsRenderer({ docs }: Props) {
               Para 5xx: reintenta. Para 429: backoff. Para 401: revisa tu API key.
             </p>
           </article>
+          </div>
         </div>
       </section>
 
