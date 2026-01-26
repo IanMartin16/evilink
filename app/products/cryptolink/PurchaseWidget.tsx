@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./PurchaseWidget.module.css";
 
 const PRICE = {
@@ -15,6 +15,7 @@ export default function PurchaseWidget() {
   const [selectedPlan, setSelectedPlan] = useState<Plan>("BUSINESS");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
 
   const emailTrim = useMemo(() => email.trim().toLowerCase(), [email]);
 
@@ -27,6 +28,24 @@ export default function PurchaseWidget() {
     const p = new URLSearchParams(window.location.search).get("plan");
     if (p?.toUpperCase() === "PRO") setSelectedPlan("PRO");
     if (p?.toUpperCase() === "BUSINESS") setSelectedPlan("BUSINESS");
+  }, []);
+
+  // ✅ HACE QUE LOS BOTONES EXTERNOS FUNCIONEN
+  useEffect(() => {
+    (window as any).__cryptolinkPurchase = (plan: Plan) => {
+      setSelectedPlan(plan);
+
+      const el = document.getElementById("purchase");
+      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // enfoque al input (con un mini delay para que ya esté en vista)
+      setTimeout(() => emailRef.current?.focus(), 250);
+    };
+
+    return () => {
+      // cleanup para no dejar basura si cambias de página
+      delete (window as any).__cryptolinkPurchase;
+    };
   }, []);
 
   async function startCheckout() {
@@ -64,6 +83,7 @@ export default function PurchaseWidget() {
 
       <div className={styles.row}>
         <input
+          ref={emailRef}
           className={styles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -102,3 +122,4 @@ export default function PurchaseWidget() {
     </div>
   );
 }
+

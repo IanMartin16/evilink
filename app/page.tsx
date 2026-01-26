@@ -1,4 +1,6 @@
 // app/page.tsx
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="page">
@@ -11,7 +13,7 @@ export default function Home() {
         {/* mini nav opcional */}
         <nav className="nav-links">
           <a href="#products">Productos</a>
-          <a href="#about">Sobre</a>
+          <Link href="#about">Sobre</Link>
         </nav>
       </header>
 
@@ -26,7 +28,7 @@ export default function Home() {
           <p>
             evi_link devs es un estudio de desarrollo enfocado en crear APIs,
             automatizaciones y servicios backend listos para producción. Hechos
-            a mano, con obsesión por el detalle.
+            con vision y enfoque con obsesión por el detalle.
           </p>
 
           <div className="hero-actions">
@@ -64,136 +66,153 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PRODUCTS */}
-      <section id="products" className="section">
-        <h2>Productos</h2>
-        <p className="section-intro">
-          Catálogo de APIs y herramientas del ecosistema evi_link devs.
-          Cada producto tiene su landing y documentación.
-        </p>
+     {/* PRODUCTS */}
+<section id="products" className="section">
+  <h2>Productos</h2>
+  <p className="section-intro">
+    Catálogo de APIs y herramientas del ecosistema evi_link devs. Cada producto tiene su landing y documentación.
+  </p>
 
-        <div className="cards">
-          {/* CryptoLink */}
-          <article className="card">
+  {(() => {
+    type Status = "DISPONIBLE" | "LANZAMIENTO" | "EN DESARROLLO";
+
+    const PRODUCTS: Array<{
+      key: string;
+      name: string;
+      status: Status;
+      desc: string;
+      bullets: string[];
+      links?: Array<{ label: string; href: string; external?: boolean }>;
+      tag?: string;
+      muted?: boolean;
+    }> = [
+      {
+        key: "cryptolink",
+        name: "CryptoLink API",
+        status: "DISPONIBLE",
+        desc: "API de precios cripto con streaming (SSE), rate-limit por plan, API keys y checkout con Stripe.",
+        bullets: [
+          "SSE (event: price / ping)",
+          "Planes por API Key (headers X-RateLimit-*)",
+          "Webhooks Stripe → email + DB",
+        ],
+        links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
+        tag: "Railway · Stripe · Resend · Postgres",
+      },
+      {
+        key: "curpify",
+        name: "Curpify API",
+        status: "LANZAMIENTO",
+        desc: "Servicio de validación de CURP para fintech, CRMs y cualquier app que requiera verificar identidades en México.",
+        bullets: [
+          "Validación rápida y consistente",
+          "Respuestas JSON",
+          "Integración sencilla vía HTTP",
+        ],
+        links: [{ label: "Ver producto →", href: "https://curpify.com", external: true }],
+        tag: "Next.js · Postgres · Stripe",
+      },
+      {
+        key: "nexus",
+        name: "Nexus",
+        status: "EN DESARROLLO",
+        desc: "Integraciones para datos públicos, notificaciones, deportes y automatización de flujos cotidianos.",
+        bullets: [
+          "API de deserialización de datos",
+          "Servicios de notificación y alertas",
+          "Herramientas internas para DevOps",
+        ],
+        links: [
+          { label: "Roadmap", href: "#roadmap" },
+          { label: "Join waitlist", href: "mailto:support@evilink.dev?subject=Nexus%20waitlist", external: true },
+        ],
+        tag: "Roadmap en construcción",
+        muted: true,
+      },
+    ];
+
+    const badgeClass = (s: Status) => {
+      if (s === "DISPONIBLE") return "badge badge-live";
+      if (s === "LANZAMIENTO") return "badge badge-launch";
+      return "badge badge-dev";
+    };
+
+    return (
+      <div className="cards">
+        {PRODUCTS.map((p) => (
+          <article key={p.key} className={`card ${p.muted ? "card-muted" : ""}`}>
             <div className="card-top">
-              <h3>CryptoLink API</h3>
-              <span className="badge badge-beta">BETA</span>
+              <h3>{p.name}</h3>
+              <span className={badgeClass(p.status)}>{p.status}</span>
             </div>
 
-            <p>
-              API de precios cripto con soporte de streaming (SSE),
-              rate-limit por plan, API keys y checkout con Stripe.
-            </p>
+            <p>{p.desc}</p>
 
             <ul className="card-list">
-              <li>✔ SSE (event: price / ping)</li>
-              <li>✔ Planes por API Key (headers X-RateLimit-*)</li>
-              <li>✔ Webhooks Stripe → email + DB</li>
+              {p.bullets.map((b) => (
+                <li key={b}>✔ {b}</li>
+              ))}
             </ul>
 
-            <div className="card-actions">
-              {/* Página interna (la crearemos) */}
-              <a href="/products/cryptolink" className="btn-mini">
-                Landing + Docs →
-              </a>
-            </div>
+            {p.links?.length ? (
+              <div className="card-actions">
+                {p.links.map((l) => {
+                  const cls = "btn-mini"; // una sola clase para todos
+                  return l.external ? (
+                    <a key={l.href} href={l.href} className={cls} target="_blank" rel="noreferrer">
+                      {l.label}
+                    </a>
+                  ) : (
+                    <a key={l.href} href={l.href} className={cls}>
+                      {l.label}
+                    </a>
+                  );
+                })}
+              </div>
+            ) : null}
 
-            <p className="card-tag">Railway · Stripe · Resend · Postgres</p>
+            {p.tag ? <p className="card-tag">{p.tag}</p> : null}
           </article>
-
-          {/* Curpify */}
-          <article className="card">
-            <div className="card-top">
-              <h3>Curpify API</h3>
-              <span className="badge badge-soon">PRÓXIMO</span>
-            </div>
-
-            <p>
-              Servicio de validación de CURP para plataformas fintech,
-              CRMs, sistemas de registro y cualquier app que requiera
-              verificar identidades en México.
-            </p>
-
-            <ul className="card-list">
-              <li>✔ Validación rápida y consistente</li>
-              <li>✔ Respuestas JSON</li>
-              <li>✔ Integración sencilla vía HTTP</li>
-            </ul>
-
-            <div className="card-actions">
-              {/* si ya tienes curpify.com listo */}
-              <a
-                href="https://curpify.com"
-                className="btn-mini"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Ver producto →
-              </a>
-
-              {/* landing interno opcional (si luego quieres) */}
-              {/* <a href="/products/curpify" className="btn-mini btn-mini-ghost">Docs →</a> */}
-            </div>
-
-            <p className="card-tag">Next.js · Postgres · Stripe</p>
-          </article>
-
-          {/* Coming soon */}
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Coming soon</h3>
-              <span className="badge badge-muted">ROADMAP</span>
-            </div>
-
-            <p>
-              Integraciones para datos públicos, notificaciones, deportes
-              y automatización de flujos cotidianos.
-            </p>
-
-            <ul className="card-list">
-              <li>• API de deserialización de datos</li>
-              <li>• Servicios de notificación y alertas</li>
-              <li>• Herramientas internas para DevOps</li>
-            </ul>
-
-            <p className="card-tag">Roadmap en construcción</p>
-          </article>
-        </div>
-      </section>
+        ))}
+      </div>
+    );
+  })()}
+</section>
 
       {/* ABOUT / FOOTER */}
-      <section className="section section-soft">
-        <div className="card-top">
-      <article className="card card-muted">
-        <h2>Sobre evi_link devs</h2>
-
-        <p>
-          evi_link devs nace como un estudio independiente de desarrollo, enfocado
-          en servicios backend y APIs listos para producción: performance,
-          observabilidad y soporte como prioridades.
-          Actualmente operando desde Ciudad de México, con foco en proyectos que
-          mezclan banca, automatización y servicios en la nube.
-        </p>
-      </article>
-      </div>
-      </section>
-
+      <section id="about" >
+        <div className="card">
+          <div className="card-top">
+            <article className="card card-muted">
+              <h2 className="card-title">Sobre</h2>
+              <p>
+              evi_link devs nace como un estudio independiente de desarrollo, enfocado
+              en servicios backend y APIs listos para producción: performance,
+              observabilidad y soporte como prioridades. Actualmente operando desde Ciudad de México,
+              con foco en proyectos que mezclan banca, automatización y servicios en la nube.
+              </p>
+            </article>
+          </div>
+         </div>
+        </section> 
 
       <footer className="footer">
-        <p>© {new Date().getFullYear()} evi_link devs. All rights reserved.</p>
+        <div className="container">
+          <p>© {new Date().getFullYear()} evi_link devs. All rights reserved.</p>
 
-       <div className="footer-contact">
-           <span>Contacto:</span>
-          <a href="mailto:support@evilink.dev"> support@evilink.dev</a>
-           <span className="dot"> • </span>
-          <a href="mailto:billing@evilink.dev"> billing@evilink.dev</a>
-       </div>
+          <div className="footer-contact">
+            <span>Contacto:</span>
+            <a href="mailto:support@evilink.dev">support@evilink.dev</a>
+            <span className="dot"> • </span>
+            <a href="mailto:billing@evilink.dev">billing@evilink.dev</a>
+          </div>
 
-        <p className="footer-note">
-          Sitio y APIs en desarrollo activo. Este proyecto se construye en paralelo a otras
-          responsabilidades profesionales, sin afiliación con terceros.
-        </p>
-      </footer>
+          <p className="footer-note">
+            Sitio y APIs en desarrollo activo. Este proyecto se construye en paralelo a otras
+            responsabilidades profesionales, sin afiliación con terceros.
+          </p>
+          </div>
+        </footer>
 
     </main>
   );

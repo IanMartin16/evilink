@@ -12,7 +12,7 @@ export default function PlanBuyButton({
   return (
     <button
       type="button"
-      className={styles.planBadge}
+      className={`${styles.planBadge}`}
       onClick={() => (window as any).__cryptolinkPurchase?.(plan)}
     >
       {label ?? `Comprar ${plan}`}
