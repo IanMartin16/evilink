@@ -44,7 +44,7 @@ a:hover{ opacity: .95; }
 
 .logo-block img {
   height: 200px;     /* Ajusta entre 120–160 a tu gusto */
-  width: 250;
+  width: 250px;
   object-fit: contain;
   display: block;
   image-rendering: high-quality;
@@ -106,7 +106,7 @@ a:hover{ opacity: .95; }
 
 .btn-primary{
   background: var(--accent);
-  border-color: 1px solid rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255,255,255,.10);
   color: #042019;
   font-weight: 550;
 }
@@ -293,7 +293,7 @@ html, body{
 /* Botones (los de tu home) */
 .btn-primary{
   background: var(--accent);
-  color: #06110f15;
+  color: #04110e;
   border: 1px solid rgba(0,0,0,.25);
 }
 .btn-primary:hover{ filter: brightness(1.05); }
@@ -385,4 +385,47 @@ body::after {
 /* opcional: por si el texto largo rompe raro */
 .code pre {
   white-space: pre;
+}
+
+/* ===== Productos UI (para cards del catálogo) ===== */
+
+.card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Badges de estado */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color: var(--text);
+}
+
+.badge-live{ opacity: 1; }
+.badge-launch{ opacity: .92; }
+.badge-dev{ opacity: .75; }
+
+/* Botón mini para links en cards */
+.btn-mini{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.12);
+  color: var(--text);
+}
+.btn-mini:hover{
+  border-color: rgba(23,214,163,.25);
 }

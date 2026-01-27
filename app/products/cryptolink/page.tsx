@@ -56,23 +56,25 @@ export default function CryptoLinkPage() {
   const baseUrl = "https://cryptolink-production.up.railway.app";
 
   return (
-    <main className={styles.page}>
+    <main className="page">
       {/* Header */}
-      <header className={styles.header}>
+      <header className="nav">
+        <div className="logo-block">
+          <img src="/logo-horizontal.png" alt="evi_link devs logo" />
+        </div>
         <div className={styles.brand}>
-          {/* aquí si quieres el logo */}
-          {/* <img src="/logo-horizontal.png" alt="evi_link devs" className={styles.logo} /> */}
+          
         </div>
 
         <nav className="nav-links">
-          <Link href="/">Inicio</Link>
-          <Link href="/#products">← Volver</Link>
-          <Link href="/products/cryptolink/docs">Docs</Link>
+          <a href="/">Inicio</a>
+          <a href="/#products">← Volver</a>
+          <a href="/products/cryptolink/docs">Docs</a>
         </nav>
       </header>
 
       {/* HERO (ya NO usa className="page") */}
-      <section className={styles.hero}>
+      <section className="nav">
         <div className={styles.heroLeft}>
           <PurchaseStatusBanner />
 
