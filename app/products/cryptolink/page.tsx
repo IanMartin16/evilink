@@ -74,7 +74,7 @@ export default function CryptoLinkPage() {
       </header>
 
       {/* HERO (ya NO usa className="page") */}
-      <section className="nav">
+      <section className={styles.hero}>
         <div className={styles.heroLeft}>
           <PurchaseStatusBanner />
 

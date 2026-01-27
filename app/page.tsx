@@ -67,38 +67,38 @@ export default function Home() {
       </section>
 
      {/* PRODUCTS */}
-<section id="products" className="section">
-  <h2>Productos Destacados</h2>
-  <p className="section-intro">
-    Catálogo de APIs y herramientas del ecosistema evi_link devs. Cada producto tiene su landing y documentación.
-  </p>
+       <section id="products" className="section">
+         <h2>Productos Destacados</h2>
+         <p className="section-intro">
+          Catálogo de APIs y herramientas del ecosistema evi_link devs. Cada producto tiene su landing y documentación.
+        </p>
 
-  {(() => {
-    type Status = "DISPONIBLE" | "LANZAMIENTO" | "EN DESARROLLO";
+      {(() => {
+        type Status = "DISPONIBLE" | "LANZAMIENTO" | "EN DESARROLLO";
 
-    const PRODUCTS: Array<{
-      key: string;
-      name: string;
-      status: Status;
-      desc: string;
-      bullets: string[];
-      links?: Array<{ label: string; href: string; external?: boolean }>;
-      tag?: string;
-      muted?: boolean;
-    }> = [
-      {
-        key: "cryptolink",
-        name: "CryptoLink API",
-        status: "DISPONIBLE",
-        desc: "API de precios cripto con streaming (SSE), rate-limit por plan, API keys y checkout con Stripe.",
-        bullets: [
-          "SSE (event: price / ping)",
-          "Planes por API Key (headers X-RateLimit-*)",
-          "Webhooks Stripe → email + DB",
-        ],
-        links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
-        tag: "Railway · Stripe · Resend · Postgres",
-      },
+        const PRODUCTS: Array<{
+          key: string;
+          name: string;
+          status: Status;
+          desc: string;
+          bullets: string[];
+          links?: Array<{ label: string; href: string; external?: boolean }>;
+          tag?: string;
+          muted?: boolean;
+          }> = [
+        {
+          key: "cryptolink",
+          name: "CryptoLink API",
+          status: "DISPONIBLE",
+          desc: "API de precios cripto con streaming (SSE), rate-limit por plan, API keys y checkout con Stripe.",
+          bullets: [
+            "SSE (event: price / ping)",
+            "Planes por API Key (headers X-RateLimit-*)",
+            "Webhooks Stripe → email + DB",
+          ],
+          links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
+          tag: "Railway · Stripe · Resend · Postgres",
+        },
       {
         key: "curpify",
         name: "Curpify API",
