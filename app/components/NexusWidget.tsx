@@ -516,7 +516,7 @@ useEffect(() => {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12 }}>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <strong style={{ fontSize: 14, color: EVILINK.text }}>Nexus</strong>
-                <span style={{ fontSize: 12, color: EVILINK.muted }}>Asistente de evi_link (beta)</span>
+                <span style={{ fontSize: 12, color: EVILINK.muted }}>Asistente AI de evi_link (beta)</span>
               </div>
 
               <div style={{ display: "flex", gap: 8 }}>
