@@ -15,11 +15,14 @@ const EVILINK = {
 };
 
 type Product = "curpify" | "cryptolink" | "evilink";
-type Msg = {id: string; role: "user" | "assistant"; text: string; ts: number, product: string;};
+type Msg = {id: string; role: "user" | "assistant" | "system"; text: string; ts: number, product: string;};
 
 const LS_KEY = "nexus_widget_state_v1";
 const LS_PRODUCT_KEY = "nexus.product";
 const LS_SESSION_KEY = "nexus.sessionId";
+const LS_MSGS = (p: string) => `nexus_msgs_${p}`;
+const LS_LAST_PRODUCT = "nexus.product";
+
 
 function safeParse<T>(s: string | null): T | null {
   if (!s) return null;
@@ -80,19 +83,60 @@ export default function NexusWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [msgs, setMsgs] = useState<Msg[]>([
-    {id:"welcome", role: "assistant", text: "Hola 👋 Soy Nexus. Pregúntame sobre Curpify, CryptoLink o evi_link.", ts: Date.now (), product: "curpify" },
-  ]);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
 
   const [product, setProduct] = useState<string>(() => {
     if (typeof window === "undefined") return "curpify";
     return localStorage.getItem(LS_PRODUCT_KEY) || "curpify";
   });
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(LS_PRODUCT_KEY, product);
-  }, [product]);
 
+const PRODUCT_LABEL: Record<string, string> = {
+  curpify: "Curpify",
+  cryptolink: "CryptoLink",
+  evilink: "evi_link",
+};
+
+const hydratedRef = useRef(false);
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const label = PRODUCT_LABEL[product] ?? product;
+
+  const raw =
+    safeParse<Msg[]>(localStorage.getItem(LS_MSGS(product))) ?? [];
+
+  // ✅ normaliza: solo mensajes válidos y fuerza product actual
+  const savedMsgs: Msg[] = raw
+    .filter((m) => m && typeof m.id === "string" && typeof m.text === "string")
+    .map((m) => ({ ...m, product }));
+
+  const hasWelcome = savedMsgs.some((m) => m.id === "welcome");
+
+  const next: Msg[] = hasWelcome
+    ? savedMsgs
+    : [
+        {
+          id: "welcome",
+          role: "assistant",
+          text: `Listo ✅ Estás en ${label}. ¿Qué quieres preguntar?`,
+          ts: Date.now(),
+          product,
+        },
+        ...savedMsgs,
+      ];
+
+  setMsgs(next);
+}, [product]);
+hydratedRef.current = true;
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  if (!hydratedRef.current) return;      // ✅ no guardes antes de cargar
+  if (msgs.length === 0) return;         // ✅ evita pisar con []
+
+  localStorage.setItem(LS_MSGS(product), JSON.stringify(msgs));
+}, [product, msgs]);
 
 
   const DISCLAIMER_KEY = "nexus_disclaimer_dismissed_v1";
@@ -119,10 +163,14 @@ export default function NexusWidget() {
     if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
     if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
 
-  const fadeAtMs = 4000;
-  const hideAtMs = 5000;
+  const fadeAtMs = 7000;
+  const hideAtMs = 10000;
 
-  fadeTimerRef.current = window.setTimeout(() => setTeaserClosing(true), fadeAtMs);
+  fadeTimerRef.current = window.setTimeout(() => {
+    setTeaserOpen(false);
+  setTeaserClosing(false);
+  localStorage.setItem("nexus_teaser_seen", "1");
+}, fadeAtMs);
   hideTimerRef.current = window.setTimeout(() => {
     setTeaserOpen(false);
     setTeaserClosing(false);
@@ -135,7 +183,11 @@ useEffect(() => {
   if (typeof window === "undefined") return;
 
   const seen = localStorage.getItem("nexus_teaser_seen");
-  if (seen) return;
+  if (seen) {
+    setTeaserOpen(false);
+    setTeaserClosing(false);
+    return;
+  } 
 
   setTeaserOpen(true);
   setTeaserClosing(false);
@@ -154,9 +206,8 @@ useEffect(() => {
 
   // Load state from localStorage
   useEffect(() => {
-    const saved = safeParse<{ product: Product; msgs: Msg[] }>(localStorage.getItem(LS_KEY));
+    const saved = safeParse<{ product: Product }>(localStorage.getItem(LS_KEY));
     if (saved?.product) setProduct(saved.product);
-    if (saved?.msgs?.length) setMsgs(saved.msgs);
   }, []);
 
   const [sessionId] = useState<string>(() => {
@@ -168,9 +219,26 @@ useEffect(() => {
     return created;
   });
 
+  function dedupeByFingerprint(list: Msg[]) {
+   const seen = new Set<string>();
+   const out: Msg[] = [];
+   for (const m of list) {
+    const key = `${m.role}|${m.ts}|${m.text}`;
+     if (seen.has(key)) continue;
+     seen.add(key);
+     out.push(m);
+    }
+    return out;
+  }
 
   useEffect(() => {
   if (!open) return;
+
+  // si ya hay msgs guardados para este producto, no pegues history
+  try {
+    const cached = safeParse<Msg[]>(localStorage.getItem(LS_MSGS(product)));
+    if (cached?.length) return;
+  } catch {}
 
   (async () => {
     try {
@@ -181,26 +249,24 @@ useEffect(() => {
       const data = await r.json().catch(() => null);
 
       if (data?.ok && Array.isArray(data.messages)) {
-        setMsgs(
-          data.messages.map((m: any) => ({
-            id: crypto.randomUUID(),
-            role: m.role === "assistant" ? "assistant" : "user",
-            text: String(m.text ?? ""),
-            ts: Date.parse(m.ts) || Date.now(),
-            product,
-          }))
-        );
+        const loaded: Msg[] = data.messages.map((m: any) => ({
+          id: crypto.randomUUID(), // aún sin backend id
+          role: m.role === "assistant" ? "assistant" : "user",
+          text: String(m.text ?? ""),
+          ts: Date.parse(m.ts) || Date.now(),
+          product,
+        }));
+
+        setMsgs(dedupeByFingerprint(loaded).sort((a,b)=>a.ts-b.ts));
       }
-    } catch {
-      // si falla, no pasa nada
-    }
+    } catch {}
   })();
 }, [open, product, sessionId]);
 
   // Save state
   useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify({ product, msgs }));
-  }, [product, msgs]);
+    localStorage.setItem(LS_KEY, JSON.stringify({ product }));
+  }, [product]);
 
   // Auto-scroll
   useEffect(() => {
@@ -222,6 +288,7 @@ useEffect(() => {
       s.includes("whsec_") ||
       s.includes("bearer ") ||
       s.includes("authorization:") ||
+      s.includes("contraseña") ||
       s.includes("x-api-key") ||
       s.includes("password") ||
       s.includes("token") ||
@@ -285,10 +352,34 @@ useEffect(() => {
       setLoading(false);
     }
   }
+  function dedupeMsgsById(list: Msg[]) {
+    const seen = new Set<string>();
+    const out: Msg[] = [];
+    for (const m of list) {
+      if (seen.has(m.id)) continue;
+      seen.add(m.id);
+      out.push(m);
+    }
+    return out;
+  }
 
   function clearChat() {
-    setMsgs([{id: crypto.randomUUID(), role: "assistant", text: "Listo ✅ ¿Qué quieres preguntar ahora?", ts: Date.now(), product}]);
-  }
+  const label = PRODUCT_LABEL[product] ?? product;
+
+  const welcome: Msg = {
+    id: "welcome",
+    role: "assistant",
+    text: `Listo ✅ Estás en ${label}. ¿Qué quieres preguntar?`,
+    ts: Date.now(),
+    product,
+  };
+
+  setMsgs([welcome]);
+
+  try {
+    localStorage.setItem(LS_MSGS(product), JSON.stringify([welcome]));
+  } catch {}
+}
 
   return (
     <>
@@ -324,73 +415,70 @@ useEffect(() => {
   </span>
   </button>
   {!open && teaserOpen && (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={() => setOpen(true)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") setOpen(true);
+  <button
+    onClick={() => setOpen(true)}
+    style={{
+      position: "fixed",
+      right: 88,
+      bottom: 22,
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      padding: "12px 14px",
+      borderRadius: 999,
+      background: "rgba(10, 18, 14, 0.92)",
+      border: `1px solid ${EVILINK.border}`,
+      color: EVILINK.text,
+      boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
+      cursor: "pointer",
+      maxWidth: 320,
+      backdropFilter: "blur(10px)",
+      WebkitBackdropFilter: "blur(10px)",
+      zIndex: 99999,
+
+      // 👇 esto controla el fade-out
+      opacity: teaserClosing ? 0 : 1,
+      transform: teaserClosing ? "translateY(6px)" : "translateY(0)",
+      transition: "opacity 420ms ease, transform 420ms ease",
+    }}
+  >
+    <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
+      <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
+      <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
+    </div>
+
+    <span
+      onClick={(e) => {
+        e.stopPropagation();
+        setTeaserClosing(true);
+        window.setTimeout(() => {
+          setTeaserOpen(false);
+          setTeaserClosing(false);
+          localStorage.setItem("nexus_teaser_seen", "1");
+        }, 450);
       }}
       style={{
-        position: "fixed",
-        right: 88,
-        bottom: 22,
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "12px 14px",
+        width: 28,
+        height: 28,
         borderRadius: 999,
-        background: "rgba(10, 18, 14, 0.92)",
+        display: "grid",
+        placeItems: "center",
+        background: "rgba(255,255,255,0.06)",
         border: `1px solid ${EVILINK.border}`,
         color: EVILINK.text,
-        boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
-        cursor: "pointer",
-        maxWidth: 320,
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
+        fontWeight: 900,
         animation: teaserClosing
-          ? "nexusTeaserOut 1000ms ease-in forwards"
-          : "nexusTeaserIn 260ms ease-out",
-        zIndex: 99999,
-        userSelect: "none",
+        ? "nexusTeaserOut 10000ms ease-in forwards"
+        : "nexusTeaserIn 7500ms ease-out",
       }}
-      aria-label="Abrir Nexus"
-      title="Abrir Nexus"
+      aria-label="Cerrar mensaje"
+      title="Cerrar"
     >
-      <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
-        <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
-        <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
-      </div>
+      ×
+    </span>
+  </button>
+)}
 
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setTeaserClosing(true);
-          window.setTimeout(() => {
-            setTeaserOpen(false);
-            setTeaserClosing(false);
-          }, 650);
-        }}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 999,
-          display: "grid",
-          placeItems: "center",
-          background: "rgba(255,255,255,0.06)",
-          border: `1px solid ${EVILINK.border}`,
-          color: EVILINK.text,
-          fontWeight: 900,
-          cursor: "pointer",
-        }}
-        aria-label="Cerrar mensaje"
-        title="Cerrar"
-      >
-        ×
-      </button>
-    </div>
-  )}
 
       {/* Overlay */}
       {open && (
@@ -535,12 +623,21 @@ useEffect(() => {
               <label style={{ fontSize: 12, opacity: 0.75 }}>Producto</label>
               <select
                 value={product}
-                onChange={(e) => setProduct(e.target.value as Product)}
-                style={{ padding: 8, borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)" }}
-              >
+                onChange={(e) => {
+                const next = String(e.target.value || "")
+                  .trim()
+                  .toLowerCase(); // ✅ normaliza
+
+                  setProduct(next);
+                  setMsgs([]);      // ✅ evita “flash” de msgs del producto anterior
+                  setInput("");
+                  setLoading(false);
+                }}
+              style={{ padding: 8, borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)" }}
+                >
                 <option value="curpify">curpify</option>
-                <option value="cryptolink">cryptolink</option>
-                <option value="evilink">evilink</option>
+                <option value="cryptolink">cryptoLink</option>
+                <option value="evi_link">evilink</option>
               </select>
 
               <div style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>
@@ -563,7 +660,7 @@ useEffect(() => {
               <div style={{ overflow: "auto", padding: 12, display: "grid", gap: 10 }}></div>
               {msgs.map((m) => (
                 <div
-                  key={m.ts}
+                  key={m.id}
                   style={{
                     justifySelf: m.role === "user" ? "end" : "start",
                     maxWidth: "88%",
@@ -616,8 +713,8 @@ useEffect(() => {
                 }}
               />
               <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 12, opacity: 0.7 }}>
-                  No compartas datos sensibles.
+                <span style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>
+                  ⚠️ Seguridad: no pegues passwords, tokens, llaves API o datos bancarios.
                 </span>
                 <button
                   onClick={send}
