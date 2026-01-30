@@ -140,26 +140,27 @@ useEffect(() => {
 }, [product, msgs]);
 
 
-  const DISCLAIMER_SESSION_KEY = "nexus_disclaimer_seen_v1";
+  const DISCLAIMER_COLLAPSE_KEY = "nexus_disclaimer_collapse_v1";
 
-const [showDisclaimer, setShowDisclaimer] = useState(false);
-const didInitDisclaimerRef = useRef(false);
+  const [discCollapsed, setDiscCollapsed] = useState(false);
+  const didInitDisclaimerRef = useRef(false);
 
-useEffect(() => {
-  if (didInitDisclaimerRef.current) return;
-  didInitDisclaimerRef.current = true;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setDiscCollapsed(localStorage.getItem(DISCLAIMER_COLLAPSE_KEY) === "1");
+    }, 
+  []);
 
-  if (typeof window === "undefined") return;
-
-  try {
-    const seen = sessionStorage.getItem(DISCLAIMER_SESSION_KEY) === "1";
-    setShowDisclaimer(!seen);
-  } catch {
-    // si el storage falla, mejor mostrarlo
-    setShowDisclaimer(true);
+  function toggleDisclaimer() {
+    setDiscCollapsed((v) => {
+      const next = !v;
+      try {
+        sessionStorage.setItem(DISCLAIMER_COLLAPSE_KEY, next ? "1" : "0");
+      } catch {}
+      return next;
+    });
+      
   }
-}, []);
-
 
   const [teaserOpen, setTeaserOpen] = useState(true);
   const [teaserClosing, setTeaserClosing] = useState(false);
@@ -587,7 +588,7 @@ useEffect(() => {
             }}
           >
             {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12 }}>
+            <div style={{ display: "flex",  justifyContent: "space-between", alignItems: "center", padding: 12 }}>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <strong style={{ fontSize: 14, color: EVILINK.text }}>Nexus</strong>
                 <span style={{ fontSize: 12, color: EVILINK.muted }}>Asistente AI de evi_link (beta)</span>
@@ -626,71 +627,45 @@ useEffect(() => {
               </div>
             </div>
 
-            {showDisclaimer && (
-             <div
-              style={{
-                margin: "10px 12px 0",
-                padding: "10px 12px",
-                borderRadius: 12,
-                border: `1px solid ${EVILINK.border}`,
-                background: `linear-gradient(135deg, ${EVILINK.accent}18 0%, ${EVILINK.accent2}10 45%, rgba(255,255,255,0.05) 100%)`,
-                display: "grid",
-                gridTemplateColumns: "auto 1fr auto",
-                gap: 10,
-                alignItems: "start",
-              }}
-            >
-              {/* Icono */}
-                <div
-                  style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 10,
-                  display: "grid",
-                  placeItems: "center",
-                  background: "rgba(255,255,255,0.06)",
-                  border: `1px solid ${EVILINK.border}`,
-                  boxShadow: `0 0 18px ${EVILINK.accent}22`,
-                  marginTop: 1,
-              }}
-              aria-hidden="true"
-            >
-              <span style={{ color: EVILINK.text, fontWeight: 900 }}>i</span>
-            </div>
-
-            {/* Texto */}
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: EVILINK.text, lineHeight: 1.1 }}>
-                  Usamos IA generativa
-                </div>
-                <span style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>
-                 ⚠️ Seguridad: no pegues passwords, tokens, llaves API o datos bancarios.
-                </span>
-              </div>
-
-              {/* Close */}
-              <button
-                onClick={() => {
-                  try {
-                      localStorage.setItem(DISCLAIMER_KEY, "1");
-                    } catch {}
-                      setShowDisclaimer(false);
-                    }}
-                    aria-label="Cerrar aviso"
-                    style={{
-                      border: `1px solid ${EVILINK.border}`,
-                      background: "rgba(255,255,255,0.06)",
-                      color: EVILINK.text,
-                      width: 30,
-                      height: 30,
-                      borderRadius: 10,
-                      cursor: "pointer",
-                    }}
-                >
-                  ✕
-                </button>
+            <div style={{
+              margin: "10px 12px",
+              padding: "3px 4px",
+              borderRadius: 12,
+              border: `1px solid ${EVILINK.border}`,
+              background: "rgba(255,255,255,0.06)",
+              color: EVILINK.text,
+              fontSize: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}>
+            <div style={{ opacity: 0.9, flex: 1, cursor: "pointer" }} onClick={toggleDisclaimer}>
+              <b>Usamos IA generativa</b>
+              {!discCollapsed && (
+              <div style={{ marginTop: 4, opacity: 0.9 }}>
+                ⚠️ Seguridad: no pegues passwords, tokens, llaves API o datos bancarios.
               </div>
             )}
+            </div>
+
+            <button
+              type="button"
+              onClick={toggleDisclaimer}
+              style={{
+              width: 28, height: 28,
+              borderRadius: 999,
+              background: "rgba(255,255,255,0.06)",
+              border: `1px solid ${EVILINK.border}`,
+              color: EVILINK.text,
+              cursor: "pointer",
+              fontWeight: 900,
+            }}
+              aria-label={discCollapsed ? "Expandir aviso" : "Colapsar aviso"}
+              title={discCollapsed ? "Mostrar" : "Ocultar"}
+            >
+              {discCollapsed ? "i" : "×"}
+              </button>
+            </div>
 
             {/* Product row */}
             <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "0 12px 12px 12px" }}>
@@ -723,6 +698,8 @@ useEffect(() => {
             <div
               ref={listRef}
               style={{
+                flex: 1,
+                minHeight: 2,
                 padding: 12,
                 overflow: "auto",
                 display: "grid",
