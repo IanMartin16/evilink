@@ -140,18 +140,26 @@ useEffect(() => {
 }, [product, msgs]);
 
 
-  const DISCLAIMER_KEY = "nexus_disclaimer_dismissed_v1";
+  const DISCLAIMER_SESSION_KEY = "nexus_disclaimer_seen_v1";
 
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+const [showDisclaimer, setShowDisclaimer] = useState(false);
+const didInitDisclaimerRef = useRef(false);
 
-  useEffect(() => {
-    try {
-      const dismissed = localStorage.getItem(DISCLAIMER_KEY) === "1";
-      setShowDisclaimer(!dismissed);
-    } catch {
-      setShowDisclaimer(true);
-    }
-  }, []);
+useEffect(() => {
+  if (didInitDisclaimerRef.current) return;
+  didInitDisclaimerRef.current = true;
+
+  if (typeof window === "undefined") return;
+
+  try {
+    const seen = sessionStorage.getItem(DISCLAIMER_SESSION_KEY) === "1";
+    setShowDisclaimer(!seen);
+  } catch {
+    // si el storage falla, mejor mostrarlo
+    setShowDisclaimer(true);
+  }
+}, []);
+
 
   const [teaserOpen, setTeaserOpen] = useState(true);
   const [teaserClosing, setTeaserClosing] = useState(false);
@@ -438,7 +446,7 @@ useEffect(() => {
         gap: 8,
       }}
     >
-      <span>Nexus está escribiendo</span>
+      <span>Nexus is typing</span>
       <span className="nexus-dots">
         <i />
         <i />
