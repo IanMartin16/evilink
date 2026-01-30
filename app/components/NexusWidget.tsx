@@ -82,6 +82,7 @@ export default function NexusWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const canSend = input.trim().length > 0 && !loading;
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
 
@@ -196,9 +197,15 @@ useEffect(() => {
   return () => {
     if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
     if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-  };
-}, []);  
+    };
+  }, []);  
 
+  useEffect(() => {
+      const el = inputRef.current;
+      if (!el) return;
+      el.style.height = "0px";
+      el.style.height = Math.min(el.scrollHeight, 140) + "px";
+    }, [input]);
 
   //const sessionId = useMemo(() => "web", []);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -210,7 +217,7 @@ useEffect(() => {
     if (saved?.product) setProduct(saved.product);
   }, []);
 
-  const [sessionId] = useState<string>(() => {
+  const [sessionId, setSessionId] = useState<string>(() => {
     if (typeof window === "undefined") return "web";
     const existing = localStorage.getItem(LS_SESSION_KEY);
     if (existing) return existing;
@@ -296,22 +303,34 @@ useEffect(() => {
     );
   };
 
-   async function send() {
-   const text = input.trim();
-   if (!text || loading) return;
+  const lastSendRef = useRef(0);
+  const lastPromptRef = useRef("");
 
-   if (looksSensitive(text)) {
-     const warn: Msg = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      text: "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo (rota la llave si ya se expuso).",
-      ts: Date.now(),
-      product,
-    };
-    setMsgs((m) => [...m, warn]);
-    setInput("");
-    return;
-  }
+   async function send() {
+    const now = Date.now();
+    if (now - lastSendRef.current < 600) return;
+    lastSendRef.current = now;
+
+  const text = input.trim();
+    if (!text || loading) return;
+    lastPromptRef.current = text;
+
+    if (looksSensitive(text)) {
+      const warn: Msg = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        text: "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo (rota la llave si ya se expuso).",
+        ts: Date.now(),
+        product,
+      };
+        setMsgs((m) => [...m, {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        text: `⚠️ No pude responder. ¿Reintento?`,
+        ts: Date.now(),
+        product,
+      }]);
+    }
 
    const sid = (sessionId && sessionId.trim()) ? sessionId : "web";
    const prod = (product && product.trim()) ? product : "curpify";
@@ -363,22 +382,70 @@ useEffect(() => {
     return out;
   }
 
-  function clearChat() {
-  const label = PRODUCT_LABEL[product] ?? product;
+  function startNewChat() {
+    const label = PRODUCT_LABEL[product] ?? product;
 
-  const welcome: Msg = {
-    id: "welcome",
-    role: "assistant",
-    text: `Listo ✅ Estás en ${label}. ¿Qué quieres preguntar?`,
-    ts: Date.now(),
-    product,
-  };
+    // 1) welcome + limpia UI
+    const welcome: Msg = {
+      id: "welcome",
+      role: "assistant",
+      text: `Listo ✅ Nuevo chat en ${label}. ¿Qué quieres preguntar?`,
+      ts: Date.now(),
+      product,
+    };
 
-  setMsgs([welcome]);
+    setMsgs([welcome]);
+    setInput("");
+    setLoading(false);
 
-  try {
-    localStorage.setItem(LS_MSGS(product), JSON.stringify([welcome]));
-  } catch {}
+    // 2) nuevo sessionId (esto es lo que evita que regrese history)
+    const sid = crypto.randomUUID();
+    setSessionId(sid);
+
+    // 3) persistir sesión + (opcional) limpiar storage de msgs del producto
+    try {
+      localStorage.setItem(LS_SESSION_KEY, sid);
+      localStorage.setItem(LS_MSGS(product), JSON.stringify([welcome]));
+    } catch {}
+  }
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  async function copyText(id: string, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      window.setTimeout(() => setCopiedId(null), 1200);
+    } catch {
+      // fallback sin deprecated: muestra un prompt para copiar manualmente
+      window.prompt("Copia este texto:", text);
+    }
+  }
+
+  function TypingIndicator() {
+  return (
+    <div
+      style={{
+        justifySelf: "start",
+        maxWidth: "70%",
+        padding: "10px 12px",
+        borderRadius: 14,
+        background: "rgba(255,255,255,0.08)",
+        color: "rgba(255,255,255,0.8)",
+        border: "1px solid rgba(255,255,255,0.10)",
+        fontSize: 13,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      <span>Nexus está escribiendo</span>
+      <span className="nexus-dots">
+        <i />
+        <i />
+        <i />
+      </span>
+    </div>
+  );
 }
 
   return (
@@ -457,28 +524,27 @@ useEffect(() => {
           localStorage.setItem("nexus_teaser_seen", "1");
         }, 450);
       }}
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 999,
-        display: "grid",
-        placeItems: "center",
-        background: "rgba(255,255,255,0.06)",
-        border: `1px solid ${EVILINK.border}`,
-        color: EVILINK.text,
-        fontWeight: 900,
-        animation: teaserClosing
-        ? "nexusTeaserOut 10000ms ease-in forwards"
-        : "nexusTeaserIn 7500ms ease-out",
-      }}
-      aria-label="Cerrar mensaje"
-      title="Cerrar"
-    >
-      ×
-    </span>
-  </button>
-)}
-
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 999,
+          display: "grid",
+          placeItems: "center",
+          background: "rgba(255,255,255,0.06)",
+          border: `1px solid ${EVILINK.border}`,
+          color: EVILINK.text,
+          fontWeight: 900,
+          animation: teaserClosing
+          ? "nexusTeaserOut 10000ms ease-in forwards"
+          : "nexusTeaserIn 7500ms ease-out",
+        }}
+        aria-label="Cerrar mensaje"
+        title="Cerrar"
+      >
+        ×
+      </span>
+    </button>
+  )}
 
       {/* Overlay */}
       {open && (
@@ -521,7 +587,7 @@ useEffect(() => {
 
               <div style={{ display: "flex", gap: 8 }}>
                 <button
-                  onClick={clearChat}
+                  onClick={startNewChat}
                   style={{
                     borderRadius: 10,
                     padding: "6px 10px",
@@ -657,13 +723,20 @@ useEffect(() => {
                 linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00))`,
               }}
             >
-              <div style={{ overflow: "auto", padding: 12, display: "grid", gap: 10 }}></div>
-              {msgs.map((m) => (
-                <div
-                  key={m.id}
-                  style={{
-                    justifySelf: m.role === "user" ? "end" : "start",
-                    maxWidth: "88%",
+              <div style={{ padding: 12, display: "grid", gap: 10 }}>
+                {msgs.map((m) => (
+                  <div
+                    key={m.id}
+                    style={{
+                      justifySelf: m.role === "user" ? "end" : "start",
+                      maxWidth: "88%",
+                      display: "grid",
+                      gap: 6,
+                    }}
+                  >
+                    {/* bubble */}
+                  <div
+                    style={{
                     padding: "10px 12px",
                     borderRadius: 14,
                     background: m.role === "user" ? EVILINK.bubbleUser : EVILINK.bubbleBot,
@@ -676,13 +749,46 @@ useEffect(() => {
                 >
                   {renderLiteMarkdown(m.text)}
                 </div>
-              ))}
-              {loading && (
-                <div style={{ justifySelf: "start", opacity: 0.75, fontSize: 13 }}>
-                  Nexus está pensando…
+                  {/* actions: solo assistant */}
+                  {m.role === "assistant" && (
+                <div style={{ display: "flex", gap: 8, opacity: 0.9 }}>
+              <button
+                type="button"
+                onClick={() => copyText(m.id, m.text)}
+                style={{
+                  padding: "4px 8px",
+                  borderRadius: 10,
+                  background: "rgba(255,255,255,0.06)",
+                  border: `1px solid ${EVILINK.border}`,
+                  color: EVILINK.text,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+                  title="Copiar respuesta"
+                  aria-label="Copiar respuesta"
+              >
+                {copiedId === m.id ? "✅ Copiado" : "📋 Copy"}
+              </button>
                 </div>
-              )}
-            </div>
+                  )}
+                </div>
+                ))}
+              </div>
+            </div>  
+            {loading && (
+             <div style={{ justifySelf: "start", alignSelf: "start" }}>
+                <TypingIndicator />
+             </div>
+             )}
+            <button
+              onClick={() => {
+              setInput(lastPromptRef.current);
+              setTimeout(() => send(), 0);
+            }}
+              disabled={loading || !lastPromptRef.current}
+           >
+              Reintentar
+            </button>
 
             {/* Input */}
             <div style={{ display: "grid", gap: 8, padding: 12, borderTop: "1px solid rgba(0,0,0,0.08)" }}>
@@ -718,15 +824,16 @@ useEffect(() => {
                 </span>
                 <button
                   onClick={send}
-                  disabled={loading}
+                  disabled={!canSend}
                   style={{
+                    opacity: canSend ? 1 : 0.5,
+                    cursor: canSend ? "pointer" : "not-allowed",
                     padding: "10px 14px",
                     borderRadius: 12,
                     background: EVILINK.accent,
                     color: "#06110A",
                     border: "1px solid rgba(0,0,0,0.18)",
                     boxShadow: `0 0 18px ${EVILINK.accent}55`,
-                    cursor: "pointer",
                     fontWeight: 700,
                   }}
                 >
@@ -743,6 +850,17 @@ useEffect(() => {
             border-color: rgba(43, 255, 136, 0.35);
           }
 
+          .nexusDots::after {
+            content: "…";
+            animation: nexusDots 1.2s infinite;
+          }
+          @keyframes nexusDots {
+            0%   { content: "."; }
+            33%  { content: ".."; }
+            66%  { content: "..."; }
+            100% { content: "."; }
+          }
+
           @keyframes nexusUp {
             from { transform: translateY(18px) scale(0.98); opacity: 0; }
             to   { transform: translateY(0) scale(1); opacity: 1; }
@@ -751,6 +869,30 @@ useEffect(() => {
           @keyframes nexusTeaserIn {
             from { transform: translateY(8px); opacity: 0; }
             to   { transform: translateY(0); opacity: 1; }
+          }
+
+          .nexus-dots {
+            display: inline-flex;
+            gap: 4px;
+          }
+
+          .nexus-dots i {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #2BFF88;
+            opacity: 0.2;
+            animation: nexusBlink 1.4s infinite both;
+          }
+
+          .nexus-dots i:nth-child(1) { animation-delay: 0s; }
+          .nexus-dots i:nth-child(2) { animation-delay: 0.2s; }
+          .nexus-dots i:nth-child(3) { animation-delay: 0.4s; }
+
+          @keyframes nexusBlink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
           }
 
           @keyframes nexusTeaserOut {
