@@ -139,6 +139,8 @@ useEffect(() => {
   localStorage.setItem(LS_MSGS(product), JSON.stringify(msgs));
 }, [product, msgs]);
 
+  
+  const TEASER_SEEN_KEY = "nexus_teaser_seen_session_v1";
 
   const [teaserOpen, setTeaserOpen] = useState(true);
   const [teaserClosing, setTeaserClosing] = useState(false);
@@ -146,46 +148,58 @@ useEffect(() => {
   const fadeTimerRef = useRef<number | null>(null);
   const hideTimerRef = useRef<number | null>(null);
 
-  const startTeaserAutoHide = () => {
-    // limpia timers previos (por si acaso)
+  function clearTeaserTimers() {
     if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
     if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+    fadeTimerRef.current = null;
+    hideTimerRef.current = null;
+  }
 
-  const fadeAtMs = 7000;
-  const hideAtMs = 10000;
+  function closeTeaser() {
+    setTeaserClosing(true);
+    window.setTimeout(() => {
+      setTeaserOpen(false);
+      setTeaserClosing(false);
+      try { sessionStorage.setItem(TEASER_SEEN_KEY, "1"); } catch {}
+    }, 650);
+  }
 
-  fadeTimerRef.current = window.setTimeout(() => {
-    setTeaserOpen(false);
-  setTeaserClosing(false);
-  localStorage.setItem("nexus_teaser_seen", "1");
-}, fadeAtMs);
-  hideTimerRef.current = window.setTimeout(() => {
-    setTeaserOpen(false);
-    setTeaserClosing(false);
-    localStorage.setItem("nexus_teaser_seen", "1");
-  }, hideAtMs);
-};
+  function startTeaserAutoHide() {
+    clearTeaserTimers();
 
+    const fadeAtMs = 7000;  // solo anima fade
+    const hideAtMs = 10000; // oculta
+
+    fadeTimerRef.current = window.setTimeout(() => {
+      setTeaserClosing(true);
+    }, fadeAtMs);
+
+    hideTimerRef.current = window.setTimeout(() => {
+      closeTeaser();
+    }, hideAtMs);
+  }
 
 useEffect(() => {
   if (typeof window === "undefined") return;
 
-  const seen = localStorage.getItem("nexus_teaser_seen");
-  if (seen) {
-    setTeaserOpen(false);
-    setTeaserClosing(false);
-    return;
-  } 
+  // evita doble ejecución por remount/hidratación
+  if (hydratedRef.current) return;
+  hydratedRef.current = true;
+
+  const seen = (() => {
+    try { return sessionStorage.getItem(TEASER_SEEN_KEY) === "1"; } catch { return false; }
+  })();
+
+  if (seen) return;
 
   setTeaserOpen(true);
   setTeaserClosing(false);
-  startTeaserAutoHide();
 
-  return () => {
-    if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
-    if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-    };
-  }, []);  
+  requestAnimationFrame(() => startTeaserAutoHide());
+
+  return () => clearTeaserTimers();
+}, []);
+
 
   useEffect(() => {
       const el = inputRef.current;
