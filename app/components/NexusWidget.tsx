@@ -665,7 +665,8 @@ useEffect(() => {
                     style={{
                       justifySelf: m.role === "user" ? "end" : "start",
                       maxWidth: "88%",
-                      display: "grid",
+                      display: "flex",
+                      flexDirection: "column",
                       gap: 6,
                     }}
                   >
@@ -692,6 +693,7 @@ useEffect(() => {
                 onClick={() => copyText(m.id, m.text)}
                 style={{
                   padding: "4px 8px",
+                  minHeight: 0,
                   borderRadius: 10,
                   background: "rgba(255,255,255,0.06)",
                   border: `1px solid ${EVILINK.border}`,
