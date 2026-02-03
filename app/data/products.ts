@@ -23,7 +23,7 @@ export const PRODUCTOS: Producto[] = [
       "Stripe webhooks → email + DB",
     ],
     tag: "Railway · Stripe · Resend · Postgres",
-    links: [{ label: "Landing + Docs →", href: "/productos/cryptolink" }],
+    links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
     destacado: true,
   },
   {

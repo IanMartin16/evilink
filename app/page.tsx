@@ -20,48 +20,47 @@ export default function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-text">
-          <h1>
-            Construyendo APIs y productos
-            <br />
-            para el siguiente nivel.
-          </h1>
-          <p>
-            evi_link devs es un estudio de desarrollo enfocado en crear APIs,
-            automatizaciones y servicios backend listos para producción. Hechos
-            con vision y enfoque con obsesión por el detalle.
-          </p>
+         <h1>
+          Construyendo APIs y productos
+         <br />
+          para developers.
+         </h1>
 
-          <div className="hero-actions">
-            <a href="#products" className="btn-secondary">
-              Ver productos
-            </a>
+         <p>
+           evi_link devs es un ecosistema de APIs y servicios digitales (developers-first).
+           Construimos productos listos para producción con contratos claros, seguridad desde el MVP
+           y una obsesión real por el detalle.
+         </p>
 
-            {/*  tienes curpify.com */}
-            <a
-              href="https://curpify.com"
-              className="btn-secondary"
-              target="_blank"
-              rel="noreferrer"
+         <div className="hero-actions">
+           <a href="#products" className="btn-secondary">
+           Ver productos
+           </a>
+
+           <a
+             href="https://curpify.com"
+             className="btn-secondary"
+             target="_blank"
+             rel="noreferrer"
             >
-              Curpify
+             Curpify
             </a>
           </div>
 
           <p className="hero-note">
-            ✦ Último release: <strong>CryptoLink</strong> (Stripe + API Keys +
-            rate limit + SSE).
+            ✦ Último release: <strong>CryptoLink v1</strong> (Stripe + API Keys + rate limiting + SSE).
           </p>
         </div>
 
         <div className="hero-card">
-          <h2>Stack principal</h2>
+          <h2>Arquitectura base</h2>
           <ul>
-            <li>Node.js · TypeScript · Next.js</li>
-            <li>APIs REST · Webhooks · Integraciones</li>
-            <li>Vercel · AWS · Stripe · Git</li>
+            <li>Next.js (UI/Gateway/BFF ligero)</li>
+            <li>Servicios core: Spring Boot / Python según el flujo</li>
+            <li>OpenAPI · Auth · Rate limiting · Observabilidad mínima</li>
           </ul>
           <p className="hero-card-foot">
-            Diseño orientado a performance, seguridad y mantenibilidad.
+            Optimizar primero, escalar después: costos controlados sin sacrificar robustez.
           </p>
         </div>
       </section>
@@ -85,51 +84,51 @@ export default function Home() {
           links?: Array<{ label: string; href: string; external?: boolean }>;
           tag?: string;
           muted?: boolean;
-          }> = [
-        {
+        }> = [
+         {
           key: "cryptolink",
           name: "CryptoLink API",
           status: "DISPONIBLE",
-          desc: "API de precios cripto con streaming (SSE), rate-limit por plan, API keys y checkout con Stripe.",
+          desc: "API de precios cripto con streaming (SSE), rate limit por plan, API Keys y checkout con Stripe.",
           bullets: [
-            "SSE (event: price / ping)",
+            "REST + SSE (stream en tiempo real)",
             "Planes por API Key (headers X-RateLimit-*)",
-            "Webhooks Stripe → email + DB",
+            "Stripe webhooks → email de API Key + registro en Postgres",
           ],
           links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
           tag: "Railway · Stripe · Resend · Postgres",
         },
-      {
-        key: "curpify",
-        name: "Curpify API",
-        status: "LANZAMIENTO",
-        desc: "Servicio de validación de CURP para fintech, CRMs y cualquier app que requiera verificar identidades en México.",
-        bullets: [
-          "Validación rápida y consistente",
-          "Respuestas JSON",
-          "Integración sencilla vía HTTP",
-        ],
-        links: [{ label: "Ver producto →", href: "https://curpify.com", external: true }],
-        tag: "Next.js · Postgres · Stripe",
-      },
-      {
-        key: "nexus",
-        name: "Nexus",
-        status: "EN DESARROLLO",
-        desc: "Integraciones para datos públicos, notificaciones, deportes y automatización de flujos cotidianos.",
-        bullets: [
-          "API de deserialización de datos",
-          "Servicios de notificación y alertas",
-          "Herramientas internas para DevOps",
-        ],
-        links: [
-          { label: "Roadmap", href: "#roadmap" },
-          { label: "Join waitlist", href: "mailto:support@evilink.dev?subject=Nexus%20waitlist", external: true },
-        ],
-        tag: "Roadmap en construcción",
-        muted: true,
-      },
-    ];
+        {
+          key: "curpify",
+          name: "Curpify API",
+          status: "LANZAMIENTO",
+          desc: "API de validación de CURP para integraciones en México. Lista para apps, CRMs y flujos fintech.",
+          bullets: [
+            "Validación rápida y consistente",
+            "Respuestas JSON estandarizadas",
+            "Curpify Lite: 4.99 USD · 100 validaciones/día (RapidAPI y Postman)",
+          ],
+          links: [{ label: "Ver producto →", href: "https://curpify.com", external: true }],
+          tag: "Next.js · Postgres · Stripe",
+        },
+        {
+          key: "nexus",
+          name: "Nexus",
+          status: "EN DESARROLLO",
+          desc: "Asistente del ecosistema evi_link devs: respuestas basadas en documentación oficial y páginas de producto.",
+          bullets: [
+            "Knowledge-driven: responde con docs (RAG)",
+            "Capa de ingesta y gobierno del ecosistema",
+            "No ejecuta procesamiento pesado: solo enruta y explica",
+          ],
+          links: [
+        { label: "Roadmap", href: "#roadmap" },
+        { label: "Join waitlist", href: "mailto:support@evilink.dev?subject=Nexus%20waitlist", external: true },
+          ],
+          tag: "Beta cerrada · roadmap en construcción",
+          muted: true,
+        },
+      ];
 
     const badgeClass = (s: Status) => {
       if (s === "DISPONIBLE") return "badge badge-live";
