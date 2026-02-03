@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import styles from "./nexusWidget.module.css"
 
 const EVILINK = {
   accent: "#2BFF88",        // verde neón
@@ -473,14 +474,10 @@ useEffect(() => {
   }}
 >
   {/* Icono simple tipo “N” */}
-  <span style={{
-    fontWeight: 900,
-    letterSpacing: 0.5,
-    color: EVILINK.text,
-    textShadow: `0 0 18px ${EVILINK.accent}88`,
-  }}>
-    N
+  <span className={styles.nexusWord}>
+  <span className={styles.nexusN}>N</span>exus
   </span>
+
   </button>
   {!open && teaserOpen && (
   <button

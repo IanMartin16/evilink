@@ -1,0 +1,12 @@
+.nexusWord{
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.nexusN{
+    color: rgba(0, 229, 168, 1);
+    font-style: italic;
+    display: inline-block;
+    transform: skewX(-8deg);
+    margin-right: 1px;
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="28" fill="#061814"/>
+  <!-- N simple, gruesa, súper legible -->
+  <path d="M36 92V36h16l24 36V36h16v56H76L52 56v36H36z" fill="#00E5A8"/>
+</svg>
