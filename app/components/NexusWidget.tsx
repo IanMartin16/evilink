@@ -318,21 +318,21 @@ useEffect(() => {
     lastPromptRef.current = text;
 
     if (looksSensitive(text)) {
-      const warn: Msg = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        text: "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo (rota la llave si ya se expuso).",
-        ts: Date.now(),
-        product,
-      };
-        setMsgs((m) => [...m, {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        text: `⚠️ No pude responder. ¿Reintento?`,
-        ts: Date.now(),
-        product,
-      }]);
-    }
+    const warn: Msg = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      text:
+        "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo. " +
+        "Si ya lo expusiste, rota esa llave/token.",
+      ts: Date.now(),
+      product,
+    };
+
+    // ✅ muestra el warning y corta el flujo (no llamar backend)
+    setMsgs((m) => [...m, warn]);
+    setLoading(false);
+    return;
+  }
 
    const sid = (sessionId && sessionId.trim()) ? sessionId : "web";
    const prod = (product && product.trim()) ? product : "curpify";
@@ -352,27 +352,54 @@ useEffect(() => {
    setLoading(true);
 
    try {
-     const resp = await fetch("/api/nexus/chat", {
-       method: "POST",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ sessionId: sid, product: prod, message: text }),
-     });
-     
+    const resp = await fetch("/api/nexus/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId: sid, product: prod, message: text }),
+  });
 
-      const data = await resp.json().catch(() => ({}));
+  const data = await resp.json().catch(() => ({}));
+ 
+    // 1) Errores legacy (si todavía llegan)
+  if (!resp.ok || data?.ok === false) {
+    const err = data?.error || `Error HTTP ${resp.status}`;
+    setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: `⚠️ ${err}`, ts: Date.now(), product }]);
+    return;
+  }
 
-      if (!resp.ok || data?.ok === false) {
-        const err = data?.error || `Error HTTP ${resp.status}`;
-        setMsgs((m) => [...m, {id: crypto.randomUUID(), role: "assistant", text: `⚠️ ${err}`, ts: Date.now(), product }]);
-      } else {
-        setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: data?.answer ?? "(sin respuesta)", ts: Date.now(), product }]);
-      }
+  // 2) MCP v0.1
+  if (data?.responseVersion === "0.1" && data?.answer?.sections) {
+    const summary = data?.answer?.summary ? `**${String(data.answer.summary)}**\n\n` : "";
+
+      const sectionsText = (data.answer.sections as any[])
+        .map((s) => {
+          if (!s?.type) return "";
+          if (s.type === "notice") {
+            const k = (s.kind ? String(s.kind).toUpperCase() : "INFO");
+            return `> ${k}: ${s.message ?? ""}${s.details ? `\n${s.details}` : ""}`.trim();
+          }
+          if (s.type === "text") return String(s.text ?? "");
+          // v0.2: aquí metemos render “cards” para kpi_grid/table/bullets
+          return "";
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+    const finalText = (summary + sectionsText).trim() || "(sin respuesta)";
+    setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: finalText, ts: Date.now(), product }]);
+    return;
+  }
+
+  // 3) Legacy success
+  setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: data?.answer ?? "(sin respuesta)", ts: Date.now(), product }]);
+
     } catch (e: any) {
       setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: `⚠️ Error: ${e?.message ?? "unknown"}`, ts: Date.now(), product}]);
     } finally {
       setLoading(false);
     }
   }
+  
   function dedupeMsgsById(list: Msg[]) {
     const seen = new Set<string>();
     const out: Msg[] = [];
