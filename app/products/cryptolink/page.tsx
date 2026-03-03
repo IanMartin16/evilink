@@ -66,7 +66,7 @@ export default function CryptoLinkPage() {
              <nav className={styles.navLinks}>
               <a href="/">Inicio</a>
               <a href="/#products">← Volver</a>
-              <a href="/products/cryptolink/docs">Docs</a>
+              <a href="/products">Productos</a>
              </nav>
             </div>
           </div>

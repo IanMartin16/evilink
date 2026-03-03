@@ -95,7 +95,10 @@ export default function Home() {
             "Planes por API Key (headers X-RateLimit-*)",
             "Stripe webhooks → email de API Key + registro en Postgres",
           ],
-          links: [{ label: "Landing + Docs →", href: "/products/cryptolink" }],
+          links: [
+            { label: "Comprar →", href: "/products/cryptolink" },
+            { label: "Docs →", href: "https://cryptolink.mx/docs", external: true },
+          ],
           tag: "Railway · Stripe · Resend · Postgres",
         },
         {
