@@ -429,3 +429,70 @@
 .heroRight{
   padding-top: 10px; /* prueba 0, 6, 10 según tu ojo */
 }
+
+/* ===== FREE KEY CARD (demo) ===== */
+
+.freeCard {
+  border: 1px solid rgba(0,229,168,.22);
+  box-shadow: 0 0 0 1px rgba(0,229,168,.06) inset;
+}
+
+.freeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.freeTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.freePill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  background: rgba(0,229,168,.12);
+  border: 1px solid rgba(0,229,168,.25);
+  color: rgba(255,255,255,.86);
+}
+
+.freeKeyBox {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.freeKey {
+  max-width: 100%;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.28);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,.92);
+  user-select: all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* botones en mobile que no se aplasten */
+.freeKeyActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* micro feedback */
+.copied {
+  border-color: rgba(0,229,168,.35) !important;
+}

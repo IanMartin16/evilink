@@ -103,7 +103,7 @@ export default function Home() {
 
         <nav className="nav-links">
           <a href="#ecosystem">Ecosystem</a>
-          <a href="#products">Productos</a>
+          <a href="/products">Productos</a>
           <a href="#quickstart">Quickstart</a>
           <Link href="#about">Sobre</Link>
         </nav>
@@ -245,22 +245,76 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="section">
-        <h2>Cómo funciona</h2>
-        <p className="section-intro">Para el usuario final parece magia. Para developers es un pipeline claro.</p>
+        <section className="section">
+          <h2>Cómo funciona</h2>
+          <p className="section-intro">Para el usuario final parece magia. Para developers es un pipeline claro.</p>
 
-        {/* ✅ Codebox pro (no rompe móviles) */}
-        <div className="codebox">
-          <pre>
-            <code>{`Price Data (CryptoLink)   +   Sentiment Signals (Social_Link)
-            │                           │
-            └───────────────┬───────────┘
-                            ▼
-                         Nexus (AI)
-                            │
-                            ▼
-              Apps / Dashboards / Agents / Integrations`}</code>
-          </pre>
+          <div className="flow">
+            <article className="flowCard">
+              <div className="flowTop">
+                <span className="flowIcon" aria-hidden>📈</span>
+                <div>
+                  <div className="flowTitle">CryptoLink</div>
+                  <div className="flowSub">Market data</div>
+                </div>
+              </div>
+              <ul className="flowList">
+                <li>REST + SSE</li>
+                <li>Batch + stream</li>
+                <li>Headers pro</li>
+              </ul>
+            </article>
+
+            <div className="flowArrow" aria-hidden>→</div>
+
+            <article className="flowCard muted">
+              <div className="flowTop">
+                <span className="flowIcon" aria-hidden>🧠</span>
+                <div>
+                  <div className="flowTitle">Social_Link</div>
+                  <div className="flowSub">Signals</div>
+                </div>
+              </div>
+              <ul className="flowList">
+                <li>Sentiment</li>
+                <li>Trends / themes</li>
+                <li>Roadmap social + news</li>
+              </ul>
+            </article>
+
+            <div className="flowArrow" aria-hidden>→</div>
+
+            <article className="flowCard">
+              <div className="flowTop">
+                <span className="flowIcon" aria-hidden>🤖</span>
+                <div>
+                  <div className="flowTitle">Nexus</div>
+                  <div className="flowSub">AI + governance</div>
+                </div>
+              </div>
+              <ul className="flowList">
+                <li>RAG sobre docs</li>
+                <li>MCP-ready</li>
+                <li>Coordina, explica, enruta</li>
+              </ul>
+            </article>
+
+            <div className="flowArrow" aria-hidden>→</div>
+
+            <article className="flowCard">
+              <div className="flowTop">
+                <span className="flowIcon" aria-hidden>🧩</span>
+                <div>
+                  <div className="flowTitle">Integrations</div>
+                  <div className="flowSub">Apps / Agents / Dashboards</div>
+                </div>
+              </div>
+              <ul className="flowList">
+                <li>SDKs</li>
+                <li>Webhooks / cron</li>
+                <li>Productos “platform-ready”</li>
+              </ul>
+          </article>
         </div>
       </section>
 

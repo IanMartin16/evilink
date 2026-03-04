@@ -4,9 +4,86 @@
 import dynamic from "next/dynamic";
 import styles from "./cryptolink.module.css";
 import PlanBuyButton from "./PlanBuyButton";
+import React from "react";
 
 const PurchaseWidget = dynamic(() => import("./PurchaseWidget"), { ssr: false });
 const PurchaseStatusBanner = dynamic(() => import("./PurchaseStatusBanner"), { ssr: false });
+const baseUrl = "https://cryptolink-production.up.railway.app";
+
+function FreeKeyCard({ baseUrl }: { baseUrl: string }) {
+  const FREE_DEMO_KEY =
+    process.env.NEXT_PUBLIC_CRYPTOLINK_FREE_KEY || "cl_yEmprvVq49xxtiLLTpUktKLRF4vmqsmc";
+
+  const [copied, setCopied] = React.useState(false);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(FREE_DEMO_KEY);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // fallback silencioso
+      setCopied(false);
+    }
+  }
+
+  return (
+    <div className={`${styles.panel} ${styles.freeCard}`}>
+      <div className={styles.freeRow}>
+        <div className={styles.freeTitle}>
+          <div className={styles.h2} style={{ margin: 0 }}>
+            Plan FREE <span style={{ opacity: 0.6 }}>(demo)</span>
+          </div>
+          <span className={styles.freePill}>2 symbols · 60 rpm · SSE off</span>
+        </div>
+
+        <a
+          className={`${styles.btn} ${styles.btnGhost}`}
+          href="https://cryptolink.mx/docs"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Ver docs →
+        </a>
+      </div>
+
+      <p className={styles.p} style={{ marginTop: 10, opacity: 0.92 }}>
+        Copia esta API key para probar rápido. Está limitada a demo (para evitar abuso).
+      </p>
+
+      <div className={styles.freeKeyBox}>
+        <code className={`${styles.freeKey} ${copied ? styles.copied : ""}`}>
+          {FREE_DEMO_KEY}
+        </code>
+
+        <div className={styles.freeKeyActions}>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={copy}
+          >
+            {copied ? "Copiada ✅" : "Copiar API Key"}
+          </button>
+
+          <a
+            className={`${styles.btn} ${styles.btn}`}
+            href={`${baseUrl}/v1/me`}
+            target="_blank"
+            rel="noreferrer"
+            title="Ver plan y límites"
+          >
+            Ver /v1/me →
+          </a>
+        </div>
+      </div>
+
+      <div className={styles.note} style={{ marginTop: 12 }}>
+        <strong>Quick test:</strong>{" "}
+        <code>curl -s "{baseUrl}/v1/prices?symbols=BTC,ETH&fiat=MXN" -H "x-api-key: TU_API_KEY"</code>
+      </div>
+    </div>
+  );
+}
 
 type PlanKey = "BUSINESS" | "PRO";
 
@@ -53,24 +130,17 @@ export default function CryptoLinkPage() {
   const baseUrl = "https://cryptolink-production.up.railway.app";
 
   return (
-    <main className={styles.page}>
+    <main className="page">
       {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerShell}>
-          <div className={styles.logoBlock}>
+      <header className="nav">
+          <div className="logo-block">
            <img src="/logo-horizontal.png" alt="evi_link devs logo" />
           </div>
-
-          <div className={styles.container}>
-            <div className={styles.headerRowRight}>
-             <nav className={styles.navLinks}>
+             <nav className="nav-links">
               <a href="/">Inicio</a>
               <a href="/#products">← Volver</a>
               <a href="/products">Productos</a>
              </nav>
-            </div>
-          </div>
-         </div>
         </header>
 
       {/* HERO */}
@@ -155,7 +225,7 @@ export default function CryptoLinkPage() {
           <h2 className={styles.h2}>Planes</h2>
 
           <div className={styles.grid}>
-            <PlanCard name="FREE" rpm="60" sse="1" symbols="3" />
+            <PlanCard name="FREE" rpm="60" sse="off" symbols="2" />
             <PlanCard name="BUSINESS" rpm="600" sse="5" symbols="15" planKey="BUSINESS" />
             <PlanCard name="PRO" rpm="1200" sse="10" symbols="25" planKey="PRO" highlight />
           </div>
@@ -171,6 +241,8 @@ export default function CryptoLinkPage() {
         <div className={styles.container}>
           <PurchaseStatusBanner />
           <h2 className={styles.h2}>Comprar</h2>
+              {/* ✅ Nuevo: FREE demo */}
+              <FreeKeyCard baseUrl={baseUrl}/>
           <p className={styles.p}>Te enviamos tu API Key por correo en cuanto se confirme el pago.</p>
           <PurchaseWidget />
         </div>
