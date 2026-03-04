@@ -84,6 +84,9 @@ export default function CryptoLinkPage() {
               <p className={styles.sub}>
                 Precios cripto + streaming SSE en tiempo real, con límites por plan y headers “pro”.
               </p>
+              <p className={styles.tip}>
+                En venta: <strong>CryptoLink API (V1)</strong>. El Dashboard V2 es <strong>showcase/reference-only</strong> por ahora.
+              </p>
 
               <div className={styles.badges}>
                 <span className={styles.badge}>Base URL: {baseUrl.replace("https://", "")}</span>
@@ -130,13 +133,13 @@ export default function CryptoLinkPage() {
 
           <div className={styles.codeBox}>
             <pre className={styles.list}>
-{`# REST
-curl -s "${baseUrl}/v1/prices?symbols=BTC,ETH&fiat=MXN" \\
-  -H "x-api-key: TU_API_KEY"
+            {`# REST
+              curl -s "${baseUrl}/v1/prices?symbols=BTC,ETH&fiat=MXN" \\
+                -H "x-api-key: TU_API_KEY"
 
-# SSE (stream)
-curl -N "${baseUrl}/v1/stream/prices?symbols=BTC,ETH&fiat=MXN" \\
-  -H "x-api-key: TU_API_KEY"`}
+              # SSE (stream)
+              curl -N "${baseUrl}/v1/stream/prices?symbols=BTC,ETH&fiat=MXN" \\
+                -H "x-api-key: TU_API_KEY"`}
             </pre>
           </div>
 
@@ -153,8 +156,8 @@ curl -N "${baseUrl}/v1/stream/prices?symbols=BTC,ETH&fiat=MXN" \\
 
           <div className={styles.grid}>
             <PlanCard name="FREE" rpm="60" sse="1" symbols="3" />
-            <PlanCard name="BUSINESS" rpm="600" sse="5" symbols="10" planKey="BUSINESS" />
-            <PlanCard name="PRO" rpm="1200" sse="10" symbols="13" planKey="PRO" highlight />
+            <PlanCard name="BUSINESS" rpm="600" sse="5" symbols="15" planKey="BUSINESS" />
+            <PlanCard name="PRO" rpm="1200" sse="10" symbols="25" planKey="PRO" highlight />
           </div>
 
           <div className={styles.note}>

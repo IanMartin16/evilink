@@ -429,3 +429,209 @@ body::after {
 .btn-mini:hover{
   border-color: rgba(23,214,163,.25);
 }
+
+/* =========================
+   EVILINK PREMIUM PATCH
+   Pega al final de globals.css
+   ========================= */
+
+/* --- Layout breathing --- */
+.page{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --- Navbar: pro + responsive --- */
+.nav{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 10px 0;
+  background: linear-gradient(180deg, rgba(5,13,11,.92), rgba(5,13,11,.65));
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.logo-block img{
+  /* 👇 El logo en desktop puede ser grande, pero en móvil debe bajar sí o sí */
+  width: clamp(140px, 22vw, 240px);
+  height: auto;
+}
+
+.nav-links{
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-links a{
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.10);
+  color: rgba(234,219,184,.86);
+}
+.nav-links a:hover{
+  border-color: rgba(23,214,163,.22);
+  background: rgba(23,214,163,.06);
+  opacity: 1;
+}
+
+/* --- Hero: headline premium --- */
+.hero{
+  margin-top: 18px;
+  gap: 18px;
+}
+
+.hero-text h1{
+  font-size: clamp(34px, 4.4vw, 54px);
+  letter-spacing: -0.03em;
+}
+
+.hero-text p{
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(234,219,184,.76);
+}
+
+.hero-note{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.12);
+}
+
+/* --- Buttons: consistent --- */
+.btn-primary, .btn-secondary, .btn-mini{
+  transition: transform .16s ease, border-color .16s ease, background .16s ease, filter .16s ease;
+}
+.btn-primary:hover, .btn-secondary:hover, .btn-mini:hover{
+  transform: translateY(-1px);
+}
+
+/* --- Cards: shadow + hover --- */
+.card, .hero-card{
+  box-shadow: 0 14px 34px rgba(0,0,0,.28);
+}
+
+.card:hover{
+  border-color: rgba(23,214,163,.22) !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.36);
+}
+
+.card-muted{
+  border-color: rgba(255,255,255,.08) !important;
+  opacity: .92;
+}
+
+/* --- Badge colors: real status --- */
+.badge{
+  font-size: 11px;
+  letter-spacing: .25px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,.14);
+}
+
+.badge-live{
+  border-color: rgba(23,214,163,.25);
+  background: rgba(23,214,163,.10);
+  color: rgba(152, 255, 224, .92);
+}
+
+.badge-launch{
+  border-color: rgba(255, 193, 7, .22);
+  background: rgba(255, 193, 7, .10);
+  color: rgba(255, 232, 179, .92);
+}
+
+.badge-dev{
+  border-color: rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(234,219,184,.82);
+}
+
+/* --- Card actions: wrap for small screens --- */
+.card-actions{
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* --- Code box: “docs-grade” for curl snippets --- */
+.codebox{
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.28);
+  overflow: hidden;
+}
+
+.codebox pre{
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  color: rgba(234,219,184,.88);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.codebox code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* --- “Pills” for hero badges / metadata --- */
+.pills{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.12);
+  font-size: 12px;
+  color: rgba(234,219,184,.82);
+}
+.pill b{
+  color: rgba(234,219,184,.95);
+}
+
+/* --- Responsive: true mobile polish --- */
+@media (max-width: 900px){
+  .nav{ padding: 8px 0; }
+  .nav-links{ justify-content: flex-start; }
+}
+
+@media (max-width: 520px){
+  .page{ padding: 18px 14px 34px; }
+  .nav{
+    position: static; /* sticky en móviles viejos a veces causa jank */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: transparent;
+    border-bottom: none;
+  }
+  .logo-block img{ width: 180px; }
+  .nav-links a{ font-size: 13px; padding: 7px 9px; }
+  .hero-text h1{ font-size: 34px; }
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-contact{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.dot {
+  opacity: .55;
+}
