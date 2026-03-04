@@ -10,3 +10,32 @@
     transform: skewX(-8deg);
     margin-right: 1px;
 }
+.nexus-widget-button{
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 50%;
+  background: #061814;
+
+  border: 1px solid rgba(255,255,255,0.15);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35),
+    0 0 0 2px rgba(0,229,168,0.15);
+
+  z-index: 9999;
+}
+
+.nexus-widget-button:hover{
+  transform: translateY(-2px);
+}

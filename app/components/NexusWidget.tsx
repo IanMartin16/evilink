@@ -501,9 +501,7 @@ useEffect(() => {
   }}
 >
   {/* Icono simple tipo “N” */}
-  <span className={styles.nexusWord}>
-  <span className={styles.nexusN}>N</span>exus
-  </span>
+  <img src="/nexus-bot-icon.png" width="36" height="36"></img>
 
   </button>
   {!open && teaserOpen && (
