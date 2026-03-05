@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./nexusWidget.module.css"
+import { ZCOOL_KuaiLe } from "next/font/google";
 
 const EVILINK = {
   accent: "#2BFF88",        // verde neón
@@ -84,6 +85,7 @@ export default function NexusWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const canSend = input.trim().length > 0 && !loading;
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
 
@@ -477,117 +479,151 @@ useEffect(() => {
   );
 }
 
+// ✅ desktop check (evita blur bug en iPhone)
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 900px)");
+    const onChange = () => setIsDesktop(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  // ✅ lock body scroll cuando está abierto (iOS friendly)
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  // ✅ jerarquía fija
+  const Z = {
+    overlay: 9998,
+    panel: 9999,
+    teaser: 10001,
+    fab: 10000,
+  } as const;
+
   return (
     <>
       {/* FAB */}
       <button
-  onClick={() => setOpen((v) => !v)}
-  aria-label="Abrir Nexus"
-  style={{
-    position: "fixed",
-    right: 18,
-    bottom: 18,
-    width: 62,
-    height: 62,
-    borderRadius: 999,
-    background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
-    border: `1px solid ${EVILINK.border}`,
-    boxShadow: `0 18px 55px rgba(0,0,0,0.55), 0 0 30px ${EVILINK.accent}22`,
-    color: EVILINK.text,
-    cursor: "pointer",
-    zIndex: 9999,
-    display: "grid",
-    placeItems: "center",
-  }}
->
-  {/* Icono simple tipo “N” */}
-  <img src="/nexus-bot-icon.png" width="36" height="36"></img>
-
-  </button>
-  {!open && teaserOpen && (
-  <button
-    onClick={() => setOpen(true)}
-    style={{
-      position: "fixed",
-      right: 88,
-      bottom: 22,
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      padding: "12px 14px",
-      borderRadius: 999,
-      background: "rgba(10, 18, 14, 0.92)",
-      border: `1px solid ${EVILINK.border}`,
-      color: EVILINK.text,
-      boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
-      cursor: "pointer",
-      maxWidth: 320,
-      backdropFilter: "blur(10px)",
-      WebkitBackdropFilter: "blur(10px)",
-      zIndex: 99999,
-
-      // 👇 esto controla el fade-out
-      opacity: teaserClosing ? 0 : 1,
-      transform: teaserClosing ? "translateY(6px)" : "translateY(0)",
-      transition: "opacity 420ms ease, transform 420ms ease",
-    }}
-  >
-    <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
-      <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
-      <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
-    </div>
-
-    <span
-      onClick={(e) => {
-        e.stopPropagation();
-        setTeaserClosing(true);
-        window.setTimeout(() => {
-          setTeaserOpen(false);
-          setTeaserClosing(false);
-          localStorage.setItem("nexus_teaser_seen", "1");
-        }, 450);
-      }}
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? "Cerrar Nexus" : "Abrir Nexus"}
         style={{
-          width: 28,
-          height: 28,
+          position: "fixed",
+          right: 18,
+          bottom: 18,
+          width: 62,
+          height: 62,
           borderRadius: 999,
+          background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
+          border: `1px solid ${EVILINK.border}`,
+          boxShadow: `0 18px 55px rgba(0,0,0,0.55), 0 0 30px ${EVILINK.accent}22`,
+          color: EVILINK.text,
+          cursor: "pointer",
+          zIndex: Z.fab,
           display: "grid",
           placeItems: "center",
-          background: "rgba(255,255,255,0.06)",
-          border: `1px solid ${EVILINK.border}`,
-          color: EVILINK.text,
-          fontWeight: 900,
-          animation: teaserClosing
-          ? "nexusTeaserOut 10000ms ease-in forwards"
-          : "nexusTeaserIn 7500ms ease-out",
         }}
-        aria-label="Cerrar mensaje"
-        title="Cerrar"
       >
-        ×
-      </span>
-    </button>
-  )}
+        <img src="/nexus-bot-icon.png" width={36} height={36} alt="Nexus" />
+      </button>
 
-      {/* Overlay */}
+      {/* Teaser */}
+      {!open && teaserOpen && (
+        <button
+          onClick={() => setOpen(true)}
+          style={{
+            position: "fixed",
+            right: 88,
+            bottom: 22,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "12px 14px",
+            borderRadius: 999,
+            background: "rgba(10, 18, 14, 0.92)",
+            border: `1px solid ${EVILINK.border}`,
+            color: EVILINK.text,
+            boxShadow: "0 14px 40px rgba(0,0,0,0.45)",
+            cursor: "pointer",
+            maxWidth: 320,
+
+            // ✅ blur solo desktop
+            backdropFilter: isDesktop ? "blur(10px)" : "none",
+            WebkitBackdropFilter: isDesktop ? "blur(10px)" : "none",
+
+            zIndex: Z.teaser,
+
+            // fade-out
+            opacity: teaserClosing ? 0 : 1,
+            transform: teaserClosing ? "translateY(6px)" : "translateY(0)",
+            transition: "opacity 420ms ease, transform 420ms ease",
+          }}
+        >
+          <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
+            <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
+            <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
+          </div>
+
+          {/* Close X */}
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              setTeaserClosing(true);
+              window.setTimeout(() => {
+                setTeaserOpen(false);
+                setTeaserClosing(false);
+                localStorage.setItem("nexus_teaser_seen", "1");
+              }, 420);
+            }}
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              display: "grid",
+              placeItems: "center",
+              background: "rgba(255,255,255,0.06)",
+              border: `1px solid ${EVILINK.border}`,
+              color: EVILINK.text,
+              fontWeight: 900,
+              lineHeight: 1,
+              flex: "0 0 auto",
+            }}
+            aria-label="Cerrar mensaje"
+            title="Cerrar"
+          >
+            ×
+          </span>
+        </button>
+      )}
+
+      {/* Overlay + Panel */}
       {open && (
         <div
-          onClick={() => setOpen(false)}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.22)",
-            backdropFilter: "blur(3px)",
-            zIndex: 9999,
+            background: "rgba(0,0,0,0.28)",
+            zIndex: Z.overlay,
+
+            // ✅ blur solo desktop
+            backdropFilter: isDesktop ? "blur(3px)" : "none",
+            WebkitBackdropFilter: isDesktop ? "blur(3px)" : "none",
           }}
         >
-          {/* Panel */}
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
               position: "fixed",
               right: 18,
-              bottom: 88, // deja espacio para el FAB
+              bottom: 88,
               width: "min(420px, calc(100vw - 36px))",
               height: "min(640px, calc(100vh - 140px))",
               background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
@@ -599,6 +635,7 @@ useEffect(() => {
               overflow: "hidden",
               color: EVILINK.text,
               animation: "nexusPop 140ms ease-out",
+              zIndex: Z.panel, // ✅ panel arriba del overlay
             }}
           >
             {/* Header */}
