@@ -48,13 +48,24 @@ export default function ProductosPage() {
           ))}
         </div>
       </section>
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="container">
+          <p>©️ {new Date().getFullYear()} evi_link devs. All rights reserved.</p>
 
-      <section id="roadmap" className="section section-soft">
-        <div className="card-top">
-        <h2>Roadmap</h2>
-        <p className="section-intro">En construcción…</p>
+          <div className="footer-contact">
+            <span>Contacto:</span>
+            <a href="mailto:support@evilink.dev">support@evilink.dev</a>
+            <span className="dot"> • </span>
+            <a href="mailto:billing@evilink.dev">billing@evilink.dev</a>
+          </div>
+
+          <p className="footer-note">
+            Sitio y APIs en desarrollo activo. Este proyecto se construye en paralelo a otras responsabilidades
+            profesionales, sin afiliación con terceros.
+          </p>
         </div>
-      </section>
+      </footer>
     </main>
   );
 }

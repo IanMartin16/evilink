@@ -75,8 +75,8 @@ export default function PurchaseWidget() {
   }
 
   return (
-    <div id="purchase" className={styles.wrap}>
-      <div className={styles.title}>Comprar</div>
+    <div id="purchase" className={`${styles.wrap} ${styles.panel}`}>
+      <div className={styles.freeTitle}>Comprar</div>
       <div className={styles.sub}>
         Checkout con Stripe. Cuando se confirme el pago, recibes tu API key por correo.
       </div>

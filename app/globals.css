@@ -871,3 +871,24 @@ body::after {
     max-width: 240px;
   }
 }
+
+/* Badges extra (NEXT / SOON / INCUBATING) */
+.badge-next{
+  border-color: rgba(23,214,163,.28);
+  background: rgba(23,214,163,.08);
+  color: rgba(234,219,184,.96);
+}
+
+.badge-soon{
+  border-color: rgba(234,219,184,.22);
+  background: rgba(234,219,184,.06);
+  color: rgba(234,219,184,.88);
+  opacity: .92;
+}
+
+.badge-inc{
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.05);
+  color: rgba(234,219,184,.78);
+  opacity: .86;
+}

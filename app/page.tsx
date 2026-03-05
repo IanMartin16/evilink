@@ -440,12 +440,107 @@ export default function Home() {
       </section>
 
       {/* ROADMAP */}
-      <section id="roadmap" className="section section-soft">
-        <div className="card-top">
-          <h2>Roadmap</h2>
-          <p className="section-intro">En construcción… (pero ya se siente el monstruo)</p>
-        </div>
-      </section>
+<section id="roadmap" className="section">
+  <h2>Roadmap</h2>
+
+  {/* Mantra */}
+  <p className="section-intro" style={{ marginTop: 6 }}>
+    <strong>Optimizar primero.</strong> Escalar después. Contratos claros siempre.
+  </p>
+
+  <div className="cards">
+    {/* NOW */}
+    <article className="card">
+      <div className="card-top">
+        <h3>Now (Q1 2026)</h3>
+        <span className="badge badge-live">LIVE</span>
+      </div>
+
+      <p>Lo que ya está corriendo y se siente “pro”.</p>
+
+      <ul className="card-list">
+        <li>✔ CryptoLink v1/v2: API Keys · rate limit · SSE · docs + SDK</li>
+        <li>✔ Nexus Widget v1: UI + teaser + estilo Evilink</li>
+        <li>✔ Evilink site: catálogo + ecosystem map</li>
+      </ul>
+
+      <p className="card-tag">Estabilidad primero · DX · security desde MVP</p>
+    </article>
+
+    {/* NEXT */}
+    <article className="card">
+      <div className="card-top">
+        <h3>Next (Q2 2026)</h3>
+        <span className="badge badge-next">NEXT</span>
+      </div>
+
+      <p>Subimos confianza pública + onboarding sin fricción.</p>
+
+      <ul className="card-list">
+        <li>✔ CryptoLink: botón “Obtener API Key” (demo/free + upgrade)</li>
+        <li>✔ /v1/status público: uptime + versión + provider</li>
+        <li>✔ Data_Link v1: ingesta + normalización + storage mínimo (read-only)</li>
+        <li>✔ Nexus: knowledge base (responde con docs / productos)</li>
+      </ul>
+
+      <div className="card-actions">
+        <a className="btn-mini" href="/products/cryptolink">CryptoLink →</a>
+        <a className="btn-mini" href="#ecosystem">Ecosystem →</a>
+      </div>
+
+      <p className="card-tag">Confianza · observabilidad mínima · onboarding</p>
+    </article>
+
+    {/* SOON */}
+    <article className="card card-muted">
+      <div className="card-top">
+        <h3>Soon (Q3 2026)</h3>
+        <span className="badge badge-soon">SOON</span>
+      </div>
+
+      <p>Señales + orquestación: cuando ya haya tracción.</p>
+
+      <ul className="card-list">
+        <li>✔ Social_Link v1: trends/themes/mood con contratos claros</li>
+        <li>✔ Nexus MCP v0.1: enrutamiento inteligente (no heavy compute)</li>
+        <li>✔ Integración: CryptoLink + Social_Link → Nexus</li>
+      </ul>
+
+      <p className="card-tag">Market intelligence · modular · platform-ready</p>
+    </article>
+
+    {/* AI GOVERNANCE */}
+    <article className="card card-muted">
+      <div className="card-top">
+        <h3>AI Governance (MVP)</h3>
+        <span className="badge badge-inc">INCUBATING</span>
+      </div>
+
+      <p>
+        Capa para reducir riesgos y dar control: reglas, auditoría y “policy checks” para IA.
+      </p>
+
+      <ul className="card-list">
+        <li>✔ Policy checks: validación de reglas por caso de uso</li>
+        <li>✔ Risk labels: low/medium/high</li>
+        <li>✔ Audit logs: trazabilidad mínima (compliance-friendly)</li>
+      </ul>
+
+      <div className="card-actions">
+        <a
+          className="btn-mini"
+          href="mailto:support@evilink.dev?subject=AI%20Governance%20waitlist"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Join waitlist →
+        </a>
+      </div>
+
+      <p className="card-tag">Safety · compliance · developer-first</p>
+    </article>
+  </div>
+</section>
 
       {/* ABOUT */}
       <section id="about">
