@@ -17,7 +17,24 @@ const EVILINK = {
 };
 
 type Product = "curpify" | "cryptolink" | "evilink";
-type Msg = {id: string; role: "user" | "assistant" | "system"; text: string; ts: number, product: string;};
+type McpSection = {
+  id: string;
+  type: string;
+  title: string | null;
+  text?: string | null;
+  kind?: string | null;
+  message?: string | null;
+  details?: string | null;
+  items?: Array<{ label?: string; value?: any; unit?: string }> | null;
+}
+type Msg = {
+  id: string; 
+  role: "user" | "assistant" | "system"; 
+  text: string; 
+  ts: number, 
+  product: string;
+  sections?: McpSection[];
+};
 
 const LS_KEY = "nexus_widget_state_v1";
 const LS_PRODUCT_KEY = "nexus.product";
@@ -365,7 +382,12 @@ useEffect(() => {
     // 1) Errores legacy (si todavía llegan)
   if (!resp.ok || data?.ok === false) {
     const err = data?.error || `Error HTTP ${resp.status}`;
-    setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: `⚠️ ${err}`, ts: Date.now(), product }]);
+    setMsgs((m) => [...m, { 
+      id: crypto.randomUUID(), 
+      role: "assistant", 
+      text: `⚠️ ${err}`, 
+      ts: Date.now(), 
+      product }]);
     return;
   }
 
@@ -393,7 +415,19 @@ useEffect(() => {
   }
 
   // 3) Legacy success
-  setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: data?.answer ?? "(sin respuesta)", ts: Date.now(), product }]);
+  const sections = data?.answer?.sections;
+  const summary = 
+    (typeof data?.answer?.summary === "string" && data.answer.summary.trim())
+      ? data.answer.summary
+      : (typeof data?.answer === "string" ? data.answer : "(sin respuesta)")
+  setMsgs((m) => [...m, { 
+    id: crypto.randomUUID(), 
+    role: "assistant", 
+    text: summary, 
+    ts: Date.now(), 
+    product,
+    sections: Array.isArray(sections) ? sections : undefined
+   }]);
 
     } catch (e: any) {
       setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: `⚠️ Error: ${e?.message ?? "unknown"}`, ts: Date.now(), product}]);
@@ -505,6 +539,141 @@ useEffect(() => {
     teaser: 10001,
     fab: 10000,
   } as const;
+
+  function SectionView({ s }: { s: McpSection }) {
+  if (s.type === "notice") {
+    const kind = (s.kind ?? "info").toLowerCase();
+    const isWarn = kind === "warning";
+    const isErr = kind === "error";
+
+    const bg = isErr
+      ? "rgba(255, 80, 80, 0.12)"
+      : isWarn
+      ? "rgba(255, 180, 0, 0.12)"
+      : "rgba(0, 229, 255, 0.10)";
+
+    const badge = isErr ? "ERROR" : isWarn ? "WARN" : "INFO";
+
+    return (
+      <div style={{
+        padding: "10px 12px",
+        borderRadius: 14,
+        border: `1px solid ${EVILINK.border}`,
+        background: bg,
+        fontSize: 12,
+        lineHeight: 1.35
+      }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span style={{
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: 0.6,
+            padding: "2px 8px",
+            borderRadius: 999,
+            background: "rgba(255,255,255,0.10)",
+            border: `1px solid ${EVILINK.border}`,
+          }}>
+            {badge}
+          </span>
+          <div style={{ fontWeight: 900 }}>
+            {s.message ?? "Notice"}
+          </div>
+        </div>
+
+        {s.details && (
+          <div style={{ opacity: 0.8, marginTop: 6 }}>
+            {s.details}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (s.type === "kpi_grid") {
+    const items = Array.isArray(s.items) ? s.items : [];
+    return (
+      <div style={{ display: "grid", gap: 8 }}>
+        {s.title && (
+          <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
+            {s.title}
+          </div>
+        )}
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: 10
+        }}>
+          {items.map((it, idx) => (
+            <div key={idx} style={{
+              padding: "10px 12px",
+              borderRadius: 14,
+              border: `1px solid ${EVILINK.border}`,
+              background: "rgba(255,255,255,0.06)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
+            }}>
+              <div style={{ fontSize: 11, opacity: 0.75 }}>
+                {String(it.label ?? "KPI")}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                <div style={{ fontSize: 16, fontWeight: 900 }}>
+                  {it.value === null || it.value === undefined ? "—" : String(it.value)}
+                </div>
+                {it.unit ? (
+                  <div style={{ fontSize: 11, opacity: 0.75 }}>
+                    {String(it.unit)}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // default text (o cualquier otro)
+  if (s.type === "text") {
+    return (
+      <div style={{
+        padding: "10px 12px",
+        borderRadius: 14,
+        border: `1px solid ${EVILINK.border}`,
+        background: "rgba(255,255,255,0.04)"
+      }}>
+        {s.title && <div style={{ fontWeight: 900, marginBottom: 6 }}>{s.title}</div>}
+        {renderLiteMarkdown(s.text ?? "")}
+      </div>
+    );
+  }
+
+  // fallback por si llega algo nuevo
+  return (
+    <div style={{
+      padding: "10px 12px",
+      borderRadius: 14,
+      border: `1px solid ${EVILINK.border}`,
+      background: "rgba(255,255,255,0.03)",
+      fontSize: 12,
+      opacity: 0.85
+    }}>
+      <div style={{ fontWeight: 900 }}>{s.title ?? s.type}</div>
+      {s.text ? <div style={{ marginTop: 6 }}>{renderLiteMarkdown(s.text)}</div> : null}
+    </div>
+  );
+}
+
+function RenderAssistantMessage({ m }: { m: Msg }) {
+  if (Array.isArray(m.sections) && m.sections.length) {
+    return (
+      <div style={{ display: "grid", gap: 10 }}>
+        {m.sections.map((s) => <SectionView key={s.id} s={s} />)}
+      </div>
+    );
+  }
+  return <>{renderLiteMarkdown(m.text)}</>;
+}
 
   return (
     <>
@@ -742,7 +911,7 @@ useEffect(() => {
                     fontSize: 14,
                   }}
                 >
-                  {renderLiteMarkdown(m.text)}
+                  { m.role === "assistant" ? <RenderAssistantMessage m={m} /> : renderLiteMarkdown(m.text)}
                 </div>
                   {/* actions: solo assistant */}
                   {m.role === "assistant" && (
