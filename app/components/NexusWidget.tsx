@@ -378,6 +378,7 @@ useEffect(() => {
   });
 
   const data = await resp.json().catch(() => ({}));
+  console.log("Nexus MCP DATA", data);
  
     // 1) Errores legacy (si todavía llegan)
   if (!resp.ok || data?.ok === false) {
@@ -391,35 +392,16 @@ useEffect(() => {
     return;
   }
 
-  // 2) MCP v0.1
-  if (data?.responseVersion === "0.1" && data?.answer?.sections) {
-    const summary = data?.answer?.summary ? `**${String(data.answer.summary)}**\n\n` : "";
-
-      const sectionsText = (data.answer.sections as any[])
-        .map((s) => {
-          if (!s?.type) return "";
-          if (s.type === "notice") {
-            const k = (s.kind ? String(s.kind).toUpperCase() : "INFO");
-            return `> ${k}: ${s.message ?? ""}${s.details ? `\n${s.details}` : ""}`.trim();
-          }
-          if (s.type === "text") return String(s.text ?? "");
-          // v0.2: aquí metemos render “cards” para kpi_grid/table/bullets
-          return "";
-        })
-        .filter(Boolean)
-        .join("\n\n");
-
-    const finalText = (summary + sectionsText).trim() || "(sin respuesta)";
-    setMsgs((m) => [...m, { id: crypto.randomUUID(), role: "assistant", text: finalText, ts: Date.now(), product }]);
-    return;
-  }
-
   // 3) Legacy success
   const sections = data?.answer?.sections;
   const summary = 
     (typeof data?.answer?.summary === "string" && data.answer.summary.trim())
       ? data.answer.summary
       : (typeof data?.answer === "string" ? data.answer : "(sin respuesta)")
+      console.log("LAST MSG SECTIONS", {
+        summary,
+        sections,
+      });
   setMsgs((m) => [...m, { 
     id: crypto.randomUUID(), 
     role: "assistant", 
@@ -911,7 +893,9 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     fontSize: 14,
                   }}
                 >
-                  { m.role === "assistant" ? <RenderAssistantMessage m={m} /> : renderLiteMarkdown(m.text)}
+                  {m.role === "assistant"
+                  ? <RenderAssistantMessage m={m} />
+                  : renderLiteMarkdown(m.text)}
                 </div>
                   {/* actions: solo assistant */}
                   {m.role === "assistant" && (
