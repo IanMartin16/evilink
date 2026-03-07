@@ -472,7 +472,6 @@ useEffect(() => {
   return (
     <div
       style={{
-        justifySelf: "start",
         maxWidth: "70%",
         padding: "10px 12px",
         borderRadius: 14,
@@ -886,16 +885,26 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
             }}
           >
             {/* Header */}
-            <div style={{ display: "flex",  justifyContent: "space-between", alignItems: "center", padding: 12 }}>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <strong style={{ fontSize: 14, color: EVILINK.text }}>Nexus</strong>
-                <span style={{ fontSize: 12, color: EVILINK.muted }}>Asistente de evi_link (beta) Usamos IA generativa</span>
-              </div>
+            <div style={{ display: "grid", gap: 10, padding: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                  <strong style={{ fontSize: 14, color: EVILINK.text }}>Nexus</strong>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: EVILINK.muted,
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    Asistente de evi_link (beta) Usamos IA generativa
+                  </span>
+                </div>
 
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={startNewChat}
-                  style={{
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  <button
+                    onClick={startNewChat}
+                    style={{
                     borderRadius: 10,
                     padding: "6px 10px",
                     background: EVILINK.accent,
@@ -908,8 +917,9 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                 >
                   Limpiar
                 </button>
+
                 <button
-                  onClick={() => setOpen(false) } 
+                  onClick={() => setOpen(false)}
                   style={{
                     borderRadius: 10,
                     padding: "6px 10px",
@@ -924,33 +934,58 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                 </button>
               </div>
             </div>
+          </div>
 
             {/* Product row */}
-            <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "0 12px 12px 12px" }}>
-              <label style={{ fontSize: 12, opacity: 0.75 }}>Producto</label>
-              <select
-                value={product}
-                onChange={(e) => {
-                const next = String(e.target.value || "")
-                  .trim()
-                  .toLowerCase(); // ✅ normaliza
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                minWidth: 0,
+                padding: "0 12px 12px 12px",
+              }}
+            >
+              <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
+                <label style={{ fontSize: 12, opacity: 0.75 }}>Producto</label>
 
-                  setProduct(next);
-                  setMsgs([]);      // ✅ evita “flash” de msgs del producto anterior
-                  setInput("");
-                  setLoading(false);
-                }}
-              style={{ padding: 8, borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)" }}
+                <select
+                  value={product}
+                  onChange={(e) => {
+                    const next = String(e.target.value || "").trim().toLowerCase();
+                    setProduct(next);
+                    setMsgs([]);
+                    setInput("");
+                    setLoading(false);
+                  }}
+                  style={{
+                    padding: 8,
+                    borderRadius: 10,
+                    border: "1px solid rgba(0,0,0,0.12)",
+                    maxWidth: "160px",
+                  }}
                 >
                 <option value="curpify">curpify</option>
                 <option value="cryptolink">cryptoLink</option>
                 <option value="evi_link">evilink</option>
               </select>
-
-              <div style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>
-                Respuestas basadas en docs
-              </div>
             </div>
+
+          <div
+              style={{
+                fontSize: 12,
+                opacity: 0.7,
+                minWidth: 0,
+                overflowWrap: "anywhere",
+                wordBreak: "break-word",
+                textAlign: "right",
+              }}
+            >
+              Respuestas basadas en docs
+            </div>
+          </div>
 
             {/* Messages */}
             <div
@@ -1012,28 +1047,50 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                   title="Copiar respuesta"
                   aria-label="Copiar respuesta"
               >
-                {copiedId === m.id ? "✅ Copiado" : "📋 Copy"}
+                {copiedId === m.id ? "✅ Copied" : "📋 Copy"}
               </button>
                 </div>
                   )}
                 </div>
                 ))}
               </div>
-            </div>  
+            </div>
             {loading && (
-             <div style={{ justifySelf: "start", alignSelf: "start" }}>
+              <div
+                style={{
+                  justifySelf: "start",
+                  maxWidth: "88%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
                 <TypingIndicator />
-             </div>
-             )}
-            <button
-              onClick={() => {
-              setInput(lastPromptRef.current);
-              setTimeout(() => send(), 0);
-            }}
-              disabled={loading || !lastPromptRef.current}
-           >
-              Reintentar
-            </button>
+              </div>
+            )}  
+            
+             <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => {
+                    setInput(lastPromptRef.current);
+                    setTimeout(() => send(), 0);
+                  }}
+                  disabled={loading || !lastPromptRef.current}
+                  style={{
+                    padding: "6px 10px",
+                    minHeight: 0,
+                    borderRadius: 10,
+                    background: "rgba(255,255,255,0.06)",
+                    border: `1px solid ${EVILINK.border}`,
+                    color: EVILINK.text,
+                    fontSize: 12,
+                    cursor: loading || !lastPromptRef.current ? "not-allowed" : "pointer",
+                    opacity: loading || !lastPromptRef.current ? 0.45 : 0.9,
+                  }}
+                >
+                  ↻ Reintentar
+                </button>
+              </div>
 
             {/* Input */}
             <div style={{ display: "grid", gap: 8, padding: 12, borderTop: "1px solid rgba(0,0,0,0.08)" }}>
