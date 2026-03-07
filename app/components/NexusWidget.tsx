@@ -34,6 +34,10 @@ type Msg = {
   ts: number, 
   product: string;
   sections?: McpSection[];
+
+  traceId?: string;
+  toolCalls?: any[];
+  toolResults?: any[];
 };
 
 const LS_KEY = "nexus_widget_state_v1";
@@ -103,6 +107,7 @@ export default function NexusWidget() {
   const [loading, setLoading] = useState(false);
   const canSend = input.trim().length > 0 && !loading;
   const [isDesktop, setIsDesktop] = useState(false);
+  const [devMode, setDevMode] = useState(true);
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
 
@@ -408,7 +413,10 @@ useEffect(() => {
     text: summary, 
     ts: Date.now(), 
     product,
-    sections: Array.isArray(sections) ? sections : undefined
+    sections: Array.isArray(sections) ? sections : undefined,
+    traceId: data?.traceId,
+    toolCalls: Array.isArray(data?.toolCalls) ? data.toolCalls : undefined,
+    toolResults: Array.isArray(data?.toolResults) ? data.toolResults : undefined,
    }]);
 
     } catch (e: any) {
@@ -828,15 +836,123 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
   );
 }
 
-function RenderAssistantMessage({ m }: { m: Msg }) {
-  if (Array.isArray(m.sections) && m.sections.length) {
-    return (
-      <div style={{ display: "grid", gap: 10 }}>
-        {m.sections.map((s) => <SectionView key={s.id} s={s} />)}
+function DevMeta({ m }: { m: Msg }) {
+  const toolResults = Array.isArray(m.toolResults) ? m.toolResults : [];
+
+  return (
+    <div
+      style={{
+        padding: "10px 12px",
+        borderRadius: 14,
+        border: `1px solid ${EVILINK.border}`,
+        background: "rgba(255,255,255,0.04)",
+        display: "grid",
+        gap: 10,
+      }}
+    >
+      <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
+        Dev
       </div>
-    );
-  }
-  return <>{renderLiteMarkdown(m.text)}</>;
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: 10,
+        }}
+      >
+        <div
+          style={{
+            padding: "8px 10px",
+            borderRadius: 12,
+            border: `1px solid ${EVILINK.border}`,
+            background: "rgba(255,255,255,0.05)",
+            minWidth: 0,
+          }}
+        >
+          <div style={{ fontSize: 11, opacity: 0.7 }}>Trace ID</div>
+          <div style={{ fontSize: 12, fontWeight: 800, overflowWrap: "anywhere" }}>
+            {m.traceId ?? "—"}
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: "8px 10px",
+            borderRadius: 12,
+            border: `1px solid ${EVILINK.border}`,
+            background: "rgba(255,255,255,0.05)",
+          }}
+        >
+          <div style={{ fontSize: 11, opacity: 0.7 }}>Tools</div>
+          <div style={{ fontSize: 12, fontWeight: 800 }}>
+            {toolResults.length}
+          </div>
+        </div>
+      </div>
+
+      {toolResults.map((tr: any, idx: number) => (
+        <div
+          key={idx}
+          style={{
+            padding: "8px 10px",
+            borderRadius: 12,
+            border: `1px solid ${EVILINK.border}`,
+            background: "rgba(255,255,255,0.05)",
+            display: "grid",
+            gap: 4,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 800 }}>
+              {tr.tool ?? tr.toolCallId ?? "tool"}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                color: tr.ok ? "#2BFF88" : "#FF6B6B",
+              }}
+            >
+              {tr.ok ? "OK" : "ERROR"}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 11, opacity: 0.75 }}>
+            latency: {tr.latencyMs ?? "—"} ms
+          </div>
+
+          {tr.source && (
+            <div style={{ fontSize: 11, opacity: 0.75 }}>
+              source: {String(tr.source)}
+            </div>
+          )}
+
+          {tr.provider && (
+            <div style={{ fontSize: 11, opacity: 0.75 }}>
+              provider: {String(tr.provider)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
+  const hasSections = Array.isArray(m.sections) && m.sections.length > 0;
+
+  return (
+    <div style={{ display: "grid", gap: 10 }}>
+      {hasSections ? (
+        m.sections!.map((s) => <SectionView key={s.id} s={s} />)
+      ) : (
+        <>{renderLiteMarkdown(m.text)}</>
+      )}
+
+      {devMode ? <DevMeta m={m} /> : null}
+    </div>
+  );
 }
 
   return (
@@ -997,7 +1113,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     background: EVILINK.accent,
                     color: "#06110A",
                     border: "1px solid rgba(0,0,0,0.18)",
-                    boxShadow: `0 0 18px ${EVILINK.accent}55`,
+                    boxShadow: `0 0 12px ${EVILINK.accent}55`,
                     cursor: "pointer",
                     fontSize: 12,
                   }}
@@ -1013,7 +1129,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     background: EVILINK.accent,
                     color: "#06110A",
                     border: "1px solid rgba(0,0,0,0.18)",
-                    boxShadow: `0 0 18px ${EVILINK.accent}55`,
+                    boxShadow: `0 0 12px ${EVILINK.accent}55`,
                     cursor: "pointer",
                   }}
                 >
@@ -1112,8 +1228,8 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                   }}
                 >
                   {m.role === "assistant"
-                  ? <RenderAssistantMessage m={m} />
-                  : renderLiteMarkdown(m.text)}
+                    ? <RenderAssistantMessage m={m} devMode={devMode} />
+                    : renderLiteMarkdown(m.text)}
                 </div>
                   {/* actions: solo assistant */}
                   {m.role === "assistant" && (
@@ -1215,7 +1331,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
               />
               <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>
-                  ⚠️ Seguridad: no pegues passwords, tokens, llaves API o datos bancarios.
+                  ⚠️ No pegues passwords, tokens, llaves API o datos bancarios ⚠️.
                 </span>
                 <button
                   onClick={send}
@@ -1228,7 +1344,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     background: EVILINK.accent,
                     color: "#06110A",
                     border: "1px solid rgba(0,0,0,0.18)",
-                    boxShadow: `0 0 18px ${EVILINK.accent}55`,
+                    boxShadow: `0 0 12px ${EVILINK.accent}55`,
                     fontWeight: 700,
                   }}
                 >
