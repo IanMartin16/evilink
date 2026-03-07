@@ -551,7 +551,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
   }
 
   const width = 180;
-  const height = 34;
+  const height = 30;
   const path = buildSparkPath(values, width, height);
 
   const up = values[values.length - 1] >= values[0];
@@ -569,7 +569,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
         d={path}
         fill="none"
         stroke={stroke}
-        strokeWidth="2.2"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -688,6 +688,14 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
       <div style={{ display: "grid", gap: 10 }}>
         {items.map((it, idx) => {
           const points = Array.isArray(it.points) ? it.points : [];
+          const values = points
+            .map((p) => Number(p?.v))
+            .filter((n) => Number.isFinite(n));
+
+          const last = values.length ? values[values.length - 1] : null;
+          const first = values.length ? values[0] : null;
+          const up = last !== null && first !== null ? last >= first : null;
+
           return (
             <div
               key={idx}
@@ -697,11 +705,31 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
                 border: `1px solid ${EVILINK.border}`,
                 background: "rgba(255,255,255,0.05)",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+                display: "grid",
+                gap: 6,
               }}
             >
-              <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 6 }}>
-                {String(it.label ?? "Serie")}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+                <div style={{ fontSize: 11, opacity: 0.72 }}>
+                  {String(it.label ?? "Serie")}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 900,
+                    color:
+                      up === null
+                        ? EVILINK.text
+                        : up
+                        ? "#2BFF88"
+                        : "#FF6B6B",
+                  }}
+                >
+                  {last === null ? "N/D" : Number(last).toLocaleString()}
+                </div>
               </div>
+
               <SparkMini points={points} />
             </div>
           );
@@ -915,7 +943,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     fontSize: 12,
                   }}
                 >
-                  Limpiar
+                  Clear
                 </button>
 
                 <button
@@ -949,7 +977,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
               }}
             >
               <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
-                <label style={{ fontSize: 12, opacity: 0.75 }}>Producto</label>
+                <label style={{ fontSize: 12, opacity: 0.75 }}>Product</label>
 
                 <select
                   value={product}
@@ -1077,18 +1105,18 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                   }}
                   disabled={loading || !lastPromptRef.current}
                   style={{
-                    padding: "6px 10px",
+                    padding: "5px 9px",
                     minHeight: 0,
-                    borderRadius: 10,
-                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.05)",
                     border: `1px solid ${EVILINK.border}`,
                     color: EVILINK.text,
                     fontSize: 12,
                     cursor: loading || !lastPromptRef.current ? "not-allowed" : "pointer",
-                    opacity: loading || !lastPromptRef.current ? 0.45 : 0.9,
+                    opacity: loading || !lastPromptRef.current ? 0.4 : 0.82,
                   }}
                 >
-                  ↻ Reintentar
+                  ↻ Retry
                 </button>
               </div>
 
@@ -1139,7 +1167,7 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                     fontWeight: 700,
                   }}
                 >
-                  Enviar
+                  Send
                 </button>
               </div>
             </div>
