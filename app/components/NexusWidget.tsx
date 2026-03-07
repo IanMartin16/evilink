@@ -455,6 +455,65 @@ useEffect(() => {
       localStorage.setItem(LS_MSGS(product), JSON.stringify([welcome]));
     } catch {}
   }
+
+  function sectionsToPlainText(sections?: McpSection[]) {
+  if (!Array.isArray(sections) || sections.length === 0) return "";
+
+  return sections
+    .map((s) => {
+      if (s.type === "notice") {
+        const badge =
+          (s.kind ?? "info").toString().toUpperCase();
+        return `${badge}: ${s.message ?? ""}${s.details ? `\n${s.details}` : ""}`.trim();
+      }
+
+      if (s.type === "kpi_grid") {
+        const items = Array.isArray(s.items) ? s.items : [];
+        const body = items
+          .map((it) => {
+            const label = String(it.label ?? "KPI");
+            const value = it.value === null || it.value === undefined ? "—" : String(it.value);
+            const unit = it.unit ? ` ${String(it.unit)}` : "";
+            return `${label}: ${value}${unit}`;
+          })
+          .join("\n");
+
+        return `${s.title ? `${s.title}\n` : ""}${body}`.trim();
+      }
+
+      if (s.type === "sparkline") {
+        const items = Array.isArray(s.items) ? s.items : [];
+        const body = items
+          .map((it) => {
+            const label = String(it.label ?? "Serie");
+            const points = Array.isArray(it.points) ? it.points : [];
+            const values = points
+              .map((p) => Number(p?.v))
+              .filter((n) => Number.isFinite(n));
+
+            if (values.length < 2) return `${label}: sin histórico suficiente`;
+
+            const first = values[0];
+            const last = values[values.length - 1];
+            const trend = last > first ? "alcista" : last < first ? "bajista" : "plana";
+
+            return `${label}: tendencia ${trend}, último valor ${Number(last).toLocaleString()}`;
+          })
+          .join("\n");
+
+        return `${s.title ? `${s.title}\n` : ""}${body}`.trim();
+      }
+
+      if (s.type === "text") {
+        return `${s.title ? `${s.title}\n` : ""}${s.text ?? ""}`.trim();
+      }
+
+      return s.text ?? "";
+    })
+    .filter(Boolean)
+    .join("\n\n");
+}
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   async function copyText(id: string, text: string) {
@@ -1060,8 +1119,14 @@ function RenderAssistantMessage({ m }: { m: Msg }) {
                   {m.role === "assistant" && (
                 <div style={{ display: "flex", gap: 8, opacity: 0.9 }}>
               <button
-                type="button"
-                onClick={() => copyText(m.id, m.text)}
+                onClick={() =>
+                  copyText(
+                    m.id,
+                    (Array.isArray(m.sections) && m.sections.length)
+                    ? sectionsToPlainText(m.sections)
+                    : m.text
+                  )
+                }
                 style={{
                   padding: "4px 8px",
                   minHeight: 0,
