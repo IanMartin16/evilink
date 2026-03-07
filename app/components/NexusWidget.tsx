@@ -25,7 +25,7 @@ type McpSection = {
   kind?: string | null;
   message?: string | null;
   details?: string | null;
-  items?: Array<{ label?: string; value?: any; unit?: string }> | null;
+  items?: Array<{ label?: string; value?: any; unit?: string; points?: Array<{t?: string; v?: number }> }> | null;
 }
 type Msg = {
   id: string; 
@@ -522,6 +522,62 @@ useEffect(() => {
     fab: 10000,
   } as const;
 
+  function buildSparkPath(values: number[], width: number, height: number) {
+  if (!values.length) return "";
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+
+  return values
+    .map((v, i) => {
+      const x = (i / Math.max(values.length - 1, 1)) * width;
+      const y = height - ((v - min) / range) * height;
+      return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(" ");
+}
+
+function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
+  const values = points
+    .map((p) => Number(p?.v))
+    .filter((n) => Number.isFinite(n));
+
+  if (values.length < 2) {
+    return (
+      <div style={{ fontSize: 11, opacity: 0.65 }}>
+        Sin histórico suficiente
+      </div>
+    );
+  }
+
+  const width = 180;
+  const height = 42;
+  const path = buildSparkPath(values, width, height);
+
+  const up = values[values.length - 1] >= values[0];
+  const stroke = up ? "#2BFF88" : "#FF6B6B";
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      height="42"
+      preserveAspectRatio="none"
+      style={{ display: "block" }}
+    >
+      <path
+        d={path}
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
   function SectionView({ s }: { s: McpSection }) {
   if (s.type === "notice") {
     const kind = (s.kind ?? "info").toLowerCase();
@@ -614,7 +670,42 @@ useEffect(() => {
       </div>
     );
   }
+  if (s.type === "sparkline") {
+  const items = Array.isArray(s.items) ? s.items : [];
 
+  return (
+    <div style={{ display: "grid", gap: 8 }}>
+      {s.title && (
+        <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
+          {s.title}
+        </div>
+      )}
+
+      <div style={{ display: "grid", gap: 10 }}>
+        {items.map((it, idx) => {
+          const points = Array.isArray(it.points) ? it.points : [];
+          return (
+            <div
+              key={idx}
+              style={{
+                padding: "10px 12px",
+                borderRadius: 14,
+                border: `1px solid ${EVILINK.border}`,
+                background: "rgba(255,255,255,0.05)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+              }}
+            >
+              <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 6 }}>
+                {String(it.label ?? "Serie")}
+              </div>
+              <SparkMini points={points} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
   // default text (o cualquier otro)
   if (s.type === "text") {
     return (
