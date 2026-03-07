@@ -225,7 +225,7 @@ useEffect(() => {
       const el = inputRef.current;
       if (!el) return;
       el.style.height = "0px";
-      el.style.height = Math.min(el.scrollHeight, 140) + "px";
+      el.style.height = Math.min(el.scrollHeight, 96) + "px";
     }, [input]);
 
   //const sessionId = useMemo(() => "web", []);
@@ -552,7 +552,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
   }
 
   const width = 180;
-  const height = 42;
+  const height = 34;
   const path = buildSparkPath(values, width, height);
 
   const up = values[values.length - 1] >= values[0];
@@ -594,11 +594,11 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
 
     return (
       <div style={{
-        padding: "10px 12px",
+        padding: "8px 10px",
         borderRadius: 14,
         border: `1px solid ${EVILINK.border}`,
         background: bg,
-        fontSize: 12,
+        fontSize: 11,
         lineHeight: 1.35
       }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -629,6 +629,11 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
 
   if (s.type === "kpi_grid") {
     const items = Array.isArray(s.items) ? s.items : [];
+    const cols =
+      items.length === 1 ? "1fr" :
+      items.length === 2 ? "repeat(2, minmax(0, 1fr))" :
+      items.length === 3 ? "repeat(3, minmax(0, 1fr))" :
+      "repeat(2, minmax(0, 1fr))";
     return (
       <div style={{ display: "grid", gap: 8 }}>
         {s.title && (
@@ -644,8 +649,8 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
         }}>
           {items.map((it, idx) => (
             <div key={idx} style={{
-              padding: "10px 12px",
-              borderRadius: 14,
+              padding: "8px 10px",
+              borderRadius: 12,
               border: `1px solid ${EVILINK.border}`,
               background: "rgba(255,255,255,0.06)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
@@ -655,7 +660,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
               </div>
 
               <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                <div style={{ fontSize: 16, fontWeight: 900 }}>
+                <div style={{ fontSize: 15, fontWeight: 900 }}>
                   {it.value === null || it.value === undefined ? "—" : String(it.value)}
                 </div>
                 {it.unit ? (
@@ -688,7 +693,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
             <div
               key={idx}
               style={{
-                padding: "10px 12px",
+                padding: "8px 10px",
                 borderRadius: 14,
                 border: `1px solid ${EVILINK.border}`,
                 background: "rgba(255,255,255,0.05)",
