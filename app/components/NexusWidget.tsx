@@ -700,6 +700,7 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
       items.length === 2 ? "repeat(2, minmax(0, 1fr))" :
       items.length === 3 ? "repeat(3, minmax(0, 1fr))" :
       "repeat(2, minmax(0, 1fr))";
+      
     return (
       <div style={{ display: "grid", gap: 8 }}>
         {s.title && (
@@ -713,30 +714,56 @@ function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
           gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
           gap: 10
         }}>
-          {items.map((it, idx) => (
-            <div key={idx} style={{
-              padding: "8px 10px",
-              borderRadius: 12,
-              border: `1px solid ${EVILINK.border}`,
-              background: "rgba(255,255,255,0.06)",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
-            }}>
-              <div style={{ fontSize: 11, opacity: 0.75 }}>
-                {String(it.label ?? "KPI")}
+          {items.map((it, idx) => {
+            const tone = String((it as any).tone ?? "").toLowerCase();
+            const toneColor =
+              tone === "up"
+                ? "#2BFF88"
+                : tone === "down"
+                ? "#FF6B6B"
+                : EVILINK.text;
+
+            return (
+              <div
+                key={idx}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 14,
+                  border: `1px solid ${EVILINK.border}`,
+                  background: "rgba(255,255,255,0.06)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.22)",
+                }}
+              >
+                <div style={{ fontSize: 11, opacity: 0.75 }}>
+                  {String(it.label ?? "KPI")}
+                </div>
+
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 900,
+                      color: toneColor,
+                    }}
+                  >
+                {it.value === null || it.value === undefined ? "—" : String(it.value)}
               </div>
 
-              <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                <div style={{ fontSize: 15, fontWeight: 900 }}>
-                  {it.value === null || it.value === undefined ? "—" : String(it.value)}
+              {it.unit ? (
+                <div
+                  style={{
+                    fontSize: 11,
+                    opacity: 0.75,
+                    color: toneColor,
+                  }}
+                >
+                  {String(it.unit)}
                 </div>
-                {it.unit ? (
-                  <div style={{ fontSize: 11, opacity: 0.75 }}>
-                    {String(it.unit)}
-                  </div>
-                ) : null}
-              </div>
+              ) : null}
             </div>
-          ))}
+          </div>
+        );
+      })}
         </div>
       </div>
     );
