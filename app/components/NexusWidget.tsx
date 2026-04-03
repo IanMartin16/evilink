@@ -1358,7 +1358,7 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
               />
               <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>
-                  ⚠️ No pegues passwords, tokens, llaves API o datos bancarios ⚠️.
+                  ⚠️ No pegues passwords, tokens, llaves API o datos bancarios.
                 </span>
                 <button
                   onClick={send}
