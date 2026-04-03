@@ -116,4 +116,21 @@ export const PRODUCTOS: Producto[] = [
     links: [{ label: "Roadmap →", href: "/productos#roadmap" }],
     destacado: false,
   },
+  {
+  key: "lite_experiments",
+  nombre: "Lite Experiments",
+  estado: "LIVE",
+  desc: "Experimentos públicos seleccionados para validar interés de mercado sin desviar el foco del ecosistema principal de Evilink.",
+  bullets: [
+    "Incluye releases ligeros publicados en RapidAPI",
+    "Sirven para exploración controlada y validación temprana",
+    "No sustituyen el roadmap de los productos core",
+  ],
+  tag: "RapidAPI · public experiments",
+  links: [
+    { label: "Explore on RapidAPI →", href: "https://rapidapi.com/studio", external: true },
+  ],
+  destacado: false,
+}
 ];
+
