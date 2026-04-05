@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   const base = BASE.startsWith("http") ? BASE : `https://${BASE}`;
   const url = `${base.replace(/\/$/, "")}/v1/mcp/chat`;
 
+
   const r = await fetch(url, {
     method: "POST",
     headers: {
