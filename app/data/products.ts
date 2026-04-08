@@ -46,7 +46,7 @@ export const PRODUCTOS: Producto[] = [
   {
     key: "curpify",
     nombre: "Curpify API",
-    estado: "PLATFORM",
+    estado: "LIVE",
     desc: "La base actual de validación sobre la que evolucionará Validate Suite como futura capa más amplia de verificación.",
     bullets: [
       "Validación de CURP lista para producción",
@@ -54,7 +54,7 @@ export const PRODUCTOS: Producto[] = [
       "Base natural para la futura Validate Suite",
     ],
     tag: "Next.js · Postgres · Stripe",
-    links: [{ label: "Ver producto →", href: "https://curpify.com", external: true }],
+    links: [{ label: "Comprar →", href: "https://curpify.com/pricing", external: true }],
     destacado: false,
   },
   {
