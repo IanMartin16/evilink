@@ -39,7 +39,7 @@ const POLL_INTERVAL_MS = 60_000;
 // En local puede ser "http://127.0.0.1:8080"
 // En prod puedes apuntar al dominio desplegado.
 const STATUS_HUB_BASE_URL =
-  process.env.NEXT_PUBLIC_STATUS_HUB_API_URL || "http://127.0.0.1:8080";
+  process.env.NEXT_PUBLIC_STATUS_HUB_API_URL || "https://status-hub-api-production.up.railway.app";
 
 function formatDate(value: string): string {
   try {
