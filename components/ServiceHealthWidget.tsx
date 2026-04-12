@@ -33,7 +33,7 @@ type WidgetData = {
   status: StatusResponse | null;
 };
 
-const POLL_INTERVAL_MS = 60_000;
+const POLL_INTERVAL_MS = 3600_000;
 
 // Ajusta esta base URL según tu entorno.
 // En local puede ser "http://127.0.0.1:8080"
