@@ -33,10 +33,11 @@ type WidgetData = {
   status: StatusResponse | null;
 };
 
-const POLL_INTERVAL_MS = Number(
-  process.env.NEXT_PUBLIC_STATUS_HUB_POLL_INTERVAL_MS || 3600000
-);
+const POLL_INTERVAL_MS = 3600_000;
 
+// Ajusta esta base URL según tu entorno.
+// En local puede ser "http://127.0.0.1:8080"
+// En prod puedes apuntar al dominio desplegado.
 const STATUS_HUB_BASE_URL =
   process.env.NEXT_PUBLIC_STATUS_HUB_API_URL || "https://status-hub-api-production.up.railway.app";
 
@@ -86,27 +87,18 @@ export default function ServiceHealthWidget() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const endpoints = useMemo(() => {
-    if (!STATUS_HUB_BASE_URL) return null;
-
-    return {
+  const endpoints = useMemo(
+    () => ({
       summary: `${STATUS_HUB_BASE_URL}/v1/status/summary`,
       status: `${STATUS_HUB_BASE_URL}/v1/status`,
-    };
-  }, []);
+    }),
+    []
+  );
 
   useEffect(() => {
     let mounted = true;
 
     async function load() {
-      if (!endpoints) {
-        if (mounted) {
-          setError("NEXT_PUBLIC_STATUS_HUB_API_URL is not configured.");
-          setLoading(false);
-        }
-        return;
-      }
-
       try {
         const [summaryRes, statusRes] = await Promise.all([
           fetch(endpoints.summary, { cache: "no-store" }),
@@ -114,9 +106,7 @@ export default function ServiceHealthWidget() {
         ]);
 
         if (!summaryRes.ok || !statusRes.ok) {
-          throw new Error(
-            `Failed to fetch service health. summary=${summaryRes.status}, status=${statusRes.status}`
-          );
+          throw new Error("Failed to fetch service health.");
         }
 
         const [summary, status] = await Promise.all([
@@ -129,7 +119,6 @@ export default function ServiceHealthWidget() {
         setData({ summary, status });
         setError(null);
       } catch (err) {
-        console.error("ServiceHealthWidget error:", err);
         if (!mounted) return;
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
@@ -148,7 +137,7 @@ export default function ServiceHealthWidget() {
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
         <div className="text-sm text-white/70">Loading service health...</div>
       </section>
     );
@@ -156,15 +145,17 @@ export default function ServiceHealthWidget() {
 
   if (error || !data.summary || !data.status) {
     return (
-      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5">
-        <div className="text-sm text-rose-300">Unable to load service health.</div>
-        <div className="mt-2 text-xs text-rose-200/80">{error}</div>
+      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 backdrop-blur-sm">
+        <div className="text-sm text-rose-300">
+          Unable to load service health.
+        </div>
+        {error ? <div className="mt-2 text-xs text-rose-200/80">{error}</div> : null}
       </section>
     );
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <div className="text-xs uppercase tracking-[0.22em] text-white/45">
