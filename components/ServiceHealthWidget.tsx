@@ -34,7 +34,7 @@ type WidgetData = {
 };
 
 const POLL_INTERVAL_MS = Number(
-  process.env.NEXT_PUBLIC_STATUS_HUB_POLL_INTERVAL_MS || 600000
+  process.env.NEXT_PUBLIC_STATUS_HUB_POLL_INTERVAL_MS || 3600000
 );
 
 const STATUS_HUB_BASE_URL =
