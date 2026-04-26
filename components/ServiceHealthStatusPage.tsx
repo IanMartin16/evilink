@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -195,7 +196,7 @@ export default function StatusPage() {
               <p className="sp-eyebrow">Ecosystem Monitoring</p>
               <h1 className="sp-title">Service Status</h1>
               <p className="sp-sub">
-                Live operational overview for key Evilink services and backend products.
+                Live operational overview for key Evilink services and ecosystem products.
               </p>
             </div>
             {summary && (
@@ -287,6 +288,9 @@ export default function StatusPage() {
             <footer className="sp-foot">
               <StatusDot status={summary.overall_status} />
               Last updated: {formatDate(summary.last_updated)}
+              <nav className="nav-links">
+              <Link href="/">Inicio</Link>
+            </nav>
             </footer>
           )}
         </div>

@@ -106,6 +106,7 @@ export default function Home() {
           <a href="#ecosystem">Ecosystem</a>
           <a href="/products">Productos</a>
           <a href="#quickstart">Quickstart</a>
+          <a href="/status">Status</a>
           <Link href="#about">Sobre</Link>
         </nav>
       </header>
