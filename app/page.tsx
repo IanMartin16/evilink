@@ -42,7 +42,7 @@ export default function Home() {
         "MVP en construcción para definir su dirección oficial",
       ],
       links: [
-        { label: "View product →", href: "/products#securelink" },
+      //  { label: "View product →", href: "/products#securelink" },
         { label: "Roadmap →", href: "#roadmap" },
       ],
       tag: "Risk Signals · ML iniciado",
@@ -60,11 +60,11 @@ export default function Home() {
       ],
       links: [
         { label: "Roadmap →", href: "#roadmap" },
-        {
-          label: "Join waitlist →",
-          href: "mailto:support@evilink.dev?subject=Nexus%20waitlist",
-          external: true,
-        },
+      //  {
+      //    label: "Join waitlist →",
+      //    href: "mailto:support@evilink.dev?subject=Nexus%20waitlist",
+      //    external: true,
+      //  },
       ],
       tag: "Integrador oficial · evolución activa",
       muted: true,
@@ -80,7 +80,7 @@ export default function Home() {
         "Incubación activa con enfoque en capacidad operativa real",
       ],
       links: [
-        { label: "View product →", href: "/products#datalink" },
+      //  { label: "View product →", href: "/products#datalink" },
         { label: "See roadmap →", href: "#roadmap" },
       ],
       tag: "500 MB · incubación activa",
@@ -230,16 +230,7 @@ export default function Home() {
               <li>✔ Evolucionando hacia su integración con MCP-One</li>
               <li>✔ Orquesta sin absorber lógica pesada</li>
             </ul>
-          <div className="card-actions">
-            <a
-              className="btn-mini"
-              href="mailto:support@evilink.dev?subject=Nexus%20waitlist"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Join waitlist →
-            </a>
-          </div>
+          
           <p className="card-tag">Integrador oficial · evolución activa</p>
           </article>
         </div>
@@ -532,17 +523,6 @@ export default function Home() {
               <li>✔ Primer integración de machine learning con scikit-learn</li>
               <li>✔ Base para futuros módulos de seguridad y confianza</li>
             </ul>
-
-            <div className="card-actions">
-              <a
-                className="btn-mini"
-                href="mailto:support@evilink.dev?subject=Secure_Link%20waitlist"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Join waitlist →
-              </a>
-            </div>
 
             <p className="card-tag">Security · trust · strategic direction</p>
           </article>

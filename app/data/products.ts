@@ -11,6 +11,7 @@ export type Producto = {
   destacado?: boolean; // para Home
 };
 
+
 export const PRODUCTOS: Producto[] = [
   {
     key: "cryptolink",
@@ -40,7 +41,7 @@ export const PRODUCTOS: Producto[] = [
       "Evoluciona como línea estratégica para señales y contexto",
     ],
     tag: "Trends · CoinGecko · Alternative.me",
-    links: [{ label: "Roadmap →", href: "/productos#roadmap" }],
+    links: [{ label: "Roadmap →", href: "/#roadmap" }],
     destacado: false,
   },
   {
@@ -69,8 +70,8 @@ export const PRODUCTOS: Producto[] = [
     ],
     tag: "Integrador oficial · evolución activa",
     links: [
-      { label: "Roadmap →", href: "/productos#roadmap" },
-      { label: "Join waitlist →", href: "mailto:support@evilink.dev?subject=Nexus%20waitlist", external: true },
+      { label: "Roadmap →", href: "/#roadmap" },
+    //  { label: "Join waitlist →", href: "mailto:support@evilink.dev?subject=Nexus%20waitlist", external: true },
     ],
     destacado: true,
   },
@@ -85,7 +86,7 @@ export const PRODUCTOS: Producto[] = [
       "MVP en definición para su siguiente etapa",
     ],
     tag: "Risk Signals · scikit-learn · security",
-    links: [{ label: "Roadmap →", href: "/productos#roadmap" }],
+    links: [{ label: "Roadmap →", href: "/#roadmap" }],
     destacado: true,
   },
   {
@@ -99,7 +100,7 @@ export const PRODUCTOS: Producto[] = [
       "Incubación activa con capacidad operativa real",
     ],
     tag: "MinIO · data processing · 500 MB",
-    links: [{ label: "Roadmap →", href: "/productos#roadmap" }],
+    links: [{ label: "Roadmap →", href: "/#roadmap" }],
     destacado: true,
   },
   {
@@ -113,7 +114,7 @@ export const PRODUCTOS: Producto[] = [
       "Permanece en radar como línea futura del ecosistema",
     ],
     tag: "YOLOv11 · paused · computer vision",
-    links: [{ label: "Roadmap →", href: "/productos#roadmap" }],
+    links: [{ label: "Roadmap →", href: "/#roadmap" }],
     destacado: false,
   },
   {
