@@ -191,7 +191,7 @@ export default function Home() {
         <article className="card card-muted">
           <div className="card-top">
             <h3>Social_Link</h3>
-              <span className="badge badge-dev">PLATFORM</span>
+              <span className="badge badge-launch">PLATFORM</span>
           </div>
             <p>La capa de trends y señales del ecosistema, ya integrada en productos reales para enriquecer contexto en tiempo real.</p>
               <ul className="card-list">
@@ -215,7 +215,7 @@ export default function Home() {
         <article className="card card-muted">
           <div className="card-top">
             <h3>Nexus</h3>
-              <span className="badge badge-dev">PLATFORM</span>
+              <span className="badge badge-launch">PLATFORM</span>
               </div>
               <p>La capa de integración del ecosistema: acceso unificado, coordinación de productos y experiencia guiada.</p>
                 <ul className="card-list">
@@ -229,7 +229,7 @@ export default function Home() {
         <article className="card card-muted">
           <div className="card-top">
             <h3>Status-Hub</h3>
-              <span className="badge badge-dev">LIVE</span>
+              <span className="badge badge-live">LIVE</span>
           </div>
           <p>La capa de visibilidad operativa del ecosistema, diseñada para exponer salud de servicios y monitoreo en tiempo real.</p>
             <ul className="card-list">
