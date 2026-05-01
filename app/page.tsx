@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 export default function Home() {
-  type Status = "LIVE" | "PLATFORM" | "COMING SOON";
+  type Status = "LIVE" | "PLATFORM" | "COMING SOON" | "SOFT LAUNCH";
 
   const PRODUCTS: Array<{
     key: string;
@@ -14,83 +14,77 @@ export default function Home() {
     tag?: string;
     muted?: boolean;
   }> = [
-    {
-      key: "cryptolink",
-      name: "CryptoLink",
-      status: "LIVE",
-      desc: "La API de inteligencia cripto de Evilink, enfocada en precios, señales y experiencia de producto en evolución continua.",
-      bullets: [
-        "Actualmente en v2.8 y cerca de su versión objetivo",
-        "Producto más maduro dentro del ecosistema",
-        "Base técnica estable para su siguiente etapa",
-      ],
-      links: [
-        { label: "Explore product →", href: "/products#cryptolink" },
-        { label: "See roadmap →", href: "#roadmap" },
-      ],
-      tag: "v2.8 · cerca de versión meta",
-      muted: false,
-    },
-    {
-      key: "securelink",
-      name: "Secure_Link",
-      status: "PLATFORM",
-      desc: "La línea de seguridad de Evilink, enfocada en señales de riesgo, protección y dirección estratégica para futuros módulos.",
-      bullets: [
-        "Risk Signals ya funciona como versión lite inicial",
-        "Primera integración de ML con scikit-learn",
-        "MVP en construcción para definir su dirección oficial",
-      ],
-      links: [
-      //  { label: "View product →", href: "/products#securelink" },
-        { label: "Roadmap →", href: "#roadmap" },
-      ],
-      tag: "Risk Signals · ML iniciado",
-      muted: false,
-    },
-    {
-      key: "nexus",
-      name: "Nexus",
-      status: "PLATFORM",
-      desc: "La capa de integración de Evilink: acceso unificado, coordinación de productos y experiencia guiada sobre el ecosistema.",
-      bullets: [
-        "Knowledge-driven sobre docs y capacidades oficiales",
-        "Evolucionando hacia su integración con MCP-One",
-        "Orquesta, explica y enruta sin absorber lógica pesada",
-      ],
-      links: [
-        { label: "Roadmap →", href: "#roadmap" },
-      //  {
-      //    label: "Join waitlist →",
-      //    href: "mailto:support@evilink.dev?subject=Nexus%20waitlist",
-      //    external: true,
-      //  },
-      ],
-      tag: "Integrador oficial · evolución activa",
-      muted: true,
-    },
-    {
-      key: "datalink",
-      name: "Data_Link",
-      status: "PLATFORM",
-      desc: "La línea de procesamiento de datos de Evilink, diseñada para manejar archivos pesados y evolucionar hacia flujos más potentes.",
-      bullets: [
-        "Soporta archivos de hasta 500 MB",
-        "Usa MinIO como base para almacenamiento y procesamiento",
-        "Incubación activa con enfoque en capacidad operativa real",
-      ],
-      links: [
-      //  { label: "View product →", href: "/products#datalink" },
-        { label: "See roadmap →", href: "#roadmap" },
-      ],
-      tag: "500 MB · incubación activa",
-      muted: false,
-    },
-  ];
+  {
+    key: "cryptolink",
+    name: "CryptoLink",
+    status: "LIVE",
+    desc: "La API de inteligencia cripto de Evilink, ahora consolidada en su versión 3 con una base estable, comercializable y lista para su siguiente evolución.",
+    bullets: [
+      "Versión 3 cerrada formalmente y operando con estabilidad",
+      "Producto más maduro dentro del ecosistema",
+      "Su siguiente etapa crecerá con integración futura hacia MCP-One",
+    ],
+    links: [
+      { label: "Explore product →", href: "/products#cryptolink" },
+      { label: "See roadmap →", href: "#roadmap" },
+    ],
+    tag: "v3 · estable y en operación",
+    muted: false,
+  },
+  {
+    key: "nexus",
+    name: "Nexus",
+    status: "PLATFORM",
+    desc: "La capa de integración de Evilink: acceso unificado, coordinación de productos y experiencia guiada sobre el ecosistema.",
+    bullets: [
+      "Avanza hacia una integración más sólida con MCP-One",
+      "Orquesta, explica y enruta sin absorber lógica pesada",
+      "Se mantiene como una de las piezas más estratégicas del ecosistema",
+    ],
+    links: [
+      { label: "Roadmap →", href: "#roadmap" },
+    ],
+    tag: "integrador oficial · foco estratégico",
+    muted: false,
+  },
+  {
+    key: "datalink",
+    name: "Data_Link",
+    status: "PLATFORM",
+    desc: "La línea de procesamiento de datos de Evilink, diseñada para manejar archivos pesados y evolucionar hacia flujos más potentes.",
+    bullets: [
+      "Resultados sólidos en pruebas con datasets de millones de registros",
+      "Optimización con multiprocessing y chunk sizing para mayor rendimiento",
+      "v1 en observación final antes de perfilar su soft launch",
+    ],
+    links: [
+      { label: "See roadmap →", href: "#roadmap" },
+    ],
+    tag: "alto volumen · v1 en observación",
+    muted: false,
+  },
+  {
+    key: "vsecrets",
+    name: "V-Secrets",
+    status: "SOFT LAUNCH",
+    desc: "La capa de gestión segura de secretos de Evilink, enfocada en cifrado, control, versionado y acceso programático para productos y equipos.",
+    bullets: [
+      "AES-256-GCM, versionado, auditoría y autenticación por API key",
+      "Base sólida con PostgreSQL y Redis",
+      "Fuerte candidata al ciclo de soft launch de junio",
+    ],
+    links: [
+      { label: "See roadmap →", href: "#roadmap" },
+    ],
+    tag: "junio · soft launch candidate",
+    muted: false,
+  },
+];
 
   const badgeClass = (s: Status) => {
     if (s === "LIVE") return "badge badge-live";
     if (s === "PLATFORM") return "badge badge-launch";
+    if (s === "SOFT LAUNCH") return "badge badge-soft";
     return "badge badge-dev";
   };
 
@@ -115,25 +109,22 @@ export default function Home() {
       <section className="hero">
         <div className="hero-text">
           <h1>
-            APIs y productos modulares <br />
+            Productos, APIs e integración modular <br />
             para developers.
           </h1>
+        <p>
+          evi_link devs es un ecosistema developer-first: construimos APIs, productos y capas de integración listas para producción, con contratos claros, arquitectura modular y seguridad desde el MVP.
+        </p>
 
-          <p>
-            evi_link devs es un ecosistema developer-first: construimos productos y APIs listas para producción, con
-            contratos claros, integración modular y seguridad desde el MVP.
-          </p>
-
-          {/* ✅ Pills (Stripe/Vercel vibe) */}
           <div className="pills">
             <span className="pill">
-              <b>Release:</b> CryptoLink v1
+              <b>Core:</b> CryptoLink v3
             </span>
             <span className="pill">
-              <b>Auth:</b> x-api-key
+              <b>Launch:</b> Curpify live
             </span>
             <span className="pill">
-              <b>Streaming:</b> SSE
+              <b>Ops:</b> Status-Hub v1
             </span>
           </div>
 
@@ -148,17 +139,17 @@ export default function Home() {
           </div>
 
           <p className="hero-note">
-            ✦ Último release: <strong>CryptoLink v1</strong> (SSE + API Keys + Stripe + rate limiting).
+            ✦ Últimos avances: <strong>CryptoLink v3</strong>, <strong>Curpify live</strong>, <strong>Status-Hub v1</strong> y nuevas capas en observación rumbo a junio.
           </p>
         </div>
 
         <div className="hero-card">
           <h2>Arquitectura base</h2>
-          <ul>
-            <li>Next.js (UI / gateway / BFF ligero)</li>
-            <li>Servicios core: Spring Boot / Python según el flujo</li>
-            <li>OpenAPI · Auth · Rate limiting · Observabilidad mínima</li>
-          </ul>
+            <ul>
+              <li>Next.js para UI, portales y capas ligeras de integración</li>
+              <li>Servicios core en Spring Boot, Python o Rust según el caso de uso</li>
+              <li>Bases cloud-ready con OpenAPI, Auth, rate limiting y observabilidad mínima</li>
+            </ul>
           <p className="hero-card-foot">
             Optimizar primero, escalar después: costos controlados sin sacrificar robustez.
           </p>
@@ -169,71 +160,85 @@ export default function Home() {
       <section id="ecosystem" className="section">
         <h2>Ecosystem</h2>
         <p className="section-intro">
-          Una idea simple: <strong>data + signals + AI</strong>. Evilink conecta productos especializados en un ecosistema
-          modular donde cada capa aporta valor real, desde datos y tendencias hasta integración guiada.
+          Una idea simple: <strong>productos especializados + signals + integración</strong>. Evilink conecta capas
+          complementarias en un ecosistema modular donde cada servicio aporta valor real, desde datos y contexto
+          hasta coordinación guiada y visibilidad operativa.
         </p>
 
-        <div className="cards">
-          <article className="card">
-            <div className="card-top">
-              <h3>CryptoLink</h3>
-              <span className="badge badge-live">LIVE</span>
-            </div>
-            <p>La capa de market data del ecosistema: precios, streaming y experiencia de producto lista para escalar.</p>
+      <div className="cards">
+        <article className="card">
+          <div className="card-top">
+            <h3>CryptoLink</h3>
+            <span className="badge badge-live">LIVE</span>
+          </div>
+        <p>La capa de market data del ecosistema: precios, streaming y experiencia de producto ya consolidada en v3.</p>
             <ul className="card-list">
               <li>✔ Precios batch + streaming SSE</li>
               <li>✔ SDK JS oficial</li>
-              <li>✔ Base madura rumbo a su siguiente gran versión</li>
+              <li>✔ Base madura lista para su siguiente evolución</li>
             </ul>
-            <div className="card-actions">
-              <a className="btn-mini" href="/products/cryptolink">
-                Comprar →
-              </a>
-              <a className="btn-mini" href="https://cryptolink.mx/docs" target="_blank" rel="noreferrer">
-                Docs →
-              </a>
-            </div>
-            <p className="card-tag">Spring Boot · Railway · Stripe</p>
-          </article>
+          <div className="card-actions">
+            <a className="btn-mini" href="/products/cryptolink">
+              Comprar →
+            </a>
+            <a className="btn-mini" href="https://cryptolink.mx/docs" target="_blank" rel="noreferrer">
+              Docs →
+            </a>
+          </div>
+        <p className="card-tag">v3 · Spring Boot · Railway · Stripe</p>
+        </article>
 
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Social_Link</h3>
+        <article className="card card-muted">
+          <div className="card-top">
+            <h3>Social_Link</h3>
               <span className="badge badge-dev">PLATFORM</span>
-            </div>
-            <p>La capa de trends y señales del ecosistema, diseñada para enriquecer productos con contexto en tiempo real.</p>
+          </div>
+            <p>La capa de trends y señales del ecosistema, ya integrada en productos reales para enriquecer contexto en tiempo real.</p>
               <ul className="card-list">
                 <li>✔ Trends activos con CoinGecko y Alternative.me</li>
                 <li>✔ Integrado ya en CryptoLink</li>
                 <li>✔ Evolución futura hacia señales más amplias</li>
               </ul>
-              <div className="card-actions">
-                <a
-                  className="btn-mini"
-                  href="mailto:support@evilink.dev?subject=Social_Link%20waitlist"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Notify me →
-                </a>
-              </div>
-            <p className="card-tag">Signals layer · integración activa</p>
-          </article>
-
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Nexus</h3>
-              <span className="badge badge-dev">PLATFORM</span>
+            <div className="card-actions">
+              <a
+                className="btn-mini"
+                href="mailto:support@evilink.dev?subject=Social_Link%20waitlist"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Notify me →
+              </a>
             </div>
-            <p>La capa de integración del ecosistema: acceso unificado, coordinación de productos y experiencia guiada.</p>
+            <p className="card-tag">Signals layer · integración activa</p>
+        </article>
+
+        <article className="card card-muted">
+          <div className="card-top">
+            <h3>Nexus</h3>
+              <span className="badge badge-dev">PLATFORM</span>
+              </div>
+              <p>La capa de integración del ecosistema: acceso unificado, coordinación de productos y experiencia guiada.</p>
+                <ul className="card-list">
+                  <li>✔ Knowledge-driven sobre docs oficiales</li>
+                  <li>✔ Evolucionando hacia su integración con MCP-One</li>
+                  <li>✔ Orquesta sin absorber lógica pesada</li>
+                </ul>
+              <p className="card-tag">Integrador oficial · evolución activa</p>
+        </article>
+
+        <article className="card card-muted">
+          <div className="card-top">
+            <h3>Status-Hub</h3>
+              <span className="badge badge-dev">LIVE</span>
+          </div>
+          <p>La capa de visibilidad operativa del ecosistema, diseñada para exponer salud de servicios y monitoreo en tiempo real.</p>
             <ul className="card-list">
-              <li>✔ Knowledge-driven sobre docs oficiales</li>
-              <li>✔ Evolucionando hacia su integración con MCP-One</li>
-              <li>✔ Orquesta sin absorber lógica pesada</li>
+              <li>✔ Monitoreo automatizado de servicios clave</li>
+              <li>✔ Sección integrada ya dentro del portal Evilink</li>
+              <li>✔ Base lista para futuras mejoras de observabilidad</li>
             </ul>
-          
-          <p className="card-tag">Integrador oficial · evolución activa</p>
-          </article>
+          <p className="card-tag">Monitoring · Railway · Postgres</p>
+        </article>
         </div>
       </section>
 
@@ -241,8 +246,8 @@ export default function Home() {
       <section className="section">
         <h2>Cómo funciona</h2>
         <p className="section-intro">
-          Para el usuario final se siente simple. Para developers, Evilink funciona como un pipeline claro de datos,
-          señales e integración.
+           Para el usuario final se siente simple. Para developers, Evilink funciona como un pipeline claro de
+           <strong> datos, señales, integración y consumo operativo</strong>.
         </p>
 
         <div className="flow">
@@ -254,31 +259,31 @@ export default function Home() {
                 <div className="flowSub">Market data</div>
               </div>
             </div>
-            <ul className="flowList">
-              <li>REST + SSE</li>
-              <li>Batch + stream</li>
-              <li>Base sólida en evolución continua</li>
-            </ul>
+              <ul className="flowList">
+                <li>REST + SSE</li>
+                <li>Batch + stream</li>
+                <li>Base consolidada en v3</li>
+              </ul>
           </article>
 
-          <div className="flowArrow" aria-hidden>→</div>
+        <div className="flowArrow" aria-hidden>→</div>
 
           <article className="flowCard muted">
             <div className="flowTop">
               <span className="flowIcon" aria-hidden>🧠</span>
-              <div>
-                <div className="flowTitle">Social_Link</div>
-                <div className="flowSub">Signals</div>
-              </div>
+                <div>
+                  <div className="flowTitle">Social_Link</div>
+                  <div className="flowSub">Signals</div>
+                </div>
             </div>
-            <ul className="flowList">
-              <li>Trends activos</li>
-              <li>CoinGecko + Alternative.me</li>
-              <li>Integrado ya en CryptoLink</li>
-            </ul>
+              <ul className="flowList">
+                <li>Trends activos</li>
+                <li>CoinGecko + Alternative.me</li>
+                <li>Integrado ya en CryptoLink</li>
+              </ul>
           </article>
 
-          <div className="flowArrow" aria-hidden>→</div>
+        <div className="flowArrow" aria-hidden>→</div>
 
           <article className="flowCard">
             <div className="flowTop">
@@ -288,62 +293,62 @@ export default function Home() {
                 <div className="flowSub">Integration layer</div>
               </div>
             </div>
-            <ul className="flowList">
-              <li>Knowledge-driven sobre docs</li>
-              <li>Evolución hacia MCP-One</li>
-              <li>Coordina, explica y enruta</li>
-            </ul>
+              <ul className="flowList">
+                <li>Knowledge-driven sobre docs</li>
+                <li>Evolución activa junto a MCP-One</li>
+                <li>Coordina, explica y enruta</li>
+              </ul>
           </article>
 
           <div className="flowArrow" aria-hidden>→</div>
 
-          <article className="flowCard">
-            <div className="flowTop">
+            <article className="flowCard">
+              <div className="flowTop">
               <span className="flowIcon" aria-hidden>🧩</span>
-              <div>
-                <div className="flowTitle">Integrations</div>
-                <div className="flowSub">Apps / Agents / Dashboards</div>
+                <div>
+                <div className="flowTitle">Apps & Operations</div>
+                <div className="flowSub">Dashboards / workflows / monitoring</div>
               </div>
-            </div>
-            <ul className="flowList">
-              <li>SDKs y clientes</li>
-              <li>Workflows y automatización</li>
-              <li>Productos platform-ready</li>
-            </ul>
-          </article>
-        </div>
-      </section>
+              </div>
+              <ul className="flowList">
+                <li>SDKs, clientes y automatización</li>
+                <li>Productos platform-ready</li>
+                <li>Visibilidad operativa con Status-Hub</li>
+              </ul>
+            </article>
+          </div>
+        </section>
 
       {/* DEV EXPERIENCE */}
       <section className="section">
         <h2>Developer Experience</h2>
-        <p className="section-intro">Menos fricción. Más shipping.</p>
+        <p className="section-intro">Menos fricción. Más consistencia. Más shipping.</p>
 
         <div className="cards">
           <article className="card">
             <h3>Contracts</h3>
             <ul className="card-list">
-              <li>✔ OpenAPI / Swagger (curado)</li>
-              <li>✔ Endpoints estables</li>
-              <li>✔ Docs públicas</li>
+              <li>✔ OpenAPI / Swagger curado</li>
+              <li>✔ Endpoints estables y contratos claros</li>
+              <li>✔ Docs públicas donde el producto ya lo requiere</li>
             </ul>
           </article>
 
           <article className="card">
             <h3>Security</h3>
             <ul className="card-list">
-              <li>✔ API keys</li>
-              <li>✔ Rate limiting por plan</li>
-              <li>✔ Endpoints sensibles ocultos</li>
+              <li>✔ API keys y control de acceso por producto</li>
+              <li>✔ Rate limiting por plan o caso de uso</li>
+              <li>✔ Endpoints sensibles fuera de la superficie pública</li>
             </ul>
           </article>
 
           <article className="card">
-            <h3>DX</h3>
+            <h3>Delivery</h3>
             <ul className="card-list">
-              <li>✔ SDK JS oficial</li>
-              <li>✔ Quickstart copy/paste</li>
-              <li>✔ Headers de observabilidad (X-Request-Id)</li>
+              <li>✔ Bases reutilizables y arranques cloud-ready</li>
+              <li>✔ Quickstarts y estructura consistente entre servicios</li>
+              <li>✔ Tooling interno para acelerar entregas sin perder control técnico</li>
             </ul>
           </article>
         </div>
@@ -435,98 +440,97 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ROADMAP */}
-      <section id="roadmap" className="section">
-        <h2>Roadmap</h2>
+    {/* ROADMAP */}
+    <section id="roadmap" className="section">
+      <h2>Roadmap</h2>
 
-      {/* Mantra */}
+    {/* Mantra */}
       <p className="section-intro" style={{ marginTop: 6 }}>
         <strong>Optimizar primero.</strong> Escalar después. Contratos claros siempre.
       </p>
- 
+
       <div className="cards">
-        {/* NOW */}
-        <article className="card">
-          <div className="card-top">
-            <h3>Now (Q2 2026)</h3>
-            <span className="badge badge-live">FOCUS</span>
-          </div>
+      {/* NOW */}
+      <article className="card">
+        <div className="card-top">
+          <h3>Now (Q2 2026)</h3>
+          <span className="badge badge-live">FOCUS</span>
+        </div>
 
-          <p>Lo que hoy está consolidando el core del ecosistema.</p>
+        <p>Lo que hoy está consolidando el núcleo real del ecosistema.</p>
 
-          <ul className="card-list">
-            <li>✔ CryptoLink en v2.8, cerca de su versión objetivo</li>
-            <li>✔ Nexus evolucionando hacia su integración con MCP-One</li>
-            <li>✔ Social_Link ya entrega trends con CoinGecko y Alternative.me</li>
-            <li>✔ Data_Link soporta archivos de hasta 500 MB con MinIO</li>
-            <li>✔ Secure_Link avanza con Risk Signals y su primer paso en ML</li>
-          </ul>
+        <ul className="card-list">
+          <li>✔ CryptoLink alcanzó su v3 y opera con estabilidad</li>
+          <li>✔ Nexus sigue avanzando como capa de integración junto a MCP-One</li>
+          <li>✔ Social_Link ya entrega trends integrados dentro de CryptoLink</li>
+          <li>✔ Data_Link v1 entró en observación final con resultados sólidos</li>
+          <li>✔ Status-Hub ya vive como capa operativa de monitoreo del ecosistema</li>
+        </ul>
 
-          <p className="card-tag">Core ecosystem · integración real · consolidación técnica</p>
-        </article>
+        <p className="card-tag">Core ecosystem · integración real · consolidación técnica</p>
+      </article>
 
-        {/* NEXT */}
+      {/* NEXT */}
         <article className="card">
           <div className="card-top">
             <h3>Next (Q2–Q3 2026)</h3>
             <span className="badge badge-next">NEXT</span>
           </div>
 
-          <p>Lo siguiente: fortalecer la integración y empujar la próxima expansión clave.</p>
+          <p>Lo siguiente: preparar los siguientes soft launches y fortalecer las capas estratégicas del ecosistema.</p>
 
           <ul className="card-list">
-            <li>✔ Acelerar Validate Suite como evolución de Curpify</li>
-            <li>✔ Definir con más claridad el MVP oficial de Secure_Link</li>
-            <li>✔ Seguir fortaleciendo Nexus como capa de acceso e integración</li>
-            <li>✔ Consolidar el flujo CryptoLink + Social_Link + Nexus</li>
+            <li>✔ V-Secrets se perfila como fuerte candidata para soft launch en junio</li>
+            <li>✔ Secure_Link se prepara como siguiente foco estratégico del ecosistema</li>
+            <li>✔ Curpify permanece en observación y pulido final tras su soft launch</li>
+            <li>✔ Nexus y MCP-One seguirán como eje de integración y estructura</li>
           </ul>
 
           <div className="card-actions">
-            <a className="btn-mini" href="/products/cryptolink">CryptoLink →</a>
+            <a className="btn-mini" href="/products#cryptolink">CryptoLink →</a>
             <a className="btn-mini" href="#ecosystem">Ecosystem →</a>
           </div>
 
-          <p className="card-tag">Expansión comercial · integration layer · platform growth</p>
+          <p className="card-tag">Soft launch discipline · integration layer · product maturity</p>
         </article>
 
-        {/* SOON */}
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Soon (Q3 2026)</h3>
-              <span className="badge badge-soon">SOON</span>
-            </div>
+      {/* SOON */}
+        <article className="card card-muted">
+          <div className="card-top">
+            <h3>Soon (Q3 2026)</h3>
+            <span className="badge badge-soon">SOON</span>
+          </div>
 
-            <p>Lo que sigue una vez estabilizado el núcleo principal del ecosistema.</p>
+          <p>Lo que sigue una vez estabilizado el núcleo principal y definidos los siguientes lanzamientos.</p>
 
-            <ul className="card-list">
-              <li>✔ Vision_Link permanece pausado con una v1 ya existente en YOLOv11</li>
-              <li>✔ Lite experiments seguirán como validación controlada de mercado</li>
-              <li>✔ Nuevas líneas del ecosistema siguen en radar sin prioridad inmediata</li>
-            </ul>
+          <ul className="card-list">
+            <li>✔ Vision_Link permanece pausado con una v1 ya existente en YOLOv11</li>
+            <li>✔ La línea Lite / RapidAPI se encuentra en revisión para una posible salida ordenada</li>
+            <li>✔ SDKs y tooling internos aparecen como dirección más natural para futuras extensiones</li>
+          </ul>
 
-            <p className="card-tag">Incubación ordenada · exploración sin distraer el core</p>
-          </article>
+          <p className="card-tag">Incubación ordenada · cleanup estratégico · extensiones futuras</p>
+        </article>
 
-          {/* STRATEGIC LINE */}
-          <article className="card card-muted">
-            <div className="card-top">
-              <h3>Strategic line</h3>
-              <span className="badge badge-inc">IN PROGRESS</span>
-            </div>
+      {/* STRATEGIC LINE */}
+        <article className="card card-muted">
+          <div className="card-top">
+            <h3>Strategic line</h3>
+            <span className="badge badge-inc">INTERNAL</span>
+          </div>
 
-            <p>
-              Secure_Link evoluciona como la capa estratégica de seguridad del ecosistema, enfocada en señales de riesgo,
-              protección y dirección futura.
-            </p>
+          <p>
+            EviForge evoluciona como una capacidad interna del ecosistema, diseñada para acelerar desarrollos sin convertirse en una oferta comercial pública.
+          </p>
 
-            <ul className="card-list">
-              <li>✔ Risk Signals ya existe como versión lite inicial</li>
-              <li>✔ Primer integración de machine learning con scikit-learn</li>
-              <li>✔ Base para futuros módulos de seguridad y confianza</li>
-            </ul>
+          <ul className="card-list">
+            <li>✔ Ya ha entregado resultados en productos reales como evi-gateway y V-Secrets</li>
+            <li>✔ Reduce fricción de arranque y fortalece la capacidad interna de construcción</li>
+            <li>✔ Su siguiente evolución se piensa como tooling del ecosistema, no como producto comercial</li>
+          </ul>
 
-            <p className="card-tag">Security · trust · strategic direction</p>
-          </article>
+          <p className="card-tag">Internal tooling · build capacity · ecosystem acceleration</p>
+        </article>
         </div>
       </section>
 
