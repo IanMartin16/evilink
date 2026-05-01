@@ -113,7 +113,7 @@ export const PRODUCTOS: Producto[] = [
       "Fuerte candidata al ciclo de soft launch de junio",
     ],
     links: [
-      { label: "See roadmap →", href: "#roadmap" },
+      { label: "See roadmap →", href: "/#roadmap" },
     ],
     tag: "junio · soft launch candidate",
     destacado: true,
