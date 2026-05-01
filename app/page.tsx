@@ -237,6 +237,11 @@ export default function Home() {
               <li>✔ Sección integrada ya dentro del portal Evilink</li>
               <li>✔ Base lista para futuras mejoras de observabilidad</li>
             </ul>
+            <div className="card-actions">
+            <a className="btn-mini" href="/status">
+              Ver →
+            </a>
+          </div>
           <p className="card-tag">Monitoring · Railway · Postgres</p>
         </article>
         </div>
