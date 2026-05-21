@@ -15,6 +15,7 @@ import {
   getStoredApiKey,
   signup,
   saveApiKey,
+  clearApiKey,
   processFile,
   getJob,
   createCheckoutSession,
@@ -96,6 +97,24 @@ export function DataLinkConsole() {
     }, 3000);
   }
 
+  function handleForgetDevice() {
+    clearApiKey();
+    setApiKey(null);
+    setDashboard(null);
+    setCurrentJob(null);
+    setError(null);
+
+    if (typeof window !== "undefined") {
+      window.history.replaceState({}, "", "/data-link");
+    }
+  }
+
+  async function handleUseExistingKey(existingKey: string) {
+    saveApiKey(existingKey);
+    setApiKey(existingKey);
+    await loadDashboard();
+  }
+
   async function handleUpgrade() {
     const data = await createCheckoutSession();
 
@@ -109,11 +128,14 @@ export function DataLinkConsole() {
   }
 
   if (!apiKey) {
-    return <SignupCard onSignup={handleSignup} />;
+    return <SignupCard 
+            onSignup={handleSignup}
+            onUseExistingKey={handleUseExistingKey} />;
   }
 
   return (
     <main className="dl-page">
+      <div className="dl-shell">
       <section className="dl-header">
         <div className="dl-brand">
           <img
@@ -147,7 +169,10 @@ export function DataLinkConsole() {
             />
 
             <aside className="dl-side">
-              <ApiKeyCard apiKey={dashboard.api_key?.masked} />
+              <ApiKeyCard 
+              apiKey={dashboard.api_key?.masked} 
+              onForgetDevice={handleForgetDevice}
+              />
               <UpgradeCard
                 billing={dashboard.billing}
                 limits={dashboard.limits}
@@ -161,6 +186,7 @@ export function DataLinkConsole() {
           <RecentJobsTable jobs={dashboard.recent_jobs || []} />
         </>
       )}
+      </div>
     </main>
   );
 }
