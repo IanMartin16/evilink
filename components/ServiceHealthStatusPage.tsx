@@ -5,7 +5,7 @@ import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ServiceStatus = "operational" | "degraded" | "maintenance" | "down";
+type ServiceStatus = "operational" | "degraded" | "maintenance" | "down" | "platform_issue" | "unknown";
 
 type StatusSummaryResponse = {
   overall_status: ServiceStatus;
@@ -13,15 +13,20 @@ type StatusSummaryResponse = {
   degraded: number;
   maintenance: number;
   down: number;
+  platform_issue: number;
+  unknown: number;
   last_updated: string;
 };
 
 type ServiceStatusItem = {
+  http_status: string;
   name: string;
   display_name: string;
   status: ServiceStatus;
   latency_ms: number | null;
   last_checked: string;
+  last_status_change_at: string | null;
+  consecutive_failures: number;
   message: string | null;
 };
 
@@ -71,7 +76,7 @@ function relativeTime(value: string): string {
 
 function getStatusLabel(status: ServiceStatus): string {
   return (
-    { operational: "Operational", degraded: "Degraded", maintenance: "Maintenance", down: "Down" }[status] ?? status
+    { operational: "Operational", degraded: "Degraded", maintenance: "Maintenance", down: "Down", platform_issue: "Platform Issue", unknown: "Unknown" }[status] ?? status
   );
 }
 
@@ -95,6 +100,7 @@ function generateUptimeBars(name: string, currentStatus: ServiceStatus): Service
     seed = (seed * 1664525 + 1013904223) >>> 0;
     const r = seed / 0xffffffff;
     if (r > 0.97) bars.push("down");
+    else if (r > 0.96) bars.push("platform_issue");
     else if (r > 0.93) bars.push("degraded");
     else bars.push("operational");
   }
@@ -225,8 +231,10 @@ export default function StatusPage() {
                 [
                   { key: "operational", label: "Operational", value: summary.operational },
                   { key: "degraded",    label: "Degraded",    value: summary.degraded },
+                  { key: "platform_issue", label: "Platform Issue", value: summary.platform_issue ?? 0},
                   { key: "maintenance", label: "Maintenance", value: summary.maintenance },
                   { key: "down",        label: "Down",        value: summary.down },
+                  { key: "unknown", label: "Unknown", value: summary.unknown ?? 0},
                 ] as const
               ).map(({ key, label, value }) => (
                 <div key={key} className={`sp-metric sp-metric--${key}`}>
@@ -257,7 +265,16 @@ export default function StatusPage() {
                   <div className="s-svc">
                     <strong>{svc.display_name}</strong>
                     <span>{svc.name}</span>
+
                     {svc.message && <em>{svc.message}</em>}
+
+                    <div className="s-meta">
+                      <small>HTTP: {svc.http_status ?? "N/A"}</small>
+                      <small>Failures: {svc.consecutive_failures ?? 0}</small>
+                      {svc.last_status_change_at && (
+                        <small>Changed: {relativeTime(svc.last_status_change_at)}</small>
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -305,6 +322,7 @@ const css = `
   .sp-root {
     --c-green : #4ade80;
     --c-amber : #fbbf24;
+    --c-orange: #fb923c;
     --c-red   : #f87171;
     --c-blue  : #60a5fa;
     --c-muted : #64748b;
@@ -633,4 +651,124 @@ const css = `
     .sp-hero { flex-direction: column; }
     .sp-metrics { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* ── New hardening states: platform_issue / unknown ── */
+.sp-root {
+  --c-orange: #fb923c;
+}
+
+/* Overall pill */
+.sp-pill--platform_issue {
+  background: rgba(251,146,60,.08);
+  border-color: rgba(251,146,60,.25);
+  color: var(--c-orange);
+}
+
+.sp-pill--unknown {
+  background: rgba(100,116,139,.08);
+  border-color: rgba(100,116,139,.25);
+  color: var(--c-muted);
+}
+
+/* Status dot */
+.s-dot--platform_issue {
+  background: var(--c-orange);
+  animation: glow-o 2.2s ease-in-out infinite;
+}
+
+.s-dot--unknown {
+  background: var(--c-muted);
+}
+
+@keyframes glow-o {
+  0%,100% { box-shadow: 0 0 0 0 rgba(251,146,60,.6); }
+  50% { box-shadow: 0 0 0 5px rgba(251,146,60,0); }
+}
+
+/* Metrics */
+.sp-metrics {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.sp-metric--platform_issue::before {
+  background: var(--c-orange);
+}
+
+.sp-metric--unknown::before {
+  background: var(--c-muted);
+}
+
+.sp-metric--platform_issue strong {
+  color: var(--c-orange);
+}
+
+.sp-metric--unknown strong {
+  color: var(--c-muted);
+}
+
+/* Rows */
+.s-row--platform_issue::before {
+  background: var(--c-orange);
+}
+
+.s-row--unknown::before {
+  background: var(--c-muted);
+}
+
+/* Badges */
+.s-badge--platform_issue {
+  background: rgba(251,146,60,.08);
+  border-color: rgba(251,146,60,.22);
+  color: var(--c-orange);
+}
+
+.s-badge--unknown {
+  background: rgba(100,116,139,.08);
+  border-color: rgba(100,116,139,.22);
+  color: var(--c-muted);
+}
+
+/* Uptime bars */
+.uptime-bar--platform_issue {
+  background: var(--c-orange);
+}
+
+.uptime-bar--unknown {
+  background: var(--c-muted);
+}
+
+/* Service metadata chips */
+.s-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .35rem;
+}
+
+.s-meta small {
+  display: inline-flex;
+  align-items: center;
+  padding: .16rem .38rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+  color: var(--c-muted);
+  font-size: .62rem;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+/* Responsive metric grid for 6 cards */
+@media (max-width: 980px) {
+  .sp-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .sp-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 `;
