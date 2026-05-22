@@ -61,6 +61,8 @@ async function apiFetch(path: string, options: RequestInit = {}) {
       // ignore
     }
 
+    const error = new Error(detail) as Error & { status?: number };
+    error.status = res.status;
     throw new Error(detail);
   }
 

@@ -32,9 +32,17 @@ export function DataLinkConsole() {
     try {
       setLoading(true);
       setError(null);
+
       const data = await getDashboard();
       setDashboard(data);
     } catch (err: any) {
+        if (err.status === 401 || err.status === 403) {
+          clearApiKey();
+          setApiKey(null);
+          setDashboard(null);
+          setCurrentJob(null);
+        }
+
       setError(err.message || "Could not load dashboard");
     } finally {
       setLoading(false);
@@ -110,9 +118,24 @@ export function DataLinkConsole() {
   }
 
   async function handleUseExistingKey(existingKey: string) {
-    saveApiKey(existingKey);
-    setApiKey(existingKey);
-    await loadDashboard();
+    try {
+      setError(null);
+
+      saveApiKey(existingKey);
+      setApiKey(existingKey);
+
+      const data = await getDashboard();
+      setDashboard(data);
+    } catch (err: any) {
+      clearApiKey();
+      setApiKey(null);
+      setDashboard(null);
+      setCurrentJob(null);
+
+      throw new Error(
+        err.message || "Invalid API key. Please check it and try again."
+      );
+    }
   }
 
   async function handleUpgrade() {
@@ -150,9 +173,15 @@ export function DataLinkConsole() {
           </div>
         </div>
 
-        <div className="dl-status">
-          <span className="dot" />
-           {dashboard?.service?.status || "operational"}
+        <div className="dl-header-actions">
+          <a href="/" className="dl-home-link">
+            ← evi_link Home
+          </a>
+
+          <div className="dl-status">
+            <span className="dot" />
+              {dashboard?.service?.status || "operational"}
+          </div>
         </div>
       </section>
 

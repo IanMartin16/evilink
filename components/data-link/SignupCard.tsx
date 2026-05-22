@@ -105,7 +105,7 @@ export function SignupCard({ onSignup, onUseExistingKey }: SignupCardProps) {
 
             {error && <div className="dl-error">{error}</div>}
 
-            <button type="submit" disabled={loading}>
+            <button className="dl-primary-btn" type="submit" disabled={loading}>
               {loading ? "Creating account..." : "Create FREE API key"}
             </button>
           </form>
@@ -121,7 +121,7 @@ export function SignupCard({ onSignup, onUseExistingKey }: SignupCardProps) {
 
             {error && <div className="dl-error">{error}</div>}
 
-            <button type="submit" disabled={loading}>
+            <button className="dl-primary-btn" type="submit" disabled={loading}>
               {loading ? "Loading dashboard..." : "Use this API key"}
             </button>
           </form>

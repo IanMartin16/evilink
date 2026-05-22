@@ -812,3 +812,34 @@
   color: #1c1207;
   background: linear-gradient(135deg, var(--dl-gold-soft), var(--dl-copper));
 }
+
+.dl-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dl-home-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: var(--dl-gold-soft);
+  background: rgba(215, 168, 71, 0.08);
+  border: 1px solid rgba(215, 168, 71, 0.2);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.dl-home-link:hover {
+  background: rgba(215, 168, 71, 0.14);
+}
+
+@media (max-width: 720px) {
+  .dl-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
