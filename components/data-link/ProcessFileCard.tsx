@@ -16,7 +16,6 @@ type ProcessFileCardProps = {
   }) => Promise<void>;
 };
 
-
 function formatNumber(value: number | null | undefined) {
   if (value === null || value === undefined) return "—";
   return new Intl.NumberFormat("en-US").format(value);
@@ -42,6 +41,8 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
   const plan = dashboard.user.plan;
   const presets = dashboard.presets || [];
 
+  const isDedupeByField = preset === "REMOVE_DUPLICATES_BY_FIELD";
+
   useEffect(() => {
     const firstAvailablePreset = presets.find((item: any) => item.available);
 
@@ -49,6 +50,25 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
       setPreset(firstAvailablePreset.value);
     }
   }, [presets, preset]);
+
+  useEffect(() => {
+    // Cuando el usuario cambia a dedupe por campo, evitamos mandar
+    // operador/valor como si fuera custom filter.
+    if (isDedupeByField) {
+      setFilterOperator("");
+      setFilterValue("");
+    }
+  }, [isDedupeByField]);
+
+  function handlePresetChange(value: string) {
+    setPreset(value);
+    setError("");
+
+    // Limpiamos campos para evitar mezclar modos.
+    setFilterField("");
+    setFilterOperator("");
+    setFilterValue("");
+  }
 
   function handleFileChange(selectedFile: File | null) {
     setError("");
@@ -101,7 +121,14 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
     const selectedPreset = presets.find((item: any) => item.value === preset);
 
     if (selectedPreset && !selectedPreset.available) {
-      setError(selectedPreset.locked_message || "This preset is available on STARTER.");
+      setError(
+        selectedPreset.locked_message || "This preset is available on STARTER."
+      );
+      return;
+    }
+
+    if (isDedupeByField && !filterField.trim()) {
+      setError("Choose the field to deduplicate by.");
       return;
     }
 
@@ -110,9 +137,16 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
       Boolean(filterOperator.trim()) ||
       Boolean(filterValue.trim());
 
-    if (hasCustomFilter && !customFiltersAllowed) {
+    if (!isDedupeByField && hasCustomFilter && !customFiltersAllowed) {
       setError("Custom filters are available on STARTER.");
       return;
+    }
+
+    if (!isDedupeByField && hasCustomFilter) {
+      if (!filterField.trim() || !filterOperator.trim() || !filterValue.trim()) {
+        setError("Custom filters require field, operator and value.");
+        return;
+      }
     }
 
     try {
@@ -122,9 +156,13 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
         file,
         format,
         preset,
-        filterField: filterField || undefined,
-        filterOperator: filterOperator || undefined,
-        filterValue: filterValue || undefined,
+        filterField: filterField.trim() || undefined,
+        filterOperator: isDedupeByField
+          ? undefined
+          : filterOperator.trim() || undefined,
+        filterValue: isDedupeByField
+          ? undefined
+          : filterValue.trim() || undefined,
       });
 
       setFile(null);
@@ -191,13 +229,18 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
             <label>Operation</label>
             <select
               value={preset}
-              onChange={(event) => setPreset(event.target.value)}
+              onChange={(event) => handlePresetChange(event.target.value)}
             >
               <option value="" disabled>
                 Choose operation
               </option>
+
               {presets.map((item: any) => (
-                <option key={item.value} value={item.value} disabled={!item.available}>
+                <option
+                  key={item.value}
+                  value={item.value}
+                  disabled={!item.available}
+                >
                   {item.display_name}
                   {!item.available ? " — STARTER" : ""}
                 </option>
@@ -206,41 +249,61 @@ export function ProcessFileCard({ dashboard, onProcess }: ProcessFileCardProps) 
           </div>
         </div>
 
-        <div className="dl-filter-box">
-          <div className="dl-filter-title">
-            <span>Custom filters</span>
-            {!customFiltersAllowed && <small>Available on STARTER</small>}
-          </div>
+        {isDedupeByField ? (
+          <div className="dl-filter-box">
+            <div className="dl-filter-title">
+              <span>Field to deduplicate by</span>
+              <small>Required</small>
+            </div>
 
-          <div className="dl-form-row dl-filter-row">
             <input
-              placeholder="Field"
+              placeholder="Example: material, sku, customer_id"
               value={filterField}
-              disabled={!customFiltersAllowed}
               onChange={(event) => setFilterField(event.target.value)}
             />
 
-            <select
-              value={filterOperator}
-              disabled={!customFiltersAllowed}
-              onChange={(event) => setFilterOperator(event.target.value)}
-            >
-              <option value="">Operator</option>
-              <option value="EQUALS">Equals</option>
-              <option value="NOT_EQUALS">Not equals</option>
-              <option value="CONTAINS">Contains</option>
-              <option value="GREATER_THAN">Greater than</option>
-              <option value="LESS_THAN">Less than</option>
-            </select>
-
-            <input
-              placeholder="Value"
-              value={filterValue}
-              disabled={!customFiltersAllowed}
-              onChange={(event) => setFilterValue(event.target.value)}
-            />
+            <small className="dl-field-hint">
+              Data_Link will remove duplicate records using this field as the
+              deduplication key.
+            </small>
           </div>
-        </div>
+        ) : (
+          <div className="dl-filter-box">
+            <div className="dl-filter-title">
+              <span>Custom filters</span>
+              {!customFiltersAllowed && <small>Available on STARTER</small>}
+            </div>
+
+            <div className="dl-form-row dl-filter-row">
+              <input
+                placeholder="Field"
+                value={filterField}
+                disabled={!customFiltersAllowed}
+                onChange={(event) => setFilterField(event.target.value)}
+              />
+
+              <select
+                value={filterOperator}
+                disabled={!customFiltersAllowed}
+                onChange={(event) => setFilterOperator(event.target.value)}
+              >
+                <option value="">Operator</option>
+                <option value="EQUALS">Equals</option>
+                <option value="NOT_EQUALS">Not equals</option>
+                <option value="CONTAINS">Contains</option>
+                <option value="GREATER_THAN">Greater than</option>
+                <option value="LESS_THAN">Less than</option>
+              </select>
+
+              <input
+                placeholder="Value"
+                value={filterValue}
+                disabled={!customFiltersAllowed}
+                onChange={(event) => setFilterValue(event.target.value)}
+              />
+            </div>
+          </div>
+        )}
 
         {error && <div className="dl-error">{error}</div>}
 

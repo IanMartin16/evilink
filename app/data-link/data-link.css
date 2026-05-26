@@ -837,6 +837,14 @@
   background: rgba(215, 168, 71, 0.14);
 }
 
+.dl-field-hint {
+  display: block;
+  margin-top: 10px;
+  color: var(--dl-muted);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
 @media (max-width: 720px) {
   .dl-header-actions {
     width: 100%;
