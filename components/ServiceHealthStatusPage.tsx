@@ -198,19 +198,35 @@ export default function StatusPage() {
 
           {/* Hero */}
           <header className="sp-hero">
-            <div>
-              <p className="sp-eyebrow">Ecosystem Monitoring</p>
-              <h1 className="sp-title">Service Status</h1>
-              <p className="sp-sub">
-                Live operational overview for key Evilink services and ecosystem products.
-              </p>
-            </div>
-            {summary && (
+            <section className="status-hero">
+              <div className="status-hero-brand">
+                <img
+                  src="/status-hub-icon.png"
+                  alt="Status-hub"
+                  className="status-hero-icon"
+                />
+
+                <div className="status-hero-copy">
+                  <p className="status-eyebrow">INTELLIGENCE OBSERVABILITY</p>
+
+                  <h1>STATUS-HUB</h1>
+
+                  <h2>IO — Intelligence Observability</h2>
+
+                  <p>
+                    Live operational visibility for key Evilink services,
+                    ecosystem products, and platform health signals.
+                  </p>
+                </div>
+              </div>
+
+              {summary && (
               <div className={`sp-pill sp-pill--${summary.overall_status}`}>
                 <StatusDot status={summary.overall_status} />
                 {getStatusLabel(summary.overall_status)}
               </div>
             )}
+            </section>
           </header>
 
           {/* Error */}
@@ -759,6 +775,58 @@ const css = `
   line-height: 1.2;
 }
 
+.status-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 56px;
+}
+
+.status-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.status-hero-icon {
+  width: clamp(110px, 12vw, 170px);
+  height: auto;
+  filter: drop-shadow(0 0 22px rgba(74, 222, 128, 0.22));
+}
+
+.status-eyebrow {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  letter-spacing: 0.24em;
+  font-weight: 700;
+  color: rgba(232, 220, 190, 0.78);
+}
+
+.status-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(2.9rem, 5.6vw, 5.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.03em;
+  color: #f2e5cf;
+}
+
+.status-hero-copy h2 {
+  margin: 14px 0 0;
+  font-size: clamp(1.15rem, 1.65vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 500;
+  color: #e7d2b1;
+}
+
+.status-hero-copy p:last-child {
+  margin: 14px 0 0;
+  max-width: 620px;
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  line-height: 1.45;
+  color: rgba(235, 235, 225, 0.74);
+}
+
 /* Responsive metric grid for 6 cards */
 @media (max-width: 980px) {
   .sp-metrics {
@@ -769,6 +837,22 @@ const css = `
 @media (max-width: 500px) {
   .sp-metrics {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .status-hero {
+    flex-direction: column;
+  }
+
+  .status-hero-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .status-hero-copy h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem);
   }
 }
 `;
