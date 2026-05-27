@@ -780,7 +780,7 @@ const css = `
   justify-content: space-between;
   align-items: flex-start;
   gap: 32px;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
 }
 
 .status-hero-brand {
@@ -805,15 +805,16 @@ const css = `
 
 .status-hero-copy h1 {
   margin: 0;
-  font-size: clamp(2.9rem, 5.6vw, 5.4rem);
+  font-size: clamp(3.2rem, 5.0vw, 5.3rem);
   line-height: 0.95;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.025em;
   color: #f2e5cf;
 }
 
 .status-hero-copy h2 {
   margin: 14px 0 0;
-  font-size: clamp(1.15rem, 1.65vw, 1.75rem);
+  font-size: clamp(1.1rem, 1.5vw, 1.55rem);
+  margin-top: 12px;
   line-height: 1.2;
   font-weight: 500;
   color: #e7d2b1;
@@ -821,8 +822,8 @@ const css = `
 
 .status-hero-copy p:last-child {
   margin: 14px 0 0;
-  max-width: 620px;
-  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  max-width: 760px;
+  font-size: clamp(0.95rem, 1.05vw, 1.08rem);
   line-height: 1.45;
   color: rgba(235, 235, 225, 0.74);
 }
