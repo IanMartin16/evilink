@@ -229,20 +229,29 @@ export default function Home() {
         <article className="card card-muted">
           <div className="card-top">
             <h3>Status-Hub</h3>
-              <span className="badge badge-live">LIVE</span>
+            <span className="badge badge-live">LIVE</span>
           </div>
-          <p>La capa de visibilidad operativa del ecosistema, diseñada para exponer salud de servicios y monitoreo en tiempo real.</p>
-            <ul className="card-list">
-              <li>✔ Monitoreo automatizado de servicios clave</li>
-              <li>✔ Sección integrada ya dentro del portal Evilink</li>
-              <li>✔ Base lista para futuras mejoras de observabilidad</li>
-            </ul>
-            <div className="card-actions">
+
+          <p>
+            Capa de inteligencia operativa del ecosistema Evilink: monitorea salud,
+            readiness, latencia e historial real de eventos para servicios clave.
+          </p>
+
+          <ul className="card-list">
+            <li>✔ Checks reales con historial reciente por servicio</li>
+            <li>✔ Detección de degradación, caídas y platform issues</li>
+            <li>✔ Base lista para alertas, métricas y Agentic Memory</li>
+          </ul>
+
+          <div className="card-actions">
             <a className="btn-mini" href="/status">
               Ver →
             </a>
           </div>
-          <p className="card-tag">Monitoring · Railway · Postgres</p>
+
+          <p className="card-tag">
+            Observability · Readiness · Service Events
+          </p>
         </article>
         </div>
       </section>

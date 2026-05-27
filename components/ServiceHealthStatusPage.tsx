@@ -28,6 +28,15 @@ type ServiceStatusItem = {
   last_status_change_at: string | null;
   consecutive_failures: number;
   message: string | null;
+  recent_events: ServiceCheckEventItem[];
+};
+
+type ServiceCheckEventItem = {
+  status: ServiceStatus;
+  latency_ms: number | null;
+  http_status: number | null;
+  checked_at: string;
+  message: string | null;
 };
 
 type StatusResponse = {
@@ -108,6 +117,21 @@ function generateUptimeBars(name: string, currentStatus: ServiceStatus): Service
   return bars;
 }
 
+function getUptimeBarsFromEvents(
+  events: ServiceCheckEventItem[] | undefined,
+  currentStatus: ServiceStatus
+): ServiceStatus[] {
+  if (!events || events.length === 0) {
+    return [currentStatus];
+  }
+
+  const bars = events
+    .slice(-UPTIME_BARS)
+    .map((event) => event.status);
+
+  return bars.length > 0 ? bars : [currentStatus];
+}
+
 function uptimePercent(bars: ServiceStatus[]): string {
   const ok = bars.filter((b) => b === "operational").length;
   return ((ok / bars.length) * 100).toFixed(1);
@@ -119,12 +143,19 @@ function StatusDot({ status }: { status: ServiceStatus }) {
   return <span className={`s-dot s-dot--${status}`} aria-hidden />;
 }
 
-function UptimeBars({ name, status }: { name: string; status: ServiceStatus }) {
-  const bars = generateUptimeBars(name, status);
+function UptimeBars({
+  events,
+  status,
+}: {
+  events: ServiceCheckEventItem[] | undefined;
+  status: ServiceStatus;
+}) {
+  const bars = getUptimeBarsFromEvents(events, status);
   const pct = uptimePercent(bars);
+
   return (
     <div className="uptime-wrap">
-      <div className="uptime-bars" title={`${pct}% uptime — last ${UPTIME_BARS} checks`}>
+      <div className="uptime-bars" title={`${pct}% uptime — last ${bars.length} checks`}>
         {bars.map((b, i) => (
           <span key={i} className={`uptime-bar uptime-bar--${b}`} />
         ))}
@@ -306,7 +337,7 @@ export default function StatusPage() {
                       : "—"}
                   </div>
 
-                  <UptimeBars name={svc.name} status={svc.status} />
+                  <UptimeBars events={svc.recent_events} status={svc.status} />
 
                   <div className="s-time" title={formatDate(svc.last_checked)}>
                     {relativeTime(svc.last_checked)}
