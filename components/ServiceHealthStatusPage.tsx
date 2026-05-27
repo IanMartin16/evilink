@@ -340,7 +340,7 @@ export default function StatusPage() {
                   <UptimeBars events={svc.recent_events} status={svc.status} />
 
                   <div className="s-time" title={formatDate(svc.last_checked)}>
-                    {relativeTime (svc.last_checked)}
+                    {relativeTime  (svc.last_checked)}
                   </div>
                 </article>
               ))}
