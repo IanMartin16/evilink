@@ -15,68 +15,70 @@ export default function Home() {
     muted?: boolean;
   }> = [
   {
-    key: "cryptolink",
-    name: "CryptoLink",
+    key: "curpify",
+    name: "Curpify",
     status: "LIVE",
-    desc: "La API de inteligencia cripto de Evilink, ahora consolidada en su versión 3 con una base estable, comercializable y lista para su siguiente evolución.",
+    desc: "Validación de CURP y RFC para flujos de RH, onboarding y sistemas internos. Usa una API simple o valida directamente desde el dashboard",
     bullets: [
-      "Versión 3 cerrada formalmente y operando con estabilidad",
-      "Producto más maduro dentro del ecosistema",
-      "Su siguiente etapa crecerá con integración futura hacia MCP-One",
+      "Ahora valida CURP y RFC con normalización y dígito verificador",
+      "Dashboard para usuarios no técnicos",
+      "API key usage tracking, IO-ready",
+      "Upgrade visual antes de su fase de observación en soft launch"
     ],
     links: [
-      { label: "Explore product →", href: "/products#cryptolink" },
-      { label: "See roadmap →", href: "#roadmap" },
+      { label: "Explore site →", href: "https://curpify.com" },
     ],
-    tag: "v3 · estable y en operación",
-    muted: false,
-  },
-  {
-    key: "nexus",
-    name: "Nexus",
-    status: "PLATFORM",
-    desc: "La capa de integración de Evilink: acceso unificado, coordinación de productos y experiencia guiada sobre el ecosistema.",
-    bullets: [
-      "Avanza hacia una integración más sólida con MCP-One",
-      "Orquesta, explica y enruta sin absorber lógica pesada",
-      "Se mantiene como una de las piezas más estratégicas del ecosistema",
-    ],
-    links: [
-      { label: "Roadmap →", href: "#roadmap" },
-    ],
-    tag: "integrador oficial · foco estratégico",
+    tag: "live · strict validation upgrade",
     muted: false,
   },
   {
     key: "datalink",
     name: "Data_Link",
-    status: "PLATFORM",
-    desc: "La línea de procesamiento de datos de Evilink, diseñada para manejar archivos pesados y evolucionar hacia flujos más potentes.",
+    status: "SOFT LAUNCH",
+    desc: "La línea de procesamiento de datos de Evilink se perfila como una de las candidatas más fuertes del soft launch gracias a la potencia de su motor y la eficiencia de su rendimiento.",
     bullets: [
-      "Resultados sólidos en pruebas con datasets de millones de registros",
-      "Optimización con multiprocessing y chunk sizing para mayor rendimiento",
-      "v1 en observación final antes de perfilar su soft launch",
+      "Resultados sólidos con datasets 1M CSV registros procesados en ~36s",
+      "Optimización real con multiprocessing y chunk sizing",
+      "Nuevo preset para deduplicar cualquier campo fuera de los presets originales",
     ],
     links: [
-      { label: "See roadmap →", href: "#roadmap" },
+      { label: "Open console →", href: "data-link" },
     ],
-    tag: "alto volumen · v1 en observación",
+    tag: "high-volume engine · soft launch candidate",
     muted: false,
   },
   {
     key: "vsecrets",
     name: "V-Secrets",
     status: "SOFT LAUNCH",
-    desc: "La capa de gestión segura de secretos de Evilink, enfocada en cifrado, control, versionado y acceso programático para productos y equipos.",
+    desc: "Guarda API keys, tokens y credenciales técnicas cifradas. Permite que tus aplicaciones las recuperen en runtime mediante keys revocables y con permisos limitados.",
     bullets: [
-      "AES-256-GCM, versionado, auditoría y autenticación por API key",
-      "Base sólida con PostgreSQL y Redis",
-      "Fuerte candidata al ciclo de soft launch de junio",
+      "Secrets cifrados",
+      "Runtime keys con scopes",
+      "Audit logs",
+      "Integración API-first",
     ],
     links: [
-      { label: "See roadmap →", href: "#roadmap" },
+      { label: "See Site →", href: "https://vsecrets.dev" },
     ],
-    tag: "junio · soft launch candidate",
+    tag: "secure access · real-time key control",
+    muted: false,
+  },
+  {
+    key: "statushub",
+    name: "Status-Hub",
+    status: "LIVE",
+    desc: " Capa de inteligencia operativa del ecosistema Evilink: monitorea salud readiness, latencia e historial real de eventos para servicios en producción.",
+    bullets: [
+      "Monitoreo automatizado de servicios clave",
+      "Historial real de checks y eventos recientes",
+      "Expone los ultimos 30 checks con metricas reales",
+      "Base lista para integración futura con SSC dentro del modulo IO",
+    ],
+    links: [
+      { label: "See Status →", href: "status" },
+    ],
+    tag: "monitoring · IO layer · live checks",
     muted: false,
   },
 ];
@@ -112,16 +114,17 @@ export default function Home() {
             Productos, APIs e integración modular <br />
             para developers.
           </h1>
-        <p>
-          evi_link devs es un ecosistema developer-first: construimos APIs, productos y capas de integración listas para producción, con contratos claros, arquitectura modular y seguridad desde el MVP.
-        </p>
+
+          <p>
+            evi_link devs es un ecosistema developer-first: construimos APIs, productos y capas de integración listas para producción, con contratos claros, arquitectura modular y seguridad desde el MVP.
+          </p>
 
           <div className="pills">
             <span className="pill">
-              <b>Core:</b> CryptoLink v3
+              <b>Soft launch:</b> 3 apps
             </span>
             <span className="pill">
-              <b>Launch:</b> Curpify live
+              <b>Core:</b> Nexus + MCP-One
             </span>
             <span className="pill">
               <b>Ops:</b> Status-Hub v1
@@ -139,17 +142,17 @@ export default function Home() {
           </div>
 
           <p className="hero-note">
-            ✦ Últimos avances: <strong>CryptoLink v3</strong>, <strong>Curpify live</strong>, <strong>Status-Hub v1</strong> y nuevas capas en observación rumbo a junio.
+            ✦ Últimos avances: <strong>Curpify</strong>, <strong>Data_Link</strong> y <strong>V-Secrets</strong> entran en observación de soft launch mientras el ecosistema sigue consolidando su capa de integración y operación.
           </p>
         </div>
 
         <div className="hero-card">
           <h2>Arquitectura base</h2>
-            <ul>
-              <li>Next.js para UI, portales y capas ligeras de integración</li>
-              <li>Servicios core en Spring Boot, Python o Rust según el caso de uso</li>
-              <li>Bases cloud-ready con OpenAPI, Auth, rate limiting y observabilidad mínima</li>
-            </ul>
+          <ul>
+            <li>Next.js para UI, portales y capas ligeras de integración</li>
+            <li>Servicios core en Spring Boot, Python o Rust según el caso de uso</li>
+            <li>Bases cloud-ready con OpenAPI, Auth, rate limiting y observabilidad mínima</li>
+          </ul>
           <p className="hero-card-foot">
             Optimizar primero, escalar después: costos controlados sin sacrificar robustez.
           </p>
@@ -361,7 +364,7 @@ export default function Home() {
             <h3>Delivery</h3>
             <ul className="card-list">
               <li>✔ Bases reutilizables y arranques cloud-ready</li>
-              <li>✔ Quickstarts y estructura consistente entre servicios</li>
+              <li>✔ Integración consistente entre servicios y productos</li>
               <li>✔ Tooling interno para acelerar entregas sin perder control técnico</li>
             </ul>
           </article>
@@ -455,97 +458,96 @@ export default function Home() {
       </section>
 
     {/* ROADMAP */}
-    <section id="roadmap" className="section">
-      <h2>Roadmap</h2>
+      <section id="roadmap" className="section">
+        <h2>Roadmap</h2>
 
-    {/* Mantra */}
-      <p className="section-intro" style={{ marginTop: 6 }}>
-        <strong>Optimizar primero.</strong> Escalar después. Contratos claros siempre.
-      </p>
+        <p className="section-intro" style={{ marginTop: 6 }}>
+          <strong>Optimizar primero.</strong> Escalar después. Contratos claros siempre.
+        </p>
 
-      <div className="cards">
-      {/* NOW */}
-      <article className="card">
-        <div className="card-top">
-          <h3>Now (Q2 2026)</h3>
-          <span className="badge badge-live">FOCUS</span>
-        </div>
+        <div className="cards">
+          {/* NOW */}
+          <article className="card">
+            <div className="card-top">
+              <h3>Now (Q2 2026)</h3>
+              <span className="badge badge-live">FOCUS</span>
+            </div>
 
-        <p>Lo que hoy está consolidando el núcleo real del ecosistema.</p>
+            <p>Lo que hoy está consolidando el soft launch y la siguiente capa estratégica del ecosistema.</p>
 
-        <ul className="card-list">
-          <li>✔ CryptoLink alcanzó su v3 y opera con estabilidad</li>
-          <li>✔ Nexus sigue avanzando como capa de integración junto a MCP-One</li>
-          <li>✔ Social_Link ya entrega trends integrados dentro de CryptoLink</li>
-          <li>✔ Data_Link v1 entró en observación final con resultados sólidos</li>
-          <li>✔ Status-Hub ya vive como capa operativa de monitoreo del ecosistema</li>
-        </ul>
+            <ul className="card-list">
+              <li>✔ Curpify, Data_Link y V-Secrets entran en fase de soft launch / observación</li>
+              <li>✔ Nexus sigue como prioridad principal junto a MCP-One</li>
+              <li>✔ evi-gateway entra como foco inmediato con integración hacia Nexus y MCP-One</li>
+              <li>✔ Status-Hub ya opera como capa de monitoreo real dentro del portal</li>
+              <li>✔ CryptoLink v3 queda consolidado como producto maduro del ecosistema</li>
+            </ul>
 
-        <p className="card-tag">Core ecosystem · integración real · consolidación técnica</p>
-      </article>
+            <p className="card-tag">Soft launch · integration focus · core maturity</p>
+          </article>
 
-      {/* NEXT */}
-        <article className="card">
-          <div className="card-top">
-            <h3>Next (Q2–Q3 2026)</h3>
-            <span className="badge badge-next">NEXT</span>
+          {/* NEXT */}
+            <article className="card">
+              <div className="card-top">
+                <h3>Next (Q3 2026)</h3>
+                <span className="badge badge-next">NEXT</span>
+              </div>
+
+              <p>Lo siguiente: fortalecer la capa de integración, validar nuevos candidatos y preparar el siguiente ciclo de productos.</p>
+
+              <ul className="card-list">
+                <li>✔ Secure_Link será evaluado como candidato fuerte para launch en julio / agosto</li>
+                <li>✔ Data_Link Transform será analizado a fondo como producto avanzado</li>
+                <li>✔ Vision_Link podría tomar un nuevo rumbo más enfocado en facial recognition</li>
+                <li>✔ evi-gateway avanzará como pieza 100% Rust conectada al núcleo MCP-One + Nexus</li>
+              </ul>
+
+              <div className="card-actions">
+                <a className="btn-mini" href="#ecosystem">Ecosystem →</a>
+                <a className="btn-mini" href="#products">Products →</a>
+              </div>
+
+              <p className="card-tag">Gateway · security · advanced data flows</p>
+            </article>
+
+            {/* SOON */}
+            <article className="card card-muted">
+              <div className="card-top">
+                <h3>Soon (Q4 2026)</h3>
+                <span className="badge badge-soon">SOON</span>
+              </div>
+
+              <p>Lo que sigue una vez estabilizado el nuevo núcleo de integración y definidos los lanzamientos del siguiente ciclo.</p>
+
+              <ul className="card-list">
+                <li>✔ SignVerify aparece como candidato avanzado para Q4</li>
+                <li>✔ Email deliverability revivirá con nuevas capacidades y mejor dirección</li>
+                <li>✔ Vision_Link podría madurar hacia una línea más clara de reconocimiento facial</li>
+              </ul>
+
+              <p className="card-tag">Verification · deliverability · computer vision</p>
+            </article>
+
+            {/* STRATEGIC LINE */}
+            <article className="card card-muted">
+              <div className="card-top">
+                <h3>Strategic line</h3>
+                <span className="badge badge-inc">INTERNAL</span>
+              </div>
+
+              <p>
+                EviForge evoluciona como capacidad interna del ecosistema, acelerando bases cloud-ready y entregando soporte real a productos estratégicos sin convertirse en una oferta comercial pública.
+              </p>
+
+              <ul className="card-list">
+                <li>✔ Ya ha entregado resultados en productos reales como evi-gateway y V-Secrets</li>
+                <li>✔ Fortalece la velocidad de construcción sin sacrificar criterio técnico</li>
+                <li>✔ Su evolución futura se alinea más con tooling interno y SDKs que con una línea pública propia</li>
+              </ul>
+
+              <p className="card-tag">Internal tooling · cloud-ready delivery · ecosystem acceleration</p>
+            </article>
           </div>
-
-          <p>Lo siguiente: preparar los siguientes soft launches y fortalecer las capas estratégicas del ecosistema.</p>
-
-          <ul className="card-list">
-            <li>✔ V-Secrets se perfila como fuerte candidata para soft launch en junio</li>
-            <li>✔ Secure_Link se prepara como siguiente foco estratégico del ecosistema</li>
-            <li>✔ Curpify permanece en observación y pulido final tras su soft launch</li>
-            <li>✔ Nexus y MCP-One seguirán como eje de integración y estructura</li>
-          </ul>
-
-          <div className="card-actions">
-            <a className="btn-mini" href="/products#cryptolink">CryptoLink →</a>
-            <a className="btn-mini" href="#ecosystem">Ecosystem →</a>
-          </div>
-
-          <p className="card-tag">Soft launch discipline · integration layer · product maturity</p>
-        </article>
-
-      {/* SOON */}
-        <article className="card card-muted">
-          <div className="card-top">
-            <h3>Soon (Q3 2026)</h3>
-            <span className="badge badge-soon">SOON</span>
-          </div>
-
-          <p>Lo que sigue una vez estabilizado el núcleo principal y definidos los siguientes lanzamientos.</p>
-
-          <ul className="card-list">
-            <li>✔ Vision_Link permanece pausado con una v1 ya existente en YOLOv11</li>
-            <li>✔ La línea Lite / RapidAPI se encuentra en revisión para una posible salida ordenada</li>
-            <li>✔ SDKs y tooling internos aparecen como dirección más natural para futuras extensiones</li>
-          </ul>
-
-          <p className="card-tag">Incubación ordenada · cleanup estratégico · extensiones futuras</p>
-        </article>
-
-      {/* STRATEGIC LINE */}
-        <article className="card card-muted">
-          <div className="card-top">
-            <h3>Strategic line</h3>
-            <span className="badge badge-inc">INTERNAL</span>
-          </div>
-
-          <p>
-            EviForge evoluciona como una capacidad interna del ecosistema, diseñada para acelerar desarrollos sin convertirse en una oferta comercial pública.
-          </p>
-
-          <ul className="card-list">
-            <li>✔ Ya ha entregado resultados en productos reales como evi-gateway y V-Secrets</li>
-            <li>✔ Reduce fricción de arranque y fortalece la capacidad interna de construcción</li>
-            <li>✔ Su siguiente evolución se piensa como tooling del ecosistema, no como producto comercial</li>
-          </ul>
-
-          <p className="card-tag">Internal tooling · build capacity · ecosystem acceleration</p>
-        </article>
-        </div>
       </section>
 
       {/* ABOUT */}

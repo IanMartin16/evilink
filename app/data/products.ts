@@ -11,13 +11,12 @@ export type Producto = {
   destacado?: boolean; // para Home
 };
 
-
 export const PRODUCTOS: Producto[] = [
   {
     key: "cryptolink",
     nombre: "CryptoLink API",
     estado: "LIVE",
-    desc: "La API de inteligencia cripto de Evilink, ahora consolidada en su versión 3 con una base estable y lista para su siguiente evolución.",
+    desc: "La API de inteligencia cripto de Evilink, consolidada en su versión 3 con una base estable y lista para su siguiente evolución.",
     bullets: [
       "Versión 3 cerrada formalmente y operando con estabilidad",
       "Streaming SSE en tiempo real",
@@ -28,7 +27,7 @@ export const PRODUCTOS: Producto[] = [
       { label: "Go Cryptolink.mx →", href: "https://cryptolink.mx/dashboard", external: true },
       { label: "Docs →", href: "https://cryptolink.mx/docs", external: true },
     ],
-    destacado: true,
+    destacado: false,
   },
   {
     key: "social_link",
@@ -48,15 +47,17 @@ export const PRODUCTOS: Producto[] = [
     key: "curpify",
     nombre: "Curpify API",
     estado: "LIVE",
-    desc: "La API de validación CURP de Evilink, ya operativa y lista como base real para futuros flujos de validación más amplios.",
+    desc: "La API de validación de Evilink ahora evoluciona con validación más estricta de CURP y RFC, una interfaz más alineada al ecosistema y una base más sólida para su siguiente etapa.",
     bullets: [
-      "Validación de CURP lista para producción",
-      "Infraestructura estable y monetización integrada",
+      "Ahora valida CURP y RFC con dígito verificador",
+      "Nueva interfaz más alineada al ecosistema Evilink",
       "Actualmente en observación tras su soft launch",
     ],
-    tag: "Next.js · Postgres · Stripe",
-    links: [{ label: "Comprar →", href: "https://curpify.com/pricing", external: true }],
-    destacado: false,
+    tag: "strict validation · Next.js · Postgres · Stripe",
+    links: [
+      { label: "Comprar →", href: "https://curpify.com/pricing", external: true },
+    ],
+    destacado: true,
   },
   {
     key: "nexus",
@@ -72,7 +73,7 @@ export const PRODUCTOS: Producto[] = [
     links: [
       { label: "Roadmap →", href: "/#roadmap" },
     ],
-    destacado: true,
+    destacado: false,
   },
   {
     key: "secure_link",
@@ -96,9 +97,9 @@ export const PRODUCTOS: Producto[] = [
     bullets: [
       "Resultados fuertes con datasets de millones de registros",
       "Optimización con multiprocessing y chunk sizing",
-      "v1 en observación final antes de perfilar su siguiente salida",
+      "Nuevo preset para deduplicar cualquier campo fuera de los presets originales",
     ],
-    tag: "High-volume processing · v1 observing",
+    tag: "high-volume engine · v1 observing",
     links: [{ label: "Roadmap →", href: "/#roadmap" }],
     destacado: true,
   },
@@ -110,12 +111,12 @@ export const PRODUCTOS: Producto[] = [
     bullets: [
       "AES-256-GCM, versionado, auditoría y autenticación por API key",
       "Base sólida con PostgreSQL y Redis",
-      "Fuerte candidata al ciclo de soft launch de junio",
+      "La revocación de runtime keys corta acceso real en Nexus",
     ],
     links: [
-      { label: "See roadmap →", href: "/#roadmap" },
+      { label: "Roadmap →", href: "/#roadmap" },
     ],
-    tag: "junio · soft launch candidate",
+    tag: "secure access · real-time key control",
     destacado: true,
   },
   {
@@ -138,28 +139,12 @@ export const PRODUCTOS: Producto[] = [
     estado: "LIVE",
     desc: "La capa de monitoreo operativo de Evilink, diseñada para exponer salud de servicios y visibilidad del ecosistema en tiempo real.",
     bullets: [
-      "v1 funcional desplegada con checks automatizados",
-      "Ya integrada como sección dentro del portal Evilink",
-      "Base lista para futuras mejoras de observabilidad",
+      "Valida estado real de sitios y servicios clave",
+      "Expone checks recientes y métricas operativas reales",
+      "Base lista para futuras mejoras de observabilidad dentro de IO",
     ],
-    tag: "Monitoring · Railway · Postgres",
+    tag: "monitoring · IO layer · service health",
     links: [{ label: "Roadmap →", href: "/#roadmap" }],
-    destacado: false,
+    destacado: true,
   },
-  {
-  key: "lite_experiments",
-  nombre: "Lite Experiments",
-  estado: "LIVE",
-  desc: "Experimentos públicos seleccionados para validar interés de mercado sin desviar el foco del ecosistema principal de Evilink.",
-  bullets: [
-    "Incluye releases ligeros publicados en RapidAPI",
-    "Sirven para exploración controlada y validación temprana",
-    "No sustituyen el roadmap de los productos core",
-  ],
-  tag: "RapidAPI · public experiments",
-  links: [
-    { label: "Explore on RapidAPI →", href: "https://rapidapi.com/studio", external: true },
-  ],
-  destacado: false,
-}
 ];

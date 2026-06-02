@@ -15,12 +15,12 @@ export function getDuration(start?: string | null, end?: string | null) {
   const remainingSeconds = Math.round(seconds % 60);
 
   return `${minutes}m ${remainingSeconds}s`;
-}
+  }
 
-export function getProcessingTime(job: any) {
-  return getDuration(job.started_at, job.completed_at);
-}
+  export function getProcessingTime(job: any) {
+    return getDuration(job.started_at, job.completed_at);
+  }
 
-export function getTotalTime(job: any) {
-  return getDuration(job.created_at, job.completed_at);
-}
+  export function getTotalTime(job: any) {
+    return getDuration(job.created_at, job.completed_at);
+  }

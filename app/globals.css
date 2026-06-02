@@ -886,16 +886,16 @@ body::after {
 }
 
 .badge-soon{
-  border-color: rgba(234,219,184,.22);
-  background: rgba(234,219,184,.06);
+  border-color: rgba(189, 135, 10, 0.22);
+  background: rgba(190, 136, 9, 0.158);
   color: rgba(234,219,184,.88);
   opacity: .92;
 }
 
 .badge-inc{
-  border-color: rgba(255,255,255,.16);
-  background: rgba(255,255,255,.05);
-  color: rgba(234,219,184,.78);
+  border-color: rgba(6, 150, 102, 0.671);
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(234, 219, 184, 0.897);
   opacity: .86;
 }
 
