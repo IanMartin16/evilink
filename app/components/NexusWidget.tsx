@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import styles from "./nexusWidget.module.css"
-import { ZCOOL_KuaiLe } from "next/font/google";
+import { Geist, Sora } from "next/font/google";
 
 const EVILINK = {
   accent: "#2BFF88",        // verde neón
@@ -16,7 +15,17 @@ const EVILINK = {
   bubbleBot: "rgba(255,255,255,0.08)",
 };
 
-type Product = "curpify" | "cryptolink" | "evilink";
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+});
+
+const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+});
+
+type Product = "curpify" | "cryptolink" | "evilink" | "data_link" | "vsecrets" | "status_hub" | "mcpone" | "nexus";
 type McpSection = {
   id: string;
   type: string;
@@ -112,17 +121,77 @@ export default function NexusWidget() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
 
   const [product, setProduct] = useState<string>(() => {
-    if (typeof window === "undefined") return "curpify";
-    return localStorage.getItem(LS_PRODUCT_KEY) || "curpify";
+    if (typeof window === "undefined") return "evi_link";
+    return localStorage.getItem(LS_PRODUCT_KEY) || "evi_link";
   });
 
 const PRODUCT_LABEL: Record<string, string> = {
   curpify: "Curpify",
   cryptolink: "CryptoLink",
+  data_link: "Data_Link",
+  vsecrets: "V-Secrets",
+  status_hub: "Status-hub",
+  mcpone: "MCPOne",
+  nexus: "Nexus",
   evilink: "evi_link",
 };
 
-const hydratedRef = useRef(false);
+const SOFT_LAUNCH_PRODUCTS = [
+  {
+    id: "curpify",
+    name: "Curpify",
+    tag: "Identity API",
+    status: "Soft launch ready",
+    summary: "Validación CURP/RFC e identidad estructurada.",
+    pills: ["CURP", "RFC", "HR", "API"],
+  },
+  {
+    id: "data_link",
+    name: "Data_Link",
+    tag: "Data Processing",
+    status: "Soft launch ready",
+    summary: "Limpieza, deduplicación y transformación de CSV/JSON.",
+    pills: ["CSV", "JSON", "Dedupe", "Transform"],
+  },
+  {
+    id: "vsecrets",
+    name: "V-Secrets",
+    tag: "Security API",
+    status: "Soft launch ready",
+    summary: "Gestión segura de secretos por proyecto con cifrado y auditoría.",
+    pills: ["Secrets", "AES-256", "Audit", "API Keys"],
+  },
+];
+
+const QUICK_ACTIONS = [
+  {
+    label: "Productos",
+    prompt: "Muéstrame los productos disponibles de Evilink",
+  },
+  {
+    label: "APIs",
+    prompt: "Qué APIs tiene Evilink disponibles",
+  },
+  {
+    label: "Integraciones",
+    prompt: "Cómo puedo integrar productos de Evilink",
+  },
+  {
+    label: "Status",
+    prompt: "Cuál es el estado operativo del ecosistema Evilink",
+  },
+  {
+    label: "Docs",
+    prompt: "Dónde puedo consultar la documentación de Evilink",
+  },
+  {
+    label: "Contacto",
+    prompt: "Cómo puedo contactar a Evilink",
+  },
+];
+
+const msgsHydratedRef = useRef(false);
+const teaserStartedRef = useRef(false);
 
 useEffect(() => {
   if (typeof window === "undefined") return;
@@ -145,7 +214,7 @@ useEffect(() => {
         {
           id: "welcome",
           role: "assistant",
-          text: `Listo ✅ Estás en ${label}. ¿Qué quieres preguntar?`,
+          text: `Listo ✅ Estás en Nexus. Puedo ayudarte a explorar productos, APIs, integraciones y estado del ecosistema Evilink`,
           ts: Date.now(),
           product,
         },
@@ -153,12 +222,12 @@ useEffect(() => {
       ];
 
   setMsgs(next);
+  msgsHydratedRef.current = true;
 }, [product]);
-hydratedRef.current = true;
 
 useEffect(() => {
   if (typeof window === "undefined") return;
-  if (!hydratedRef.current) return;      // ✅ no guardes antes de cargar
+  if (!msgsHydratedRef.current) return;      // ✅ no guardes antes de cargar
   if (msgs.length === 0) return;         // ✅ evita pisar con []
 
   localStorage.setItem(LS_MSGS(product), JSON.stringify(msgs));
@@ -167,7 +236,7 @@ useEffect(() => {
   
   const TEASER_SEEN_KEY = "nexus_teaser_seen_session_v1";
 
-  const [teaserOpen, setTeaserOpen] = useState(true);
+  const [teaserOpen, setTeaserOpen] = useState(false);
   const [teaserClosing, setTeaserClosing] = useState(false);
 
   const fadeTimerRef = useRef<number | null>(null);
@@ -180,49 +249,63 @@ useEffect(() => {
     hideTimerRef.current = null;
   }
 
+  function markTeaserSeen() {
+    try {
+      sessionStorage.setItem(TEASER_SEEN_KEY, "1");
+    } catch {}
+  }
+
   function closeTeaser() {
+    clearTeaserTimers();
     setTeaserClosing(true);
+
     window.setTimeout(() => {
       setTeaserOpen(false);
       setTeaserClosing(false);
-      try { sessionStorage.setItem(TEASER_SEEN_KEY, "1"); } catch {}
-    }, 650);
+      markTeaserSeen();
+    }, 420);
   }
 
   function startTeaserAutoHide() {
     clearTeaserTimers();
 
-    const fadeAtMs = 7000;  // solo anima fade
-    const hideAtMs = 10000; // oculta
-
     fadeTimerRef.current = window.setTimeout(() => {
       setTeaserClosing(true);
-    }, fadeAtMs);
+    }, 7000);
 
     hideTimerRef.current = window.setTimeout(() => {
-      closeTeaser();
-    }, hideAtMs);
+      setTeaserOpen(false);
+      setTeaserClosing(false);
+      markTeaserSeen();
+    }, 10000);
   }
 
 useEffect(() => {
   if (typeof window === "undefined") return;
 
-  // evita doble ejecución por remount/hidratación
-  if (hydratedRef.current) return;
-  hydratedRef.current = true;
+  if (teaserStartedRef.current) return;
+  teaserStartedRef.current = true;
 
   const seen = (() => {
-    try { return sessionStorage.getItem(TEASER_SEEN_KEY) === "1"; } catch { return false; }
+    try {
+      return sessionStorage.getItem(TEASER_SEEN_KEY) === "1";
+    } catch {
+      return false;
+    }
   })();
 
   if (seen) return;
 
-  setTeaserOpen(true);
-  setTeaserClosing(false);
+  const openTimer = window.setTimeout(() => {
+    setTeaserOpen(true);
+    setTeaserClosing(false);
+    startTeaserAutoHide();
+  }, 900);
 
-  requestAnimationFrame(() => startTeaserAutoHide());
-
-  return () => clearTeaserTimers();
+  return () => {
+    window.clearTimeout(openTimer);
+    clearTeaserTimers();
+  };
 }, []);
 
 
@@ -239,8 +322,9 @@ useEffect(() => {
 
   // Load state from localStorage
   useEffect(() => {
-    const saved = safeParse<{ product: Product }>(localStorage.getItem(LS_KEY));
-    if (saved?.product) setProduct(saved.product);
+    setProduct("evi_link");
+    localStorage.setItem(LS_PRODUCT_KEY, "evi_link");
+    localStorage.setItem(LS_KEY, JSON.stringify({ product: "evi_link"}))
   }, []);
 
   const [sessionId, setSessionId] = useState<string>(() => {
@@ -444,7 +528,7 @@ useEffect(() => {
     const welcome: Msg = {
       id: "welcome",
       role: "assistant",
-      text: `Listo ✅ Nuevo chat en ${label}. ¿Qué quieres preguntar?`,
+      text: `Listo ✅ Nuevo chat en Nexus. ¿Qué quieres explorar del ecosistema Evilink?`,
       ts: Date.now(),
       product,
     };
@@ -535,6 +619,13 @@ useEffect(() => {
     }
   }
 
+  function askQuick(prompt: string) {
+    setInput(prompt);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 30);
+  }
+
   function TypingIndicator() {
   return (
     <div
@@ -557,6 +648,146 @@ useEffect(() => {
         <i />
         <i />
       </span>
+    </div>
+  );
+}
+
+function EcosystemIntro() {
+  return (
+    <div
+      style={{
+        padding: 12,
+        borderRadius: 18,
+        border: `1px solid ${EVILINK.border}`,
+        background:
+          `radial-gradient(120% 90% at 20% 0%, ${EVILINK.accent}1A 0%, rgba(0,0,0,0) 58%),
+           linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035))`,
+        boxShadow: "0 18px 45px rgba(0,0,0,0.24)",
+        display: "grid",
+        gap: 12,
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 900,
+              letterSpacing: 0.8,
+              textTransform: "uppercase",
+              color: EVILINK.accent,
+              marginBottom: 5,
+            }}
+          >
+            Evilink ecosystem
+          </div>
+
+          <div style={{ fontSize: 18, fontWeight: 950, lineHeight: 1.05 }}>
+            Nexus
+          </div>
+
+          <div style={{ fontSize: 12, opacity: 0.72, marginTop: 4, lineHeight: 1.35 }}>
+            Explora productos, APIs, integraciones y estado operativo del ecosistema.
+          </div>
+        </div>
+
+        <div
+          style={{
+            alignSelf: "flex-start",
+            padding: "5px 8px",
+            borderRadius: 999,
+            border: `1px solid ${EVILINK.border}`,
+            background: "rgba(43,255,136,0.10)",
+            color: EVILINK.accent,
+            fontSize: 10,
+            fontWeight: 900,
+            whiteSpace: "nowrap",
+          }}
+        >
+          soft launch
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {QUICK_ACTIONS.map((a) => (
+          <button
+            key={a.label}
+            onClick={() => askQuick(a.prompt)}
+            style={{
+              border: `1px solid ${EVILINK.border}`,
+              background: "rgba(255,255,255,0.055)",
+              color: EVILINK.text,
+              borderRadius: 999,
+              padding: "7px 10px",
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+            }}
+          >
+            {a.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "grid", gap: 8 }}>
+        <div style={{ fontSize: 11, opacity: 0.65, fontWeight: 800 }}>
+          Soft launch ready
+        </div>
+
+        {SOFT_LAUNCH_PRODUCTS.map((p) => (
+          <div
+            key={p.id}
+            style={{
+              padding: 10,
+              borderRadius: 15,
+              border: `1px solid ${EVILINK.border}`,
+              background: "rgba(255,255,255,0.045)",
+              display: "grid",
+              gap: 7,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 950 }}>{p.name}</div>
+                <div style={{ fontSize: 11, opacity: 0.65 }}>{p.tag}</div>
+              </div>
+
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  color: EVILINK.accent,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Ready
+              </div>
+            </div>
+
+            <div style={{ fontSize: 12, opacity: 0.78, lineHeight: 1.35 }}>
+              {p.summary}
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {p.pills.map((pill) => (
+                <span
+                  key={pill}
+                  style={{
+                    fontSize: 10,
+                    padding: "3px 7px",
+                    borderRadius: 999,
+                    border: `1px solid ${EVILINK.border}`,
+                    background: "rgba(255,255,255,0.045)",
+                    opacity: 0.86,
+                  }}
+                >
+                  {pill}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -992,20 +1223,37 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
           position: "fixed",
           right: 18,
           bottom: 18,
-          width: 62,
-          height: 62,
+          width: 64,
+          height: 64,
           borderRadius: 999,
-          background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
-          border: `1px solid ${EVILINK.border}`,
-          boxShadow: `0 18px 55px rgba(0,0,0,0.55), 0 0 30px ${EVILINK.accent}22`,
+          background:
+            `radial-gradient(circle at 35% 25%, ${EVILINK.accent}22 0%, rgba(0,0,0,0) 42%),
+            linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+            linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
+          border: `1px solid rgba(255,255,255,0.14)`,
+          boxShadow: `0 18px 55px rgba(0,0,0,0.58), 0 0 34px ${EVILINK.accent}2B`,
           color: EVILINK.text,
           cursor: "pointer",
           zIndex: Z.fab,
           display: "grid",
           placeItems: "center",
+          overflow: "hidden",
         }}
       >
-        <img src="/nexus-bot-icon.png" width={36} height={36} alt="Nexus" />
+        <div
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 999,
+            display: "grid",
+            placeItems: "center",
+            background: "rgba(255,255,255,0.055)",
+            border: `1px solid ${EVILINK.border}`,
+            boxShadow: `inset 0 0 18px rgba(255,255,255,0.04), 0 0 18px ${EVILINK.accent}22`,
+          }}
+        >
+          <img src="/nexus-bot-icon.png" width={34} height={34} alt="Nexus" />
+        </div>
       </button>
 
       {/* Teaser */}
@@ -1040,20 +1288,43 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
             transition: "opacity 420ms ease, transform 420ms ease",
           }}
         >
-          <div style={{ display: "grid", textAlign: "left", lineHeight: 1.1 }}>
-            <div style={{ fontWeight: 800, fontSize: 13 }}>Hola, soy Nexus</div>
-            <div style={{ opacity: 0.85, fontSize: 12 }}>¿Tienes alguna duda?</div>
+          <div
+            style={{
+              display: "grid",
+              textAlign: "left",
+              lineHeight: 1.1,
+              fontFamily: `${geist.style.fontFamily}, system-ui, sans-serif`,
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 800,
+                fontSize: 13,
+                letterSpacing: "-0.015em",
+              }}
+            >
+              Hola, soy Nexus
+            </div>
+            <div
+              style={{
+                opacity: 0.85,
+                fontSize: 12,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Explora el ecosistema Evilink
+            </div>
           </div>
 
           {/* Close X */}
           <span
             onClick={(e) => {
               e.stopPropagation();
-              setTeaserClosing(true);
+              closeTeaser();
               window.setTimeout(() => {
-                setTeaserOpen(false);
-                setTeaserClosing(false);
-                localStorage.setItem("nexus_teaser_seen", "1");
+                try {
+                sessionStorage.setItem(TEASER_SEEN_KEY, "1");
+                } catch {}
               }, 420);
             }}
             style={{
@@ -1107,27 +1378,38 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
               border: `1px solid ${EVILINK.border}`,
               boxShadow: `0 18px 55px rgba(0,0,0,0.55), 0 0 30px ${EVILINK.accent}22`,
               display: "grid",
-              gridTemplateRows: "auto auto 1fr auto",
+              gridTemplateRows: "auto 1fr auto",
               overflow: "hidden",
               color: EVILINK.text,
               animation: "nexusPop 140ms ease-out",
               zIndex: Z.panel, // ✅ panel arriba del overlay
+              fontFamily: `${geist.style.fontFamily}, system-ui, sans-serif`,
             }}
           >
             {/* Header */}
             <div style={{ display: "grid", gap: 10, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
                 <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                  <strong style={{ fontSize: 14, color: EVILINK.text }}>Nexus</strong>
+                  <strong style={{ fontSize: 16, color: "transparent",
+                    fontFamily: `${sora.style.fontFamily}, ${geist.style.fontFamily}, system-ui, sans-serif`,
+                    fontWeight: 900,
+                    letterSpacing: "-0.03em",
+                    background: `linear-gradient(90deg, ${EVILINK.accent} 0%, ${EVILINK.accent2})`,
+                    WebkitBackgroundClip: "text",
+                    backgroundClip: "text",
+                    textShadow: `0 0 18px ${EVILINK.accent}33`,
+                   }}>Nexus</strong>
                   <span
                     style={{
                       fontSize: 12,
                       color: EVILINK.muted,
+                      letterSpacing: "-0.01em",
+                      lineHeight: "1.35",
                       overflowWrap: "anywhere",
                       wordBreak: "break-word",
                     }}
                   >
-                    Asistente de evi_link (beta) Usamos IA generativa
+                    Evilink ecosystem assistant · powered by MCPOne
                   </span>
                 </div>
 
@@ -1167,53 +1449,50 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
           </div>
 
             {/* Product row */}
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                minWidth: 0,
-                padding: "0 12px 12px 12px",
-              }}
-            >
-              <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: 0 }}>
-                <label style={{ fontSize: 12, opacity: 0.75 }}>Product</label>
+            <div style={{ display: "grid", gap: 10, padding: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                  <div
+                    style={{
+                      marginTop: 8,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 6,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 800,
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        color: EVILINK.accent,
+                        background: "rgba(43,255,136,0.10)",
+                        border: `1px solid ${EVILINK.border}`,
+                      }}
+                    >
+                      Ecosystem mode
+                    </span>
 
-                <select
-                  value={product}
-                  onChange={(e) => {
-                    const next = String(e.target.value || "").trim().toLowerCase();
-                    setProduct(next);
-                    setMsgs([]);
-                    setInput("");
-                    setLoading(false);
-                  }}
-                  style={{
-                    padding: 8,
-                    borderRadius: 10,
-                    border: "1px solid rgba(0,0,0,0.12)",
-                    maxWidth: "160px",
-                  }}
-                >
-                <option value="curpify">curpify</option>
-                <option value="cryptolink">cryptoLink</option>
-                <option value="evi_link">evilink</option>
-              </select>
-            </div>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        color: EVILINK.muted,
+                        background: "rgba(255,255,255,0.045)",
+                        border: `1px solid ${EVILINK.border}`,
+                      }}
+                    >
+                      Docs-based answers
+                    </span>
+                  </div>
+                </div>
 
-          <div
-              style={{
-                fontSize: 12,
-                opacity: 0.7,
-                minWidth: 0,
-                overflowWrap: "anywhere",
-                wordBreak: "break-word",
-                textAlign: "right",
-              }}
-            >
-              Respuestas basadas en docs
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                 {/* Clear + close buttons */}
+              </div>
             </div>
           </div>
 
@@ -1230,6 +1509,7 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
               }}
             >
               <div style={{ padding: 12, display: "grid", gap: 10 }}>
+                {msgs.length <= 1 && <EcosystemIntro />}
                 {msgs.map((m) => (
                   <div
                     key={m.id}
@@ -1250,6 +1530,7 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
                     color: EVILINK.text,
                     border: `1px solid ${EVILINK.border}`,
                     whiteSpace: "pre-wrap",
+                    letterSpacing: "-0.01em",
                     lineHeight: 1.4,
                     fontSize: 14,
                   }}
