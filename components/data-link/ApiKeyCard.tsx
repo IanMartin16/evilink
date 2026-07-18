@@ -2,19 +2,76 @@
 
 "use client";
 
-import { getStoredApiKey } from "@/lib/dataLinkApi";
+import { useState } from "react";
+import {
+  apiFetch,
+  getStoredApiKey,
+} from "@/lib/dataLinkApi";
 
 type ApiKeyCardProps = {
   apiKey?: string;
   onForgetDevice: () => void;
 };
 
-export function ApiKeyCard({ apiKey, onForgetDevice }: ApiKeyCardProps) {
+export function ApiKeyCard({
+  apiKey,
+  onForgetDevice,
+}: ApiKeyCardProps) {
+  const [billingLoading, setBillingLoading] =
+    useState(false);
+  const [billingError, setBillingError] =
+    useState<string | null>(null);
+
   async function copyKey() {
     const fullKey = getStoredApiKey();
     if (!fullKey) return;
 
     await navigator.clipboard.writeText(fullKey);
+  }
+
+  async function manageSubscription() {
+    try {
+      setBillingLoading(true);
+      setBillingError(null);
+
+      const response = await apiFetch(
+        "/api/v1/billing/portal-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorBody =
+          await response.json().catch(() => null);
+
+        throw new Error(
+          errorBody?.detail ||
+            "Unable to open billing portal."
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.portal_url) {
+        throw new Error(
+          "Billing portal URL was not returned."
+        );
+      }
+
+      window.location.href = data.portal_url;
+    } catch (error) {
+      setBillingError(
+        error instanceof Error
+          ? error.message
+          : "Unexpected billing error."
+      );
+    } finally {
+      setBillingLoading(false);
+    }
   }
 
   return (
@@ -28,16 +85,43 @@ export function ApiKeyCard({ apiKey, onForgetDevice }: ApiKeyCardProps) {
         </div>
       </div>
 
-      <div className="dl-key-box">{apiKey || "No API key"}</div>
+      <div className="dl-key-box">
+        {apiKey || "No API key"}
+      </div>
 
       <div className="dl-api-actions">
-        <button className="dl-secondary-btn" onClick={copyKey}>
+        <button
+          className="dl-secondary-btn"
+          onClick={copyKey}
+          disabled={!apiKey}
+        >
           Copy API key
         </button>
 
-        <button className="dl-danger-btn" onClick={onForgetDevice}>
+        <button
+          className="dl-danger-btn"
+          onClick={onForgetDevice}
+        >
           Forget this device
         </button>
+      </div>
+
+      <div className="dl-billing-actions">
+        <button
+          className="dl-secondary-btn"
+          onClick={manageSubscription}
+          disabled={billingLoading || !apiKey}
+        >
+          {billingLoading
+            ? "Opening billing..."
+            : "Manage subscription"}
+        </button>
+
+        {billingError && (
+          <p className="dl-error-text">
+            {billingError}
+          </p>
+        )}
       </div>
 
       <small className="dl-security-note">

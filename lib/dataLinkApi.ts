@@ -37,7 +37,7 @@ export function clearApiKey() {
   localStorage.removeItem("datalink_api_key");
 }
 
-async function apiFetch(path: string, options: RequestInit = {}) {
+export async function apiFetch(path: string, options: RequestInit = {}) {
   const apiKey = getStoredApiKey();
 
   const headers = new Headers(options.headers);

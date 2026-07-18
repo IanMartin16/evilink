@@ -1198,15 +1198,46 @@ function DevMeta({ m }: { m: Msg }) {
 }
 
 function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
-  const hasSections = Array.isArray(m.sections) && m.sections.length > 0;
+  const sections = Array.isArray(m.sections) ? m.sections : [];
+
+  const narrative =
+    typeof m.text === "string" && m.text.trim() && m.text.trim() !== "(sin respuesta)"
+      ? m.text
+      : "";
+
+  // El notice de cabecera va arriba; el resto de sections abajo.
+  const headerNotices = sections.filter((s) => s.type === "notice");
+  const bodySections = sections.filter((s) => s.type !== "notice");
+
+  const hasAnySection = sections.length > 0;
 
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      {hasSections ? (
-        m.sections!.map((s) => <SectionView key={s.id} s={s} />)
-      ) : (
-        <>{renderLiteMarkdown(m.text)}</>
-      )}
+      {/* 1) Notice(s) de cabecera — procedencia arriba */}
+      {headerNotices.map((s) => <SectionView key={s.id} s={s} />)}
+
+      {/* 2) Narrativa — la voz, después del notice */}
+      {narrative ? (
+        <div
+          style={{
+            padding: "10px 12px",
+            borderRadius: 14,
+            border: `1px solid ${EVILINK.border}`,
+            background: "rgba(255,255,255,0.04)",
+            fontSize: 14,
+            lineHeight: 1.45,
+          }}
+          >
+         {renderLiteMarkdown(narrative)}
+        </div>
+      ) : null}
+
+      {/* 3) Resto de sections (kpi_grid, text, etc.) — el detalle abajo */}
+      {bodySections.map((s) => <SectionView key={s.id} s={s} />)}
+
+      {/* Caso sin sections: recomendación pura -> solo narrativa (ya arriba).
+          Si no había narrativa NI sections, muestra el text crudo como fallback. */}
+      {!hasAnySection && !narrative ? <>{renderLiteMarkdown(m.text)}</> : null}
 
       {devMode ? <DevMeta m={m} /> : null}
     </div>
@@ -1372,7 +1403,7 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
               right: 18,
               bottom: 88,
               width: "min(420px, calc(100vw - 36px))",
-              height: "min(640px, calc(100vh - 140px))",
+              height: "min(840px, calc(100vh - 140px))",
               background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
               borderRadius: 16,
               border: `1px solid ${EVILINK.border}`,
