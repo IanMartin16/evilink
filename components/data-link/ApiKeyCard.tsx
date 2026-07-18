@@ -30,49 +30,34 @@ export function ApiKeyCard({
   }
 
   async function manageSubscription() {
-    try {
-      setBillingLoading(true);
-      setBillingError(null);
+  try {
+    setBillingLoading(true);
+    setBillingError(null);
 
-      const response = await apiFetch(
-        "/api/v1/billing/portal-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorBody =
-          await response.json().catch(() => null);
-
-        throw new Error(
-          errorBody?.detail ||
-            "Unable to open billing portal."
-        );
+    const data = await apiFetch(
+      "/api/v1/billing/portal-session",
+      {
+        method: "POST",
       }
+    );
 
-      const data = await response.json();
-
-      if (!data.portal_url) {
-        throw new Error(
-          "Billing portal URL was not returned."
-        );
-      }
-
-      window.location.href = data.portal_url;
-    } catch (error) {
-      setBillingError(
-        error instanceof Error
-          ? error.message
-          : "Unexpected billing error."
+    if (!data?.portal_url) {
+      throw new Error(
+        "Billing portal URL was not returned."
       );
-    } finally {
-      setBillingLoading(false);
     }
+
+    window.location.href = data.portal_url;
+  } catch (error) {
+    setBillingError(
+      error instanceof Error
+        ? error.message
+        : "Unexpected billing error."
+    );
+  } finally {
+    setBillingLoading(false);
   }
+}
 
   return (
     <section className="dl-panel dl-small-panel">
