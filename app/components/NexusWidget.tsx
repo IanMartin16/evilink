@@ -1115,7 +1115,7 @@ function DevMeta({ m }: { m: Msg }) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
           gap: 10,
         }}
       >
@@ -1131,20 +1131,6 @@ function DevMeta({ m }: { m: Msg }) {
           <div style={{ fontSize: 11, opacity: 0.7 }}>Trace ID</div>
           <div style={{ fontSize: 12, fontWeight: 800, overflowWrap: "anywhere" }}>
             {m.traceId ?? "—"}
-          </div>
-        </div>
-
-        <div
-          style={{
-            padding: "8px 10px",
-            borderRadius: 12,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.05)",
-          }}
-        >
-          <div style={{ fontSize: 11, opacity: 0.7 }}>Tools</div>
-          <div style={{ fontSize: 12, fontWeight: 800 }}>
-            {toolResults.length}
           </div>
         </div>
       </div>
