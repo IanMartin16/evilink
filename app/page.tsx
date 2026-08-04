@@ -18,65 +18,52 @@ export default function Home() {
     key: "cryptolink",
     name: "CryptoLink",
     status: "LIVE",
-    desc: "La API de inteligencia cripto de Evilink ahora evoluciona a v4 y empieza a consolidarse como un portal de referencia con datos reales, contexto enriquecido y una experiencia de mercado mucho más madura.",
+    desc: "CryptoLink completó un hito importante de hardening, reorganización y enriquecimiento de datos, consolidándose como una experiencia de mercado más clara, eficiente y confiable.",
     bullets: [
-      "Versión 4 ya operando como nueva etapa del producto",
-      "Market360º sustituye la vista anterior y mejora la lectura del mercado",
-      "Combina datos derivados de CryptoLink con contexto real provisto por Social_Link",
+      "Reducción significativa de llamadas redundantes al proveedor",
+      "Market360º, Top Movers y Derived Intelligence reorganizan mejor el valor del portal",
+      "Datos ricos y señales visibles sin romper contratos existentes",
     ],
-    links: [
-      { label: "Explore product →", href: "/products#cryptolink" },
-      { label: "Browse the site →", href: "https://cryptolink.mx" },
-    ],
-    tag: "v4 · enriched market portal",
+    tag: "hardening · v4 · derived intelligence",
     muted: false,
   },
   {
     key: "social_link",
     name: "Social_Link",
     status: "PLATFORM",
-    desc: "La capa de trends y señales del ecosistema ya opera como una API confiable que aporta contexto real de mercado dentro de CryptoLink.",
+    desc: "Social_Link dejó de ser una pieza secundaria y ahora aporta datos reales que enriquecen la experiencia de CryptoLink.",
     bullets: [
-      "Ya no funciona como placeholder: entrega datos valiosos de mercado",
-      "Alimenta cerca del 50% del contexto visible en el portal de CryptoLink",
-      "Enriquece la lectura del mercado junto con derivados propios de CryptoLink",
-    ],
-    links: [
-      { label: "See roadmap →", href: "#roadmap" },
+      "Alimenta secciones clave como Market360º, Market Attention y Trending Now",
+      "Aporta contexto de mercado sin cargar más al motor principal de CryptoLink",
+      "Se consolida como capa real de señales dentro del ecosistema",
     ],
     tag: "signals API · real market context",
     muted: false,
   },
   {
-    key: "datalink",
-    name: "Data_Link",
+    key: "nexus_mcpone",
+    name: "Nexus + MCP-One",
     status: "PLATFORM",
-    desc: "La línea de procesamiento de datos de Evilink mantiene su fortaleza técnica como uno de los motores más prometedores del ecosistema.",
+    desc: "La capa de integración del ecosistema dio un paso clave al sacar a Nexus Core del camino crítico y operar sobre una ruta más ligera con Nexus-slim, evi-gateway y MCP-One.",
     bullets: [
-      "Resultados sólidos en pruebas con datasets de alto volumen",
-      "Motor optimizado con multiprocessing y chunk sizing",
-      "Sigue consolidándose como una pieza de alto potencial dentro del mapa de productos",
+      "Nexus-slim reemplaza la ruta pesada de Nexus Core en producción",
+      "MCP-One ya participa en la integración operativa del ecosistema",
+      "La nueva ruta reduce carga y libera capacidad para la siguiente etapa",
     ],
-    links: [
-      { label: "Open console →", href: "data-link" },
-    ],
-    tag: "high-volume engine · strong core",
+    tag: "lightweight core · production integration",
     muted: false,
   },
   {
     key: "statushub",
     name: "Status-Hub",
     status: "LIVE",
-    desc: "La capa operativa de monitoreo de Evilink continúa consolidándose como soporte real del ecosistema, no solo por sus métricas y checks, sino por su capacidad de detectar problemas antes de que escalen.",
+    desc: "Status-Hub continúa evolucionando como capa operativa del ecosistema, ahora con health endpoints más estandarizados y señales más útiles.",
     bullets: [
-      "Ya reveló y previno bugs y debilidades de seguridad a tiempo",
-      "Checks reales y métricas operativas ya integradas en el portal",
-      "Su evolución futura como capa de observabilidad se vuelve cada vez más natural",
+      "Servicios productivos hablan un lenguaje health más consistente",
+      "Mejor separación entre liveness, readiness y performance",
+      "Base más sólida para la evolución futura hacia IO",
     ],
-    links: [
-      { label: "See status →", href: "status" },
-    ],
-    tag: "monitoring · prevention · live ops",
+    tag: "observability · health standard · IO path",
     muted: false,
   },
 ];
@@ -136,9 +123,8 @@ export default function Home() {
           </div>
 
           <p className="hero-note">
-            ✦ Últimos avances: el ecosistema entra en una etapa de consolidación técnica,
-            con <strong>CryptoLink v4</strong>, señales reales desde <strong>Social_Link</strong>
-            y operación más visible mediante <strong>Status-Hub</strong>.
+            ✦ Este ciclo estuvo enfocado en consolidación: menos ruido operativo, más datos útiles,
+            mejor observabilidad y una capa de integración más ligera para sostener la siguiente etapa del ecosistema.
           </p>
         </div>
 
@@ -458,51 +444,53 @@ export default function Home() {
         </p>
 
         <div className="cards">
-          {/* NOW */}
-          <article className="card">
-            <div className="card-top">
-              <h3>Now (Q2 2026)</h3>
-              <span className="badge badge-live">FOCUS</span>
-            </div>
+         {/* NOW */}
+        <article className="card">
+          <div className="card-top">
+            <h3>Now</h3>
+            <span className="badge badge-live">FOCUS</span>
+          </div>
 
-            <p>Lo que hoy está consolidando el núcleo real del ecosistema.</p>
+          <p>
+            Después de un ciclo fuerte de hardening y reorganización, la siguiente etapa se enfoca
+            en consolidar productos existentes, observar estabilidad real y preparar piezas más robustas
+            antes de cualquier expansión.
+          </p>
 
-            <ul className="card-list">
-              <li>✔ CryptoLink alcanzó su v4 y fortalece su rol como portal de referencia</li>
-              <li>✔ Social_Link ya entrega contexto real de mercado dentro de CryptoLink</li>
-              <li>✔ MCP-One ya opera integrado con Nexus en producción</li>
-              <li>✔ Data_Link continúa consolidándose como motor de alto potencial</li>
-              <li>✔ Status-Hub ya vive como capa operativa y preventiva del ecosistema</li>
-            </ul>
+          <ul className="card-list">
+            <li>✔ Finalizar la observación de CryptoLink tras su hardening y evolución de API</li>
+            <li>✔ Revisar Data_Link Transform como siguiente línea fuerte de datos</li>
+            <li>✔ Continuar la evolución de Status-Hub hacia una capa IO más inteligente</li>
+            <li>✔ Observar la ruta Nexus-slim → evi-gateway → MCP-One en producción</li>
+            <li>✔ Definir el futuro técnico y comercial de Curpify tras su etapa de análisis</li>
+          </ul>
 
-            <p className="card-tag">Core ecosystem · integración real · consolidación técnica</p>
-          </article>
+          <p className="card-tag">Hardening · consolidation · no new fronts</p>
+        </article>
 
-          {/* NEXT */}
-          <article className="card">
-            <div className="card-top">
-              <h3>Next (Q3 2026)</h3>
-              <span className="badge badge-next">NEXT</span>
-            </div>
+        {/* NEXT */}
+        <article className="card">
+          <div className="card-top">
+            <h3>Next</h3>
+            <span className="badge badge-next">NEXT</span>
+          </div>
 
-            <p>Lo siguiente: fortalecer la capa de integración, endurecer productos clave y preparar el siguiente ciclo de evolución.</p>
+          <p>
+           Productos con avance importante que serán evaluados con más calma antes de pasar
+            a una etapa pública más fuerte.
+          </p>
 
-            <ul className="card-list">
-              <li>✔ evi-gateway avanzará como pieza de integración conectada a MCP-One</li>
-              <li>✔ Secure_Link se prepara como siguiente foco estratégico del ecosistema</li>
-              <li>✔ Data_Link Transform será evaluado como evolución avanzada de la línea de datos</li>
-              <li>✔ Nexus y MCP-One seguirán consolidando la capa de acceso y orquestación del hub</li>
-            </ul>
+          <ul className="card-list">
+            <li>✔ Secure_Link se perfila como candidato serio para una futura etapa de soft launch</li>
+            <li>✔ Data_Link Transform será revisado para definir alcance, utilidad y madurez</li>
+            <li>✔ Behavioral Shield entra como candidato avanzado dentro de la línea de seguridad</li>
+            <li>✔ Nexus y MCP-One seguirán fortaleciendo la capa de integración del ecosistema</li>
+          </ul>
 
-            <div className="card-actions">
-              <a className="btn-mini" href="#ecosystem">Ecosystem →</a>
-              <a className="btn-mini" href="#products">Products →</a>
-            </div>
+          <p className="card-tag">Security · data transform · integration core</p>
+        </article>
 
-            <p className="card-tag">Gateway · security · advanced data flows</p>
-          </article>
-
-          {/* SOON */}
+        {/* SOON */}
           <article className="card card-muted">
             <div className="card-top">
               <h3>Soon (Q4 2026)</h3>
@@ -510,20 +498,20 @@ export default function Home() {
             </div>
 
             <p>
-              Líneas que ya tienen avances o dirección inicial, pero que se retomarán con más foco
-              una vez estabilizado el núcleo de integración.
+            Líneas con base técnica o dirección inicial que se retomarán con más foco una vez
+             estabilizados los candidatos principales y el núcleo de integración.
             </p>
 
             <ul className="card-list">
-              <li>✔ Vision_Link ya cuenta con alertas integradas, pero su modelo aún requiere pruebas más profundas</li>
-              <li>✔ SignVerify aparece como candidato avanzado para Q4</li>
-              <li>✔ Email deliverability será retomado con nuevo enfoque y nombre por confirmar</li>
+              <li>✔ SignVerify aparece como candidato avanzado para una siguiente etapa de verificación</li>
+              <li>✔ Email Deliverability será replanteado con nuevo enfoque y nombre por confirmar</li>
+              <li>✔ Vision_Link continuará en incubación mientras se define su dirección final</li>
             </ul>
 
-            <p className="card-tag">Verification · vision alerts · deliverability</p>
+            <p className="card-tag">Verification · deliverability · incubation</p>
           </article>
 
-            {/* STRATEGIC LINE */}
+          {/* STRATEGIC LINE */}
             <article className="card card-muted">
               <div className="card-top">
                 <h3>Strategic line</h3>
@@ -531,19 +519,21 @@ export default function Home() {
               </div>
 
               <p>
-                EviForge evoluciona como capacidad interna del ecosistema, acelerando bases cloud-ready y entregando soporte real a productos estratégicos sin convertirse en una oferta comercial pública.
+                EviForge y las capacidades internas del ecosistema seguirán evolucionando como soporte
+                para acelerar entregas, reducir fricción técnica y evitar que una sola pieza concentre
+                demasiadas responsabilidades.
               </p>
 
               <ul className="card-list">
-                <li>✔ Ya ha entregado resultados en productos reales como evi-gateway y V-Secrets</li>
-                <li>✔ Reduce fricción de arranque y fortalece la capacidad interna de construcción</li>
-                <li>✔ Su evolución futura se alinea más con tooling interno y SDKs que con una línea pública propia</li>
+                <li>✔ EviForge ya ha entregado resultados en productos reales como evi-gateway y V-Secrets</li>
+                <li>✔ La estrategia favorece piezas ligeras, satélite y bien delimitadas</li>
+                <li>✔ Su evolución futura se alinea con tooling interno, SDKs y soporte al ecosistema</li>
               </ul>
 
-              <p className="card-tag">Internal tooling · build capacity · ecosystem acceleration</p>
+              <p className="card-tag">Internal tooling · satellite capabilities · ecosystem acceleration</p>
             </article>
-          </div>
-        </section>
+        </div>
+      </section>
 
       {/* ABOUT */}
       <section id="about">
