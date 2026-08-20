@@ -414,23 +414,12 @@ export default function StatusPage() {
 
                     {svc.message && <em>{svc.message}</em>}
 
-                    <div className="s-meta">
-                      <small>HTTP: {svc.http_status ?? "N/A"}</small>
+                    {svc.consecutive_failures > 0 && (
+                      <div className="s-meta">
+                        <small>Failures: {svc.consecutive_failures}</small>
+                      </div>
+                    )}
 
-                      <small>
-                        Uptime: {formatUptime(svc.uptime_seconds)}
-                      </small>
-
-                      <small>
-                        Failures: {svc.consecutive_failures ?? 0}
-                      </small>
-
-                      {svc.last_status_change_at && (
-                        <small>
-                          Changed: {relativeTime(svc.last_status_change_at)}
-                        </small>
-                      )}
-                    </div>
                     {svc.checks && svc.checks.length > 0 && (
                       <div className="s-checks">
                         {svc.checks.map((check) => (
@@ -465,34 +454,61 @@ export default function StatusPage() {
                   </div>
                 </div>
 
-                  <div className="s-status-stack">
-                    <span className={`s-badge s-badge--${svc.status}`}>
-                      <StatusDot status={svc.status} />
-                      {getStatusLabel(svc.status)}
-                    </span>
-
-                    {svc.readiness && (
-                      <span
-                        className={`s-readiness s-readiness--${svc.readiness}`}
-                      >
-                        {svc.readiness === "ready"
-                          ? "Ready"
-                          : svc.readiness.replaceAll("_", " ")}
+                  <div className="s-health-cell">
+                    <div className="s-state-stack">
+                      <span className={`s-state-chip s-state-chip--${svc.status}`}>
+                        <StatusDot status={svc.status} />
+                        {getStatusLabel(svc.status)}
                       </span>
-                    )}
+
+                      {svc.readiness && (
+                        <span
+                          className={`s-state-chip s-state-chip--readiness s-state-chip--${svc.readiness}`}
+                        >
+                          <span className="s-readiness-dot" />
+                          {svc.readiness === "ready"
+                            ? "Ready"
+                            : svc.readiness.replaceAll("_", " ")}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className={`s-health-scan s-health-scan--${svc.status}`}>
+                        <span />
+                      </div>
+
+                      <small className="s-health-uptime">
+                        Uptime {formatUptime(svc.uptime_seconds)}
+                      </small>
                   </div>
 
-                  <div className="s-latency" style={{ color: getLatencyColor(svc.latency_ms) }}>
-                    {svc.latency_ms !== null
-                      ? <><b>{svc.latency_ms}</b><span> ms</span></>
-                      : "—"}
+                  <div className="s-response">
+                    <div
+                      className="s-latency"
+                      style={{ color: getLatencyColor(svc.latency_ms) }}
+                    >
+                      {svc.latency_ms !== null
+                        ? <><b>{svc.latency_ms}</b><span> ms</span></>
+                        : "—"}
+                    </div>
+
+                    <small>
+                      HTTP {svc.http_status ?? "N/A"}
+                    </small>
                   </div>
 
                   <UptimeBars events={svc.recent_events} status={svc.status} />
 
                   <div className="s-time" title={formatDate(svc.last_checked)}>
-                    {relativeTime(svc.last_checked)}
+                    <strong>{relativeTime(svc.last_checked)}</strong>
+
+                    {svc.last_status_change_at && (
+                      <small>
+                        Changed {relativeTime(svc.last_status_change_at)}
+                      </small>
+                    )}
                   </div>
+
                   {expandedService === svc.name && (
                     <div className="s-events-panel">
 
@@ -748,6 +764,102 @@ const css = `
   }
   .sp-body { display: flex; flex-direction: column; }
 
+  .s-health-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .38rem;
+}
+  .s-response {
+    display: flex;
+    flex-direction: column;
+    gap: .22rem;
+  }
+
+  .s-response small {
+    font-size: .61rem;
+    color: var(--c-muted);
+  }
+
+.s-state-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .28rem;
+}
+
+.s-state-chip {
+  min-width: 108px;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .28rem .65rem;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.s-state-chip--operational {
+  background: rgba(74,222,128,.08);
+  border-color: rgba(74,222,128,.22);
+  color: var(--c-green);
+}
+
+.s-state-chip--readiness {
+  background: rgba(74,222,128,.025);
+  border-color: rgba(74,222,128,.12);
+  color: rgba(150,220,175,.85);
+}
+
+.s-readiness-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-green);
+}
+
+.s-health-scan {
+  position: relative;
+  width: 108px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+}
+
+.s-health-scan span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 35%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--c-green),
+    transparent
+  );
+  animation: status-scan 2.8s ease-in-out infinite;
+}
+
+@keyframes status-scan {
+  from { transform: translateX(-120%); }
+  to   { transform: translateX(320%); }
+}
+
+.s-health-uptime {
+  font-size: .61rem;
+  color: var(--c-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-health-scan span {
+    animation: none;
+    left: 30%;
+  }
+}
+
   /* ── Row ── */
   .s-row {
     display: grid;
@@ -985,10 +1097,20 @@ const css = `
 
   /* ── Time ── */
   .s-time {
+    display: flex;
+    flex-direction: column;
+    gap: .22rem;
+  }
+
+  .s-time strong {
     font-size: .78rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .s-time small {
+    font-size: .61rem;
     color: var(--c-muted);
-    font-variant-numeric: tabular-nums;
-    cursor: default;
   }
 
   /* ── Skeleton ── */
