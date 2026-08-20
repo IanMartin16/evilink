@@ -46,6 +46,23 @@ type ServiceStatusItem = {
   recent_events: ServiceCheckEventItem[];
 };
 
+type ServiceEventItem = {
+  event_type: string;
+  severity: string;
+  previous_status: string | null;
+  current_status: string | null;
+  message: string | null;
+  metadata: Record<string, unknown> | null;
+  source_check_id: number | null;
+  occurred_at: string;
+};
+
+type ServiceEventsResponse = {
+  name: string;
+  display_name: string;
+  events: ServiceEventItem[];
+};
+
 type ServiceCheckEventItem = {
   status: ServiceStatus;
   latency_ms: number | null;
@@ -214,6 +231,59 @@ export default function StatusPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  //-----Events ------------------------------------------------------------
+  const [expandedService, setExpandedService] = useState<string | null>(null);
+
+  const [serviceEvents, setServiceEvents] = useState<
+    Record<string, ServiceEventItem[]>
+  >({});
+
+  const [eventsLoading, setEventsLoading] = useState<
+    Record<string, boolean>
+  >({});
+
+  async function toggleServiceEvents(serviceName: string) {
+      if (expandedService === serviceName) {
+        setExpandedService(null);
+        return;
+      }
+
+      setExpandedService(serviceName);
+
+      if (serviceEvents[serviceName]) {
+        return;
+      }
+
+      setEventsLoading((prev) => ({
+        ...prev,
+        [serviceName]: true,
+      }));
+
+      try {
+        const response = await fetch(
+          `${STATUS_HUB_BASE_URL}/v1/status/${serviceName}/events?limit=10`,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch service events.");
+        }
+
+        const data =
+          (await response.json()) as ServiceEventsResponse;
+
+        setServiceEvents((prev) => ({
+          ...prev,
+          [serviceName]: data.events,
+        }));
+      } finally {
+        setEventsLoading((prev) => ({
+          ...prev,
+          [serviceName]: false,
+        }));
+      }
+    }
+
   useEffect(() => {
     let mounted = true;
 
@@ -375,7 +445,25 @@ export default function StatusPage() {
                         ))}
                       </div>
                     )}
+                    <div className="s-actions">
+                      <button
+                        type="button"
+                        className="s-events-btn"
+                        onClick={() => toggleServiceEvents(svc.name)}
+                      >
+                        Events
+                      <span
+                        className={`s-events-chevron ${
+                          expandedService === svc.name
+                            ? "s-events-chevron--open"
+                            : ""
+                        }`}
+                      >
+                        ▾
+                      </span>
+                    </button>
                   </div>
+                </div>
 
                   <div className="s-status-stack">
                     <span className={`s-badge s-badge--${svc.status}`}>
@@ -405,6 +493,57 @@ export default function StatusPage() {
                   <div className="s-time" title={formatDate(svc.last_checked)}>
                     {relativeTime(svc.last_checked)}
                   </div>
+                  {expandedService === svc.name && (
+                    <div className="s-events-panel">
+
+                      <div className="s-events-head">
+                        <strong>Recent operational events</strong>
+                        <span>Significant changes only</span>
+                      </div>
+
+                      {eventsLoading[svc.name] ? (
+                        <div className="s-events-empty">
+                          Loading events...
+                        </div>
+                      ) : serviceEvents[svc.name]?.length ? (
+                        <div className="s-events-list">
+                          {serviceEvents[svc.name].map((event) => (
+                        <div
+                          key={`${event.source_check_id}-${event.occurred_at}`}
+                          className={`s-event s-event--${event.severity}`}
+                        >
+                          <div className="s-event-top">
+                            <strong>
+                              {event.event_type.replaceAll("_", " ")}
+                            </strong>
+
+                            <span>
+                              {relativeTime(event.occurred_at)}
+                            </span>
+                          </div>
+
+                          {event.message && (
+                            <p>{event.message}</p>
+                          )}
+
+                          {(event.previous_status || event.current_status) && (
+                            <div className="s-event-transition">
+                              {event.previous_status ?? "unknown"}
+                              <span>→</span>
+                              {event.current_status ?? "unknown"}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="s-events-empty">
+                      No significant events recorded.
+                    </div>
+                  )}
+
+                  </div>
+                )}
                 </article>
               ))}
             </div>
@@ -712,6 +851,137 @@ const css = `
     width: 3.5ch;
     text-align: right;
   }
+
+  /* ── Service events ── */
+
+.s-actions {
+  margin-top: .4rem;
+}
+
+.s-events-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  color: rgba(96, 165, 250, .8);
+  font-size: .64rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.s-events-btn:hover {
+  color: var(--c-blue);
+}
+
+.s-events-chevron {
+  display: inline-block;
+  transition: transform .18s ease;
+}
+
+.s-events-chevron--open {
+  transform: rotate(180deg);
+}
+
+.s-events-panel {
+  grid-column: 1 / -1;
+
+  margin: .35rem 0 0;
+  padding: .9rem 1rem;
+
+  border-top: 1px solid var(--border);
+  background: rgba(255,255,255,.018);
+}
+
+.s-events-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: .7rem;
+}
+
+.s-events-head strong {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.s-events-head span {
+  font-size: .62rem;
+  color: var(--c-muted);
+}
+
+.s-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.s-event {
+  padding: .6rem .7rem;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: rgba(255,255,255,.02);
+}
+
+.s-event-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.s-event-top strong {
+  font-size: .66rem;
+  letter-spacing: .04em;
+  color: var(--text);
+}
+
+.s-event-top span {
+  font-size: .62rem;
+  color: var(--c-muted);
+}
+
+.s-event p {
+  margin: .35rem 0 0;
+  font-size: .68rem;
+  color: var(--c-muted);
+}
+
+.s-event-transition {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+
+  margin-top: .4rem;
+
+  font-size: .62rem;
+  font-family: monospace;
+  color: var(--c-muted);
+}
+
+.s-event--warning {
+  border-color: rgba(251,191,36,.2);
+}
+
+.s-event--critical {
+  border-color: rgba(248,113,113,.22);
+}
+
+.s-events-empty {
+  padding: .5rem 0;
+  font-size: .68rem;
+  color: var(--c-muted);
+}
 
   /* ── Time ── */
   .s-time {
