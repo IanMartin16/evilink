@@ -18,12 +18,27 @@ type StatusSummaryResponse = {
   last_updated: string;
 };
 
+type HealthCheckItem = {
+  name: string;
+  status: string;
+  details?: unknown;
+  message?: string | null;
+  latency_ms?: number | null;
+  metadata?: Record<string, unknown> | null;
+};
+
 type ServiceStatusItem = {
-  http_status: string;
+  http_status: number | null;
   name: string;
   display_name: string;
   status: ServiceStatus;
   latency_ms: number | null;
+
+  readiness: string | null;
+  uptime_seconds: number | null;
+  contract_version: string | null;
+  checks: HealthCheckItem[] | null;
+
   last_checked: string;
   last_status_change_at: string | null;
   consecutive_failures: number;
@@ -91,11 +106,25 @@ function getStatusLabel(status: ServiceStatus): string {
 
 function getLatencyColor(ms: number | null): string {
   if (ms === null) return "var(--c-muted)";
-  if (ms < 200) return "var(--c-green)";
-  if (ms < 600) return "var(--c-amber)";
-  return "var(--c-red)";
+  if (ms < 750) return "var(--c-green)";
+  if (ms < 2000) return "var(--c-amber)";
+  return "var(--c-orange)";
 }
 
+
+function formatUptime(seconds: number | null): string {
+  if (seconds === null || seconds < 0) return "N/A";
+
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m`;
+
+  return `${seconds}s`;
+}
 /**
  * Deterministic pseudo-random uptime history seeded by service name.
  * Produces consistent bars across renders without real historical data.
@@ -317,18 +346,52 @@ export default function StatusPage() {
 
                     <div className="s-meta">
                       <small>HTTP: {svc.http_status ?? "N/A"}</small>
-                      <small>Failures: {svc.consecutive_failures ?? 0}</small>
+
+                      <small>
+                        Uptime: {formatUptime(svc.uptime_seconds)}
+                      </small>
+
+                      <small>
+                        Failures: {svc.consecutive_failures ?? 0}
+                      </small>
+
                       {svc.last_status_change_at && (
-                        <small>Changed: {relativeTime(svc.last_status_change_at)}</small>
+                        <small>
+                          Changed: {relativeTime(svc.last_status_change_at)}
+                        </small>
                       )}
                     </div>
+                    {svc.checks && svc.checks.length > 0 && (
+                      <div className="s-checks">
+                        {svc.checks.map((check) => (
+                          <span
+                            key={check.name}
+                            className={`s-check s-check--${check.status}`}
+                            title={check.message ?? undefined}
+                          >
+                            <span className="s-check-dot" />
+                            {check.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  <div>
+                  <div className="s-status-stack">
                     <span className={`s-badge s-badge--${svc.status}`}>
                       <StatusDot status={svc.status} />
                       {getStatusLabel(svc.status)}
                     </span>
+
+                    {svc.readiness && (
+                      <span
+                        className={`s-readiness s-readiness--${svc.readiness}`}
+                      >
+                        {svc.readiness === "ready"
+                          ? "Ready"
+                          : svc.readiness.replaceAll("_", " ")}
+                      </span>
+                    )}
                   </div>
 
                   <div className="s-latency" style={{ color: getLatencyColor(svc.latency_ms) }}>
@@ -579,7 +642,16 @@ const css = `
   .s-svc        { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
   .s-svc strong { font-size: .875rem; font-weight: 600; }
   .s-svc span   { font-size: .7rem; color: var(--c-muted); font-family: monospace; }
-  .s-svc em     { font-size: .7rem; color: var(--c-amber); font-style: normal; margin-top: .1rem; }
+  .s-svc em     {font-size: .7rem; color: var(--c-muted); font-style: normal; margin-top: .1rem; }
+
+  .s-row--degraded .s-svc em,
+  .s-row--platform_issue .s-svc em {
+    color: var(--c-amber);
+  }
+
+  .s-row--down .s-svc em {
+    color: var(--c-red);
+  }
 
   /* ── Badge ── */
   .s-badge {
@@ -796,11 +868,14 @@ const css = `
 .s-meta small {
   display: inline-flex;
   align-items: center;
-  padding: .16rem .38rem;
+  padding: .16rem .42rem;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.03);
-  color: var(--c-muted);
+
+  border: 1px solid rgba(96, 165, 250, .13);
+  background: rgba(96, 165, 250, .045);
+
+  color: rgba(148, 180, 215, .88);
+
   font-size: .62rem;
   font-family: inherit;
   line-height: 1.2;
@@ -858,6 +933,88 @@ const css = `
   line-height: 1.45;
   color: rgba(235, 235, 225, 0.74);
 }
+
+  /* ── Health.v1 telemetry ── */
+
+  .s-status-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .35rem;
+  }
+
+  .s-readiness {
+    font-size: .61rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .s-readiness--ready {
+    color: var(--c-green);
+  }
+
+  .s-readiness--not_ready {
+    color: var(--c-amber);
+  }
+
+  .s-checks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .45rem;
+  }
+
+  .s-check {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .16rem .42rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,255,255,.025);
+    color: var(--c-muted);
+    font-size: .61rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .s-check-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--c-muted);
+  }
+
+  .s-check--operational {
+    background: rgba(74, 222, 128, .055);
+    border-color: rgba(74, 222, 128, .18);
+    color: rgba(190, 230, 205, .88);
+  }
+
+  .s-check--operational .s-check-dot {
+    background: var(--c-green);
+    box-shadow: 0 0 6px rgba(74, 222, 128, .25);
+  }
+
+  .s-check--degraded {
+    background: rgba(251, 191, 36, .055);
+    border-color: rgba(251, 191, 36, .18);
+  }
+
+  .s-check--down {
+    background: rgba(248, 113, 113, .055);
+    border-color: rgba(248, 113, 113, .18);
+  }
+
+  .s-check--platform_issue {
+    background: rgba(251, 146, 60, .055);
+    border-color: rgba(251, 146, 60, .18);
+  }
 
 /* Responsive metric grid for 6 cards */
 @media (max-width: 980px) {
