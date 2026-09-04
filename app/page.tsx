@@ -272,7 +272,7 @@ export default function Home() {
 
       {/* HOW IT WORKS */}
       <section className="section">
-        <h2>Cómo funciona</h2>
+       <h2>Cómo funciona</h2>
 
         <p className="section-intro">
           Para el usuario final se siente simple. Para developers, Evilink funciona como un pipeline claro de
@@ -291,8 +291,8 @@ export default function Home() {
 
             <ul className="flowList">
               <li>REST + SSE</li>
-              <li>Market360º</li>
-              <li>Portal enriquecido en v4</li>
+              <li>Market360º + Derived Intelligence</li>
+              <li>API enriquecida con datos de mercado</li>
             </ul>
           </article>
 
@@ -310,47 +310,47 @@ export default function Home() {
             <ul className="flowList">
               <li>Trends activos</li>
               <li>Datos reales de mercado</li>
-              <li>Contexto integrado en CryptoLink</li>
+              <li>Base para futuros insights</li>
             </ul>
           </article>
 
           <div className="flowArrow" aria-hidden>→</div>
 
-            <article className="flowCard">
-              <div className="flowTop">
-                <span className="flowIcon" aria-hidden>🤖</span>
-                <div>
-                  <div className="flowTitle">MCP-One + Nexus</div>
-                  <div className="flowSub">Orchestration layer</div>
-                </div>
+          <article className="flowCard">
+            <div className="flowTop">
+              <span className="flowIcon" aria-hidden>🤖</span>
+              <div>
+                <div className="flowTitle">MCP-One + Nexus</div>
+                <div className="flowSub">Orchestration layer</div>
               </div>
+            </div>
 
-              <ul className="flowList">
-                <li>MCP-One integrado con Nexus en prod</li>
-                <li>Coordinación guiada del ecosistema</li>
-                <li>Base para integración más avanzada</li>
-              </ul>
-            </article>
+            <ul className="flowList">
+              <li>Integración operativa con Nexus</li>
+              <li>Coordinación guiada del ecosistema</li>
+              <li>Ruta ligera para futuras integraciones</li>
+            </ul>
+          </article>
 
-            <div className="flowArrow" aria-hidden>→</div>
+          <div className="flowArrow" aria-hidden>→</div>
 
-            <article className="flowCard">
-              <div className="flowTop">
-                <span className="flowIcon" aria-hidden>🛡️</span>
-                <div>
-                  <div className="flowTitle">Status-Hub</div>
-                  <div className="flowSub">Operations</div>
-                </div>
+          <article className="flowCard">
+            <div className="flowTop">
+              <span className="flowIcon" aria-hidden>📡</span>
+              <div>
+                <div className="flowTitle">Status-Hub</div>
+                <div className="flowSub">Operations</div>
               </div>
+            </div>
 
-              <ul className="flowList">
-                <li>Checks reales</li>
-                <li>Visibilidad operativa</li>
-                <li>Detección temprana de bugs y debilidades</li>
-              </ul>
-            </article>
-          </div>
-        </section>
+            <ul className="flowList">
+              <li>Checks reales</li>
+              <li>Métricas operativas</li>
+              <li>Señales tempranas de degradación</li>
+            </ul>
+          </article>
+        </div>
+      </section>
 
       {/* DEV EXPERIENCE */}
       <section className="section">
