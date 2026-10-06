@@ -52,17 +52,25 @@ export default function Home() {
     key: "market_intelligence",
     name: "CryptoLink + Social_Link",
     status: "LIVE",
-    desc: "CryptoLink y Social_Link consolidan una capa de inteligencia de mercado más rica, combinando datos reales, señales sociales y derivados propios del ecosistema.",
+    desc: "La capa de inteligencia de mercado de Evilink da uno de sus mayores saltos: CryptoLink combina datos persistentes, ranking propio y nuevas señales mientras Social_Link convierte la atención del mercado en información histórica y utilizable.",
     bullets: [
-      "CryptoLink web evoluciona como portal de referencia pública",
-      "CryptoLink V2 fortalece su contrato, sus llamadas por símbolos y sus derivados",
-      "Social_Link avanza hacia una capa de insights basada en datos persistentes",
+      "Overview ofrece un Top 100 propio con datos de mercado e histórico corto",
+      "Market Breadth añade una nueva dimensión de lectura independiente del precio",
+      "Market Attention y Attention Pulse evolucionan sobre historial real de tendencias",
     ],
     links: [
-      { label: "Visit CryptoLink →", href: "https://cryptolink.mx/dashboard", external: true },
-      { label: "Docs →", href: "https://cryptolink.mx/docs", external: true },
+      {
+        label: "Visit CryptoLink →",
+        href: "https://cryptolink.mx/dashboard",
+        external: true,
+    },
+    {
+        label: "Docs →",
+        href: "https://cryptolink.mx/docs",
+        external: true,
+      },
     ],
-    tag: "market intelligence · real signals · enriched API",
+    tag: "own ranking · market breadth · real attention",
     muted: false,
   },
   {
@@ -139,9 +147,9 @@ export default function Home() {
           </div>
 
           <p className="hero-note">
-            ✦ Este ciclo estuvo enfocado en consolidación: productos más maduros,
-            más datos útiles, mejor observabilidad y una capa de mercado más rica
-            para sostener la siguiente etapa del ecosistema.
+            ✦ Este ciclo estuvo concentrado en CryptoLink: ranking propio, nuevas señales
+            de mercado, atención basada en datos históricos y una capa de inteligencia
+            cada vez más construida sobre información persistente del ecosistema.
           </p>
         </div>
 
