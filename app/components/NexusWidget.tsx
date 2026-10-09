@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import {
   useEffect,
   useRef,
@@ -23,17 +21,9 @@ import {
   sectionsToPlainText,
 } from "@/components/nexus/nexus.utils";
 
-const EVILINK = {
-  accent: "#2BFF88",        // verde neón
-  accent2: "#00E5FF",       // cian para detalle
-  bg: "#0B0F14",            // fondo oscuro
-  panel: "#0F1620",         // panel
-  border: "rgba(255,255,255,0.10)",
-  text: "rgba(255,255,255,0.92)",
-  muted: "rgba(255,255,255,0.65)",
-  bubbleUser: "rgba(43,255,136,0.14)",
-  bubbleBot: "rgba(255,255,255,0.08)",
-};
+import { EVILINK } from "@/components/nexus/nexus.constants";
+import { NexusMarkdown } from "@/components/nexus/NexusMarkdown";
+import { NexusSection } from "@/components/nexus/NexusSections";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -52,55 +42,6 @@ const LS_SESSION_KEY = "nexus.sessionId";
 const LS_MSGS = (p: string) => `nexus_msgs_${p}`;
 const LS_LAST_PRODUCT = "nexus.product";
 
-
-/** Markdown ultra-ligero: negritas + inline code + code blocks */
-function renderLiteMarkdown(text: string) {
-  // Split por code blocks ```
-  const parts = text.split(/```/g);
-  return parts.map((chunk, idx) => {
-    const isCodeBlock = idx % 2 === 1;
-    if (isCodeBlock) {
-      return (
-        <pre key={idx} style={{
-          margin: "10px 0",
-          padding: 12,
-          borderRadius: 12,
-          background: "rgba(0,0,0,0.06)",
-          overflowX: "auto",
-          fontSize: 12,
-          lineHeight: 1.4
-        }}>
-          <code>{chunk.replace(/^\w+\n/, "")}</code>
-        </pre>
-      );
-    }
-
-    // Inline formatting: **bold** and `code`
-    const inline = chunk
-      .split(/(\*\*[^*]+\*\*|`[^`]+`)/g)
-      .filter(Boolean)
-      .map((t, j) => {
-        if (t.startsWith("**") && t.endsWith("**")) {
-          return <strong key={j}>{t.slice(2, -2)}</strong>;
-        }
-        if (t.startsWith("`") && t.endsWith("`")) {
-          return (
-            <code key={j} style={{
-              padding: "2px 6px",
-              borderRadius: 8,
-              background: "rgba(0,0,0,0.06)",
-              fontSize: 12
-            }}>
-              {t.slice(1, -1)}
-            </code>
-          );
-        }
-        return <span key={j}>{t}</span>;
-      });
-
-    return <span key={idx}>{inline}</span>;
-  });
-}
 
 export default function NexusWidget() {
   const [open, setOpen] = useState(false);
@@ -727,265 +668,6 @@ function EcosystemIntro() {
     fab: 10000,
   } as const;
 
-function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
-  const values = points
-    .map((p) => Number(p?.v))
-    .filter((n) => Number.isFinite(n));
-
-  if (values.length < 2) {
-    return (
-      <div style={{ fontSize: 11, opacity: 0.65 }}>
-        Sin histórico suficiente
-      </div>
-    );
-  }
-
-  const width = 180;
-  const height = 30;
-  const path = buildSparkPath(values, width, height);
-
-  const up = values[values.length - 1] >= values[0];
-  const stroke = up ? "#2BFF88" : "#FF6B6B";
-
-  return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      width="100%"
-      height="42"
-      preserveAspectRatio="none"
-      style={{ display: "block" }}
-    >
-      <path
-        d={path}
-        fill="none"
-        stroke={stroke}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-  function SectionView({ s }: { s: McpSection }) {
-  if (s.type === "notice") {
-    const kind = (s.kind ?? "info").toLowerCase();
-    const isWarn = kind === "warning";
-    const isErr = kind === "error";
-
-    const bg = isErr
-      ? "rgba(255, 80, 80, 0.12)"
-      : isWarn
-      ? "rgba(255, 180, 0, 0.12)"
-      : "rgba(0, 229, 255, 0.10)";
-
-    const badge = isErr ? "ERROR" : isWarn ? "WARN" : "INFO";
-
-    return (
-      <div style={{
-        padding: "8px 10px",
-        borderRadius: 14,
-        border: `1px solid ${EVILINK.border}`,
-        background: bg,
-        fontSize: 11,
-        lineHeight: 1.35
-      }}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{
-            fontSize: 10,
-            fontWeight: 900,
-            letterSpacing: 0.6,
-            padding: "2px 8px",
-            borderRadius: 999,
-            background: "rgba(255,255,255,0.10)",
-            border: `1px solid ${EVILINK.border}`,
-          }}>
-            {badge}
-          </span>
-          <div style={{ fontWeight: 900 }}>
-            {s.message ?? "Notice"}
-          </div>
-        </div>
-
-        {s.details && (
-          <div style={{ opacity: 0.8, marginTop: 6 }}>
-            {s.details}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (s.type === "kpi_grid") {
-    const items = Array.isArray(s.items) ? s.items : [];
-    const cols =
-      items.length === 1 ? "1fr" :
-      items.length === 2 ? "repeat(2, minmax(0, 1fr))" :
-      items.length === 3 ? "repeat(3, minmax(0, 1fr))" :
-      "repeat(2, minmax(0, 1fr))";
-      
-    return (
-      <div style={{ display: "grid", gap: 8 }}>
-        {s.title && (
-          <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
-            {s.title}
-          </div>
-        )}
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: 10
-        }}>
-          {items.map((it, idx) => {
-            const tone = String((it as any).tone ?? "").toLowerCase();
-            const toneColor =
-              tone === "up"
-                ? "#2BFF88"
-                : tone === "down"
-                ? "#FF6B6B"
-                : EVILINK.text;
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 14,
-                  border: `1px solid ${EVILINK.border}`,
-                  background: "rgba(255,255,255,0.06)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.22)",
-                }}
-              >
-                <div style={{ fontSize: 11, opacity: 0.75 }}>
-                  {String(it.label ?? "KPI")}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                  <div
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 900,
-                      color: toneColor,
-                    }}
-                  >
-                {it.value === null || it.value === undefined ? "—" : String(it.value)}
-              </div>
-
-              {it.unit ? (
-                <div
-                  style={{
-                    fontSize: 11,
-                    opacity: 0.75,
-                    color: toneColor,
-                  }}
-                >
-                  {String(it.unit)}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        );
-      })}
-        </div>
-      </div>
-    );
-  }
-  if (s.type === "sparkline") {
-  const items = Array.isArray(s.items) ? s.items : [];
-
-  return (
-    <div style={{ display: "grid", gap: 8 }}>
-      {s.title && (
-        <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
-          {s.title}
-        </div>
-      )}
-
-      <div style={{ display: "grid", gap: 10 }}>
-        {items.map((it, idx) => {
-          const points = Array.isArray(it.points) ? it.points : [];
-          const values = points
-            .map((p) => Number(p?.v))
-            .filter((n) => Number.isFinite(n));
-
-          const last = values.length ? values[values.length - 1] : null;
-          const first = values.length ? values[0] : null;
-          const up = last !== null && first !== null ? last >= first : null;
-
-          return (
-            <div
-              key={idx}
-              style={{
-                padding: "8px 10px",
-                borderRadius: 14,
-                border: `1px solid ${EVILINK.border}`,
-                background: "rgba(255,255,255,0.05)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
-                display: "grid",
-                gap: 6,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
-                <div style={{ fontSize: 11, opacity: 0.72 }}>
-                  {String(it.label ?? "Serie")}
-                </div>
-
-                <div
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 900,
-                    color:
-                      up === null
-                        ? EVILINK.text
-                        : up
-                        ? "#2BFF88"
-                        : "#FF6B6B",
-                  }}
-                >
-                  {last === null ? "N/D" : Number(last).toLocaleString()}
-                </div>
-              </div>
-
-              <SparkMini points={points} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-  // default text (o cualquier otro)
-  if (s.type === "text") {
-    return (
-      <div style={{
-        padding: "10px 12px",
-        borderRadius: 14,
-        border: `1px solid ${EVILINK.border}`,
-        background: "rgba(255,255,255,0.04)"
-      }}>
-        {s.title && <div style={{ fontWeight: 900, marginBottom: 6 }}>{s.title}</div>}
-        {renderLiteMarkdown(s.text ?? "")}
-      </div>
-    );
-  }
-
-  // fallback por si llega algo nuevo
-  return (
-    <div style={{
-      padding: "10px 12px",
-      borderRadius: 14,
-      border: `1px solid ${EVILINK.border}`,
-      background: "rgba(255,255,255,0.03)",
-      fontSize: 12,
-      opacity: 0.85
-    }}>
-      <div style={{ fontWeight: 900 }}>{s.title ?? s.type}</div>
-      {s.text ? <div style={{ marginTop: 6 }}>{renderLiteMarkdown(s.text)}</div> : null}
-    </div>
-  );
-}
-
 function DevMeta({ m }: { m: Msg }) {
   const toolResults = Array.isArray(m.toolResults) ? m.toolResults : [];
 
@@ -1092,7 +774,12 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
   return (
     <div style={{ display: "grid", gap: 10 }}>
       {/* 1) Notice(s) de cabecera — procedencia arriba */}
-      {headerNotices.map((s) => <SectionView key={s.id} s={s} />)}
+      {headerNotices.map((section) => (
+        <NexusSection
+          key={section.id}
+          section={section}
+        />
+      ))}
 
       {/* 2) Narrativa — la voz, después del notice */}
       {narrative ? (
@@ -1106,16 +793,23 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
             lineHeight: 1.45,
           }}
           >
-         {renderLiteMarkdown(narrative)}
+         <NexusMarkdown text={narrative} />
         </div>
       ) : null}
 
       {/* 3) Resto de sections (kpi_grid, text, etc.) — el detalle abajo */}
-      {bodySections.map((s) => <SectionView key={s.id} s={s} />)}
+      {bodySections.map((section) => (
+        <NexusSection
+          key={section.id}
+          section={section}
+        />
+      ))}
 
       {/* Caso sin sections: recomendación pura -> solo narrativa (ya arriba).
           Si no había narrativa NI sections, muestra el text crudo como fallback. */}
-      {!hasAnySection && !narrative ? <>{renderLiteMarkdown(m.text)}</> : null}
+      {!hasAnySection && !narrative ? (
+        <NexusMarkdown text={m.text} />
+      ) : null}
 
       {devMode ? <DevMeta m={m} /> : null}
     </div>
@@ -1433,21 +1127,25 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
                     {/* bubble */}
                   <div
                     style={{
-                    padding: "10px 12px",
-                    borderRadius: 14,
-                    background: m.role === "user" ? EVILINK.bubbleUser : EVILINK.bubbleBot,
-                    color: EVILINK.text,
-                    border: `1px solid ${EVILINK.border}`,
-                    whiteSpace: "pre-wrap",
-                    letterSpacing: "-0.01em",
-                    lineHeight: 1.4,
-                    fontSize: 14,
-                  }}
-                >
-                  {m.role === "assistant"
-                    ? <RenderAssistantMessage m={m} devMode={devMode} />
-                    : renderLiteMarkdown(m.text)}
-                </div>
+                      padding: "10px 12px",
+                      borderRadius: 14,
+                      background:
+                        m.role === "user"
+                          ? EVILINK.bubbleUser
+                          : EVILINK.bubbleBot,
+                      color: EVILINK.text,
+                      border: `1px solid ${EVILINK.border}`,
+                      whiteSpace: "pre-wrap",
+                      letterSpacing: "-0.01em",
+                      lineHeight: 1.4,
+                      fontSize: 14,
+                    }}
+                  >
+                    {m.role === "assistant"
+                      ? <RenderAssistantMessage m={m} devMode={devMode} />
+                      : <NexusMarkdown text={m.text} />
+                    }
+                  </div>
                   {/* actions: solo assistant */}
                   {m.role === "assistant" && (
                 <div style={{ display: "flex", gap: 8, opacity: 0.9 }}>
