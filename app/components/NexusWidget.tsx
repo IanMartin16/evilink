@@ -1,7 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+"use client";
+
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { Geist, Sora } from "next/font/google";
+
+import type {
+  McpSection,
+  Msg,
+} from "@/components/nexus/nexus.types";
+
+import {
+  buildSparkPath,
+  dedupeByFingerprint,
+  looksSensitive,
+  safeParse,
+  sectionsToPlainText,
+} from "@/components/nexus/nexus.utils";
 
 const EVILINK = {
   accent: "#2BFF88",        // verde neón
@@ -25,29 +45,6 @@ const geist = Geist({
   subsets: ["latin"],
 });
 
-type Product = "curpify" | "cryptolink" | "evilink" | "data_link" | "vsecrets" | "status_hub" | "mcpone" | "nexus";
-type McpSection = {
-  id: string;
-  type: string;
-  title: string | null;
-  text?: string | null;
-  kind?: string | null;
-  message?: string | null;
-  details?: string | null;
-  items?: Array<{ label?: string; value?: any; unit?: string; points?: Array<{t?: string; v?: number }> }> | null;
-}
-type Msg = {
-  id: string; 
-  role: "user" | "assistant" | "system"; 
-  text: string; 
-  ts: number, 
-  product: string;
-  sections?: McpSection[];
-
-  traceId?: string;
-  toolCalls?: any[];
-  toolResults?: any[];
-};
 
 const LS_KEY = "nexus_widget_state_v1";
 const LS_PRODUCT_KEY = "nexus.product";
@@ -55,11 +52,6 @@ const LS_SESSION_KEY = "nexus.sessionId";
 const LS_MSGS = (p: string) => `nexus_msgs_${p}`;
 const LS_LAST_PRODUCT = "nexus.product";
 
-
-function safeParse<T>(s: string | null): T | null {
-  if (!s) return null;
-  try { return JSON.parse(s) as T; } catch { return null; }
-}
 
 /** Markdown ultra-ligero: negritas + inline code + code blocks */
 function renderLiteMarkdown(text: string) {
@@ -336,17 +328,6 @@ useEffect(() => {
     return created;
   });
 
-  function dedupeByFingerprint(list: Msg[]) {
-   const seen = new Set<string>();
-   const out: Msg[] = [];
-   for (const m of list) {
-    const key = `${m.role}|${m.ts}|${m.text}`;
-     if (seen.has(key)) continue;
-     seen.add(key);
-     out.push(m);
-    }
-    return out;
-  }
 
   useEffect(() => {
   if (!open) return;
@@ -397,21 +378,6 @@ useEffect(() => {
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
-
-  const looksSensitive = (t: string) => {
-     const s = t.toLowerCase();
-     return (
-      s.includes("sk_live_") || s.includes("sk_test_") ||
-      s.includes("whsec_") ||
-      s.includes("bearer ") ||
-      s.includes("authorization:") ||
-      s.includes("contraseña") ||
-      s.includes("x-api-key") ||
-      s.includes("password") ||
-      s.includes("token") ||
-      /\b\d{12,19}\b/.test(t.replace(/\s/g, "")) // posible tarjeta
-    );
-  };
 
   const lastSendRef = useRef(0);
   const lastPromptRef = useRef("");
@@ -547,64 +513,6 @@ useEffect(() => {
       localStorage.setItem(LS_MSGS(product), JSON.stringify([welcome]));
     } catch {}
   }
-
-  function sectionsToPlainText(sections?: McpSection[]) {
-  if (!Array.isArray(sections) || sections.length === 0) return "";
-
-  return sections
-    .map((s) => {
-      if (s.type === "notice") {
-        const badge =
-          (s.kind ?? "info").toString().toUpperCase();
-        return `${badge}: ${s.message ?? ""}${s.details ? `\n${s.details}` : ""}`.trim();
-      }
-
-      if (s.type === "kpi_grid") {
-        const items = Array.isArray(s.items) ? s.items : [];
-        const body = items
-          .map((it) => {
-            const label = String(it.label ?? "KPI");
-            const value = it.value === null || it.value === undefined ? "—" : String(it.value);
-            const unit = it.unit ? ` ${String(it.unit)}` : "";
-            return `${label}: ${value}${unit}`;
-          })
-          .join("\n");
-
-        return `${s.title ? `${s.title}\n` : ""}${body}`.trim();
-      }
-
-      if (s.type === "sparkline") {
-        const items = Array.isArray(s.items) ? s.items : [];
-        const body = items
-          .map((it) => {
-            const label = String(it.label ?? "Serie");
-            const points = Array.isArray(it.points) ? it.points : [];
-            const values = points
-              .map((p) => Number(p?.v))
-              .filter((n) => Number.isFinite(n));
-
-            if (values.length < 2) return `${label}: sin histórico suficiente`;
-
-            const first = values[0];
-            const last = values[values.length - 1];
-            const trend = last > first ? "alcista" : last < first ? "bajista" : "plana";
-
-            return `${label}: tendencia ${trend}, último valor ${Number(last).toLocaleString()}`;
-          })
-          .join("\n");
-
-        return `${s.title ? `${s.title}\n` : ""}${body}`.trim();
-      }
-
-      if (s.type === "text") {
-        return `${s.title ? `${s.title}\n` : ""}${s.text ?? ""}`.trim();
-      }
-
-      return s.text ?? "";
-    })
-    .filter(Boolean)
-    .join("\n\n");
-}
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -818,22 +726,6 @@ function EcosystemIntro() {
     teaser: 10001,
     fab: 10000,
   } as const;
-
-  function buildSparkPath(values: number[], width: number, height: number) {
-  if (!values.length) return "";
-
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-
-  return values
-    .map((v, i) => {
-      const x = (i / Math.max(values.length - 1, 1)) * width;
-      const y = height - ((v - min) / range) * height;
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(" ");
-}
 
 function SparkMini({ points }: { points: Array<{ t?: string; v?: number }> }) {
   const values = points
