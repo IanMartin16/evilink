@@ -6,6 +6,7 @@ import { EVILINK } from "./nexus.constants";
 import { NexusMarkdown } from "./NexusMarkdown";
 import { NexusSection } from "./NexusSections";
 import { sectionsToPlainText } from "./nexus.utils";
+import styles from "./nexusWidget.module.css";
 
 type NexusMessageProps = {
   message: Msg;
@@ -235,88 +236,54 @@ export function NexusMessage({
       ? sectionsToPlainText(message.sections)
       : message.text;
 
-  return (
+  const isUser = message.role === "user";
+
+return (
+  <div
+    className={[
+      styles.message,
+      isUser
+        ? styles.messageUser
+        : styles.messageAssistant,
+    ].join(" ")}
+  >
     <div
-      style={{
-        justifySelf:
-          message.role === "user"
-            ? "end"
-            : "start",
-        maxWidth: "88%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-      }}
+      className={[
+        styles.messageBubble,
+        isUser
+          ? styles.messageBubbleUser
+          : styles.messageBubbleAssistant,
+      ].join(" ")}
     >
-      <div
-        style={{
-          padding: "10px 12px",
-          borderRadius: 14,
-
-          background:
-            message.role === "user"
-              ? EVILINK.bubbleUser
-              : EVILINK.bubbleBot,
-
-          color: EVILINK.text,
-
-          border:
-            `1px solid ${EVILINK.border}`,
-
-          whiteSpace: "pre-wrap",
-          letterSpacing: "-0.01em",
-          lineHeight: 1.4,
-          fontSize: 14,
-        }}
-      >
-        {message.role === "assistant" ? (
-          <AssistantMessage
-            message={message}
-            devMode={devMode}
-          />
-        ) : (
-          <NexusMarkdown
-            text={message.text}
-          />
-        )}
-      </div>
-
-      {message.role === "assistant" && (
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            opacity: 0.9,
-          }}
-        >
-          <button
-            onClick={() =>
-              onCopy(
-                message.id,
-                copyPayload,
-              )
-            }
-            style={{
-              padding: "4px 8px",
-              minHeight: 0,
-              borderRadius: 10,
-              background:
-                "rgba(255,255,255,0.06)",
-              border:
-                `1px solid ${EVILINK.border}`,
-              color: EVILINK.text,
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-            title="Copiar respuesta"
-            aria-label="Copiar respuesta"
-          >
-            {copied
-              ? "✅ Copied"
-              : "📋 Copy"}
-          </button>
-        </div>
+      {message.role === "assistant" ? (
+        <AssistantMessage
+          message={message}
+          devMode={devMode}
+        />
+      ) : (
+        <NexusMarkdown text={message.text} />
       )}
     </div>
-  );
+
+    {message.role === "assistant" && (
+      <div className={styles.messageActions}>
+        <button
+          onClick={() =>
+            onCopy(
+              message.id,
+              copyPayload,
+            )
+          }
+          className={styles.copyButton}
+          title="Copiar respuesta"
+          aria-label="Copiar respuesta"
+        >
+          {copied
+            ? "✅ Copied"
+            : "📋 Copy"}
+        </button>
+      </div>
+    )}
+  </div>
+);
 }

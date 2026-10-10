@@ -11,7 +11,7 @@ import { Geist, Sora } from "next/font/google";
 import type {
   McpSection,
   Msg,
-} from "@/components/nexus/nexus.types";
+} from "./nexus.types";
 
 import {
   buildSparkPath,
@@ -19,13 +19,14 @@ import {
   looksSensitive,
   safeParse,
   sectionsToPlainText,
-} from "@/components/nexus/nexus.utils";
+} from "./nexus.utils";
 
-import { EVILINK } from "@/components/nexus/nexus.constants";
-import { NexusMarkdown } from "@/components/nexus/NexusMarkdown";
-import { NexusSection } from "@/components/nexus/NexusSections";
-import { NexusMessage } from "@/components/nexus/NexusMessage";
-import { NexusComposer } from "@/components/nexus/NexusComposer";
+import { EVILINK } from "./nexus.constants";
+import { NexusMarkdown } from "./NexusMarkdown";
+import { NexusSection } from "./NexusSections";
+import { NexusMessage } from "./NexusMessage";
+import { NexusComposer } from "./NexusComposer";
+import styles from "./nexusWidget.module.css";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -801,164 +802,79 @@ function EcosystemIntro() {
       {/* Overlay + Panel */}
       {open && (
         <div
+          className={styles.overlay}
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.28)",
-            zIndex: Z.overlay,
-
-            // ✅ blur solo desktop
-            backdropFilter: isDesktop ? "blur(3px)" : "none",
-            WebkitBackdropFilter: isDesktop ? "blur(3px)" : "none",
+            if (e.target === e.currentTarget) {
+              setOpen(false);
+            }
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            className={`${styles.shell} ${styles.panel}`}
             style={{
-              position: "fixed",
-              right: 18,
-              bottom: 88,
-              width: "min(420px, calc(100vw - 36px))",
-              height: "min(840px, calc(100vh - 140px))",
-              background: `linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
-              borderRadius: 16,
-              border: `1px solid ${EVILINK.border}`,
-              boxShadow: `0 18px 55px rgba(0,0,0,0.55), 0 0 30px ${EVILINK.accent}22`,
-              display: "grid",
-              gridTemplateRows: "auto 1fr auto",
-              overflow: "hidden",
-              color: EVILINK.text,
-              animation: "nexusPop 140ms ease-out",
-              zIndex: Z.panel, // ✅ panel arriba del overlay
-              fontFamily: `${geist.style.fontFamily}, system-ui, sans-serif`,
+              fontFamily:
+              `${geist.style.fontFamily}, system-ui, sans-serif`,
             }}
           >
             {/* Header */}
-            <div style={{ display: "grid", gap: 10, padding: 12 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
-                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                  <strong style={{ fontSize: 16, color: "transparent",
-                    fontFamily: `${sora.style.fontFamily}, ${geist.style.fontFamily}, system-ui, sans-serif`,
-                    fontWeight: 900,
-                    letterSpacing: "-0.03em",
-                    background: `linear-gradient(90deg, ${EVILINK.accent} 0%, ${EVILINK.accent2})`,
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    textShadow: `0 0 18px ${EVILINK.accent}33`,
-                   }}>Nexus</strong>
-                  <span
+            <div className={styles.header}>
+              <div className={styles.headerMain}>
+                <div className={styles.headerIdentity}>
+                  <strong
+                    className={styles.headerTitle}
                     style={{
-                      fontSize: 12,
-                      color: EVILINK.muted,
-                      letterSpacing: "-0.01em",
-                      lineHeight: "1.35",
-                      overflowWrap: "anywhere",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    Evilink ecosystem assistant · powered by MCPOne
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                  <button
-                    onClick={startNewChat}
-                    style={{
-                    borderRadius: 10,
-                    padding: "6px 10px",
-                    background: EVILINK.accent,
-                    color: "#06110A",
-                    border: "1px solid rgba(0,0,0,0.18)",
-                    boxShadow: `0 0 12px ${EVILINK.accent}55`,
-                    cursor: "pointer",
-                    fontSize: 12,
-                  }}
-                >
-                  Clear
-                </button>
-
-                <button
-                  onClick={() => setOpen(false)}
-                  style={{
-                    borderRadius: 10,
-                    padding: "6px 10px",
-                    background: EVILINK.accent,
-                    color: "#06110A",
-                    border: "1px solid rgba(0,0,0,0.18)",
-                    boxShadow: `0 0 12px ${EVILINK.accent}55`,
-                    cursor: "pointer",
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          </div>
-
-            {/* Product row */}
-            <div style={{ display: "grid", gap: 10, padding: 12 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
-                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                  <div
-                    style={{
-                      marginTop: 8,
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 6,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 800,
-                        padding: "4px 8px",
-                        borderRadius: 999,
-                        color: EVILINK.accent,
-                        background: "rgba(43,255,136,0.10)",
-                        border: `1px solid ${EVILINK.border}`,
+                      fontFamily:
+                        `${sora.style.fontFamily}, ${geist.style.fontFamily}, system-ui, sans-serif`,
                       }}
                     >
-                      Ecosystem mode
-                    </span>
+                      Nexus
+                    </strong>
 
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        padding: "4px 8px",
-                        borderRadius: 999,
-                        color: EVILINK.muted,
-                        background: "rgba(255,255,255,0.045)",
-                        border: `1px solid ${EVILINK.border}`,
-                      }}
-                    >
-                      Docs-based answers
+                    <span className={styles.headerSubtitle}>
+                      Evilink ecosystem assistant · powered by MCPOne
                     </span>
                   </div>
-                </div>
 
-                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                 {/* Clear + close buttons */}
+                  <div className={styles.headerActions}>
+                    <button
+                      onClick={startNewChat}
+                      className={styles.headerButton}
+                    >
+                      Clear
+                    </button>
+
+                    <button
+                      onClick={() => setOpen(false)}
+                      className={styles.headerButton}
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+
+            {/* Product row */}
+            <div className={styles.contextRow}>
+              <div className={styles.contextMain}>
+                <div className={styles.contextBadges}>
+                  <span className={styles.contextBadgePrimary}>
+                    Ecosystem mode
+                  </span>
+
+                  <span className={styles.contextBadge}>
+                    Docs-based answers
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* Messages */}
             <div
               ref={listRef}
-              style={{
-                padding: 12,
-                overflow: "auto",
-                display: "grid",
-                gap: 10,
-                background: `radial-gradient(120% 90% at 30% 10%, ${EVILINK.accent}10 0%, rgba(0,0,0,0) 55%), 
-                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00))`,
-              }}
+              className={styles.conversation}
             >
-              <div style={{ padding: 12, display: "grid", gap: 10 }}>
+              <div className={styles.messageList}>
                 {msgs.length <= 1 && <EcosystemIntro />}
                 {msgs.map((message) => (
                   <NexusMessage
