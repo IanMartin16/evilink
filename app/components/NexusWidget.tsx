@@ -24,6 +24,7 @@ import {
 import { EVILINK } from "@/components/nexus/nexus.constants";
 import { NexusMarkdown } from "@/components/nexus/NexusMarkdown";
 import { NexusSection } from "@/components/nexus/NexusSections";
+import { NexusMessage } from "@/components/nexus/NexusMessage";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -668,154 +669,6 @@ function EcosystemIntro() {
     fab: 10000,
   } as const;
 
-function DevMeta({ m }: { m: Msg }) {
-  const toolResults = Array.isArray(m.toolResults) ? m.toolResults : [];
-
-  return (
-    <div
-      style={{
-        padding: "10px 12px",
-        borderRadius: 14,
-        border: `1px solid ${EVILINK.border}`,
-        background: "rgba(255,255,255,0.04)",
-        display: "grid",
-        gap: 10,
-      }}
-    >
-      <div style={{ fontWeight: 900, fontSize: 12, opacity: 0.9 }}>
-        Dev
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
-          gap: 10,
-        }}
-      >
-        <div
-          style={{
-            padding: "8px 10px",
-            borderRadius: 12,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.05)",
-            minWidth: 0,
-          }}
-        >
-          <div style={{ fontSize: 11, opacity: 0.7 }}>Trace ID</div>
-          <div style={{ fontSize: 12, fontWeight: 800, overflowWrap: "anywhere" }}>
-            {m.traceId ?? "—"}
-          </div>
-        </div>
-      </div>
-
-      {toolResults.map((tr: any, idx: number) => (
-        <div
-          key={idx}
-          style={{
-            padding: "8px 10px",
-            borderRadius: 12,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.05)",
-            display: "grid",
-            gap: 4,
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-            <div style={{ fontSize: 12, fontWeight: 800 }}>
-              {tr.tool ?? tr.toolCallId ?? "tool"}
-            </div>
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 800,
-                color: tr.ok ? "#2BFF88" : "#FF6B6B",
-              }}
-            >
-              {tr.ok ? "OK" : "ERROR"}
-            </div>
-          </div>
-
-          <div style={{ fontSize: 11, opacity: 0.75 }}>
-            latency: {tr.latencyMs ?? "—"} ms
-          </div>
-
-          {tr.source && (
-            <div style={{ fontSize: 11, opacity: 0.75 }}>
-              source: {String(tr.source)}
-            </div>
-          )}
-
-          {tr.provider && (
-            <div style={{ fontSize: 11, opacity: 0.75 }}>
-              provider: {String(tr.provider)}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
-  const sections = Array.isArray(m.sections) ? m.sections : [];
-
-  const narrative =
-    typeof m.text === "string" && m.text.trim() && m.text.trim() !== "(sin respuesta)"
-      ? m.text
-      : "";
-
-  // El notice de cabecera va arriba; el resto de sections abajo.
-  const headerNotices = sections.filter((s) => s.type === "notice");
-  const bodySections = sections.filter((s) => s.type !== "notice");
-
-  const hasAnySection = sections.length > 0;
-
-  return (
-    <div style={{ display: "grid", gap: 10 }}>
-      {/* 1) Notice(s) de cabecera — procedencia arriba */}
-      {headerNotices.map((section) => (
-        <NexusSection
-          key={section.id}
-          section={section}
-        />
-      ))}
-
-      {/* 2) Narrativa — la voz, después del notice */}
-      {narrative ? (
-        <div
-          style={{
-            padding: "10px 12px",
-            borderRadius: 14,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.04)",
-            fontSize: 14,
-            lineHeight: 1.45,
-          }}
-          >
-         <NexusMarkdown text={narrative} />
-        </div>
-      ) : null}
-
-      {/* 3) Resto de sections (kpi_grid, text, etc.) — el detalle abajo */}
-      {bodySections.map((section) => (
-        <NexusSection
-          key={section.id}
-          section={section}
-        />
-      ))}
-
-      {/* Caso sin sections: recomendación pura -> solo narrativa (ya arriba).
-          Si no había narrativa NI sections, muestra el text crudo como fallback. */}
-      {!hasAnySection && !narrative ? (
-        <NexusMarkdown text={m.text} />
-      ) : null}
-
-      {devMode ? <DevMeta m={m} /> : null}
-    </div>
-  );
-}
-
   return (
     <>
       {/* FAB */}
@@ -1113,69 +966,14 @@ function RenderAssistantMessage({ m, devMode }: { m: Msg; devMode: boolean }) {
             >
               <div style={{ padding: 12, display: "grid", gap: 10 }}>
                 {msgs.length <= 1 && <EcosystemIntro />}
-                {msgs.map((m) => (
-                  <div
-                    key={m.id}
-                    style={{
-                      justifySelf: m.role === "user" ? "end" : "start",
-                      maxWidth: "88%",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    {/* bubble */}
-                  <div
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: 14,
-                      background:
-                        m.role === "user"
-                          ? EVILINK.bubbleUser
-                          : EVILINK.bubbleBot,
-                      color: EVILINK.text,
-                      border: `1px solid ${EVILINK.border}`,
-                      whiteSpace: "pre-wrap",
-                      letterSpacing: "-0.01em",
-                      lineHeight: 1.4,
-                      fontSize: 14,
-                    }}
-                  >
-                    {m.role === "assistant"
-                      ? <RenderAssistantMessage m={m} devMode={devMode} />
-                      : <NexusMarkdown text={m.text} />
-                    }
-                  </div>
-                  {/* actions: solo assistant */}
-                  {m.role === "assistant" && (
-                <div style={{ display: "flex", gap: 8, opacity: 0.9 }}>
-              <button
-                onClick={() =>
-                  copyText(
-                    m.id,
-                    (Array.isArray(m.sections) && m.sections.length)
-                    ? sectionsToPlainText(m.sections)
-                    : m.text
-                  )
-                }
-                style={{
-                  padding: "4px 8px",
-                  minHeight: 0,
-                  borderRadius: 10,
-                  background: "rgba(255,255,255,0.06)",
-                  border: `1px solid ${EVILINK.border}`,
-                  color: EVILINK.text,
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
-                  title="Copiar respuesta"
-                  aria-label="Copiar respuesta"
-              >
-                {copiedId === m.id ? "✅ Copied" : "📋 Copy"}
-              </button>
-                </div>
-                  )}
-                </div>
+                {msgs.map((message) => (
+                  <NexusMessage
+                    key={message.id}
+                    message={message}
+                    devMode={devMode}
+                    copied={copiedId === message.id}
+                    onCopy={copyText}
+                  />
                 ))}
               </div>
             </div>
