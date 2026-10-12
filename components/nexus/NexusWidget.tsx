@@ -819,54 +819,63 @@ function EcosystemIntro() {
           >
             {/* Header */}
             <div className={styles.header}>
-              <div className={styles.headerMain}>
-                <div className={styles.headerIdentity}>
+              <div className={styles.headerIdentity}>
+                <div className={styles.titleRow}>
                   <strong
                     className={styles.headerTitle}
                     style={{
                       fontFamily:
                         `${sora.style.fontFamily}, ${geist.style.fontFamily}, system-ui, sans-serif`,
-                      }}
-                    >
-                      Nexus
-                    </strong>
+                    }}
+                  >
+                    Nexus
+                  </strong>
 
-                    <span className={styles.headerSubtitle}>
-                      Evilink ecosystem assistant · powered by MCPOne
+                  <span className={styles.connectionStatus}>
+                    <span className={styles.connectionDot} />
+                      Connected
                     </span>
                   </div>
 
-                  <div className={styles.headerActions}>
-                    <button
-                      onClick={startNewChat}
-                      className={styles.headerButton}
-                    >
-                      Clear
-                    </button>
+                  <span className={styles.headerSubtitle}>
+                    Evilink ecosystem interface
+                  </span>
+                </div>
 
-                    <button
-                      onClick={() => setOpen(false)}
-                      className={styles.headerButton}
+                <div className={styles.headerActions}>
+                  <button
+                    onClick={startNewChat}
+                    className={styles.headerAction}
+                    title="New conversation"
+                    aria-label="Nueva conversación"
                   >
-                    ✕
+                    ↺
+                  </button>
+
+                  <button
+                    onClick={() => setOpen(false)}
+                    className={styles.headerAction}
+                    title="Close"
+                    aria-label="Cerrar Nexus"
+                  >
+                    ×
                   </button>
                 </div>
               </div>
-            </div>
 
             {/* Product row */}
-            <div className={styles.contextRow}>
-              <div className={styles.contextMain}>
-                <div className={styles.contextBadges}>
-                  <span className={styles.contextBadgePrimary}>
-                    Ecosystem mode
-                  </span>
+            <div className={styles.contextBar}>
+              <span className={styles.contextPrimary}>
+                Ecosystem
+              </span>
 
-                  <span className={styles.contextBadge}>
-                    Docs-based answers
-                  </span>
-                </div>
-              </div>
+              <span className={styles.contextItem}>
+                Docs grounded
+              </span>
+
+              <span className={styles.contextItem}>
+                MCP-One active
+              </span>
             </div>
 
             {/* Messages */}

@@ -51,8 +51,7 @@ export function NexusComposer({
 
       <div className={styles.composerFooter}>
         <span className={styles.securityHint}>
-          ⚠️ No pegues passwords, tokens,
-          llaves API o datos bancarios.
+          🔒 Sensitive credentials are blocked
         </span>
 
         <button

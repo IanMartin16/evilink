@@ -15,137 +15,89 @@ type NexusMessageProps = {
   onCopy: (id: string, text: string) => void;
 };
 
-function DevMeta({ message }: { message: Msg }) {
+function ResponseDetails({
+  message,
+}: {
+  message: Msg;
+}) {
   const toolResults = Array.isArray(message.toolResults)
     ? message.toolResults
     : [];
 
+  const hasDetails =
+    Boolean(message.traceId) ||
+    toolResults.length > 0;
+
+  if (!hasDetails) return null;
+
   return (
-    <div
-      style={{
-        padding: "10px 12px",
-        borderRadius: 14,
-        border: `1px solid ${EVILINK.border}`,
-        background: "rgba(255,255,255,0.04)",
-        display: "grid",
-        gap: 10,
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 900,
-          fontSize: 12,
-          opacity: 0.9,
-        }}
-      >
-        Dev
-      </div>
+    <details className={styles.responseDetails}>
+      <summary className={styles.responseDetailsSummary}>
+        <span>Details</span>
+        <span className={styles.responseDetailsChevron}>
+          ▾
+        </span>
+      </summary>
 
-      <div
-        style={{
-          padding: "8px 10px",
-          borderRadius: 12,
-          border: `1px solid ${EVILINK.border}`,
-          background: "rgba(255,255,255,0.05)",
-          minWidth: 0,
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            opacity: 0.7,
-          }}
-        >
-          Trace ID
-        </div>
+      <div className={styles.responseDetailsBody}>
+        {message.traceId && (
+          <div className={styles.metaBlock}>
+            <span className={styles.metaLabel}>
+              Trace ID
+            </span>
 
-        <div
-          style={{
-            fontSize: 12,
-            fontWeight: 800,
-            overflowWrap: "anywhere",
-          }}
-        >
-          {message.traceId ?? "—"}
-        </div>
-      </div>
+            <code className={styles.traceValue}>
+              {message.traceId}
+            </code>
+          </div>
+        )}
 
-      {toolResults.map((result: any, index) => (
-        <div
-          key={index}
-          style={{
-            padding: "8px 10px",
-            borderRadius: 12,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.05)",
-            display: "grid",
-            gap: 4,
-          }}
-        >
+        {toolResults.map((result: any, index) => (
           <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 10,
-            }}
+            key={index}
+            className={styles.toolMeta}
           >
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 800,
-              }}
-            >
-              {result.tool ??
-                result.toolCallId ??
-                "tool"}
+            <div className={styles.toolMetaHeader}>
+              <strong>
+                {result.tool ??
+                  result.toolCallId ??
+                  "tool"}
+              </strong>
+
+              <span
+                className={
+                  result.ok
+                    ? styles.toolOk
+                    : styles.toolError
+                }
+              >
+                {result.ok ? "OK" : "ERROR"}
+              </span>
             </div>
 
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 800,
-                color: result.ok
-                  ? "#2BFF88"
-                  : "#FF6B6B",
-              }}
-            >
-              {result.ok ? "OK" : "ERROR"}
+            <div className={styles.toolMetaGrid}>
+              {result.latencyMs !== undefined && (
+                <span>
+                  latency · {result.latencyMs} ms
+                </span>
+              )}
+
+              {result.source && (
+                <span>
+                  source · {String(result.source)}
+                </span>
+              )}
+
+              {result.provider && (
+                <span>
+                  provider · {String(result.provider)}
+                </span>
+              )}
             </div>
           </div>
-
-          <div
-            style={{
-              fontSize: 11,
-              opacity: 0.75,
-            }}
-          >
-            latency: {result.latencyMs ?? "—"} ms
-          </div>
-
-          {result.source && (
-            <div
-              style={{
-                fontSize: 11,
-                opacity: 0.75,
-              }}
-            >
-              source: {String(result.source)}
-            </div>
-          )}
-
-          {result.provider && (
-            <div
-              style={{
-                fontSize: 11,
-                opacity: 0.75,
-              }}
-            >
-              provider: {String(result.provider)}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </details>
   );
 }
 
@@ -192,16 +144,7 @@ function AssistantMessage({
       ))}
 
       {narrative ? (
-        <div
-          style={{
-            padding: "10px 12px",
-            borderRadius: 14,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(255,255,255,0.04)",
-            fontSize: 14,
-            lineHeight: 1.45,
-          }}
-        >
+        <div className={styles.narrative}>
           <NexusMarkdown text={narrative} />
         </div>
       ) : null}
@@ -218,7 +161,7 @@ function AssistantMessage({
       ) : null}
 
       {devMode ? (
-        <DevMeta message={message} />
+        <ResponseDetails message={message} />
       ) : null}
     </div>
   );

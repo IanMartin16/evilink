@@ -6,6 +6,7 @@ import type {
 import { EVILINK } from "./nexus.constants";
 import { buildSparkPath } from "./nexus.utils";
 import { NexusMarkdown } from "./NexusMarkdown";
+import styles from "./nexusWidget.module.css";
 
 function SparkMini({
   points,
@@ -202,59 +203,31 @@ export function NexusSection({
             return (
               <div
                 key={idx}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 14,
-                  border:
-                    `1px solid ${EVILINK.border}`,
-                  background:
-                    "rgba(255,255,255,0.06)",
-                  boxShadow:
-                    "0 10px 30px rgba(0,0,0,0.22)",
-                }}
+                className={styles.kpiCard}
               >
-                <div
-                  style={{
-                    fontSize: 11,
-                    opacity: 0.75,
-                  }}
-                >
-                  {String(
-                    item.label ?? "KPI",
-                  )}
-                </div>
+                <span className={styles.kpiLabel}>
+                  {String(item.label ?? "KPI")}
+                </span>
 
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 6,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 900,
-                      color: toneColor,
-                    }}
+                <div className={styles.kpiReading}>
+                  <strong
+                    className={styles.kpiValue}
+                    data-tone={tone || "neutral"}
                   >
                     {item.value === null ||
                     item.value === undefined
                       ? "—"
                       : String(item.value)}
-                  </div>
+                  </strong>
 
-                  {item.unit ? (
-                    <div
-                      style={{
-                        fontSize: 11,
-                        opacity: 0.75,
-                        color: toneColor,
-                      }}
+                  {item.unit && (
+                    <span
+                      className={styles.kpiUnit}
+                      data-tone={tone || "neutral"}
                     >
-                      {String(item.unit)}
-                    </div>
-                  ) : null}
+                    {String(item.unit)}
+                    </span>
+                  )}
                 </div>
               </div>
             );
