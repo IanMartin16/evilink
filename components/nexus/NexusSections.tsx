@@ -9,63 +9,173 @@ import { NexusMarkdown } from "./NexusMarkdown";
 import styles from "./nexusWidget.module.css";
 
 function SparkMini({
+  label,
+  value,
+  unit,
   points,
+  tone = "neutral",
 }: {
-  points: McpPoint[];
+  label: string;
+  value?: string | number | null;
+  unit?: string;
+  points: Array<{
+    t?: string | null;
+    v: number;
+  }>;
+  tone?: "up" | "down" | "neutral";
 }) {
-  const values = points
-    .map((point) => Number(point?.v))
-    .filter((value) => Number.isFinite(value));
+  const cleanPoints = points.filter(
+    (point) =>
+      point &&
+      Number.isFinite(point.v)
+  );
 
-  if (values.length < 2) {
-    return (
-      <div
-        style={{
-          fontSize: 11,
-          opacity: 0.65,
-        }}
-      >
-        Sin histórico suficiente
-      </div>
-    );
+  if (cleanPoints.length < 2) {
+    return null;
   }
 
-  const width = 180;
-  const height = 30;
-
-  const path = buildSparkPath(
-    values,
-    width,
-    height,
+  const values = cleanPoints.map(
+    (point) => point.v
   );
 
   const first = values[0];
   const last = values[values.length - 1];
 
-  const up = last >= first;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
 
-  const stroke = up
-    ? "#2BFF88"
-    : "#FF6B6B";
+  const changePct =
+    sparkChangePct(cleanPoints);
+
+  const resolvedTone =
+    tone !== "neutral"
+      ? tone
+      : last > first
+      ? "up"
+      : last < first
+      ? "down"
+      : "neutral";
+
+  const path = buildSparkPath(
+    values,
+    100,
+    34
+  );
+
+  const displayValue =
+    typeof value === "string"
+      ? value
+      : formatSparkValue(
+          typeof value === "number"
+            ? value
+            : last,
+          unit
+        );
+
+  const changeLabel =
+    `${changePct >= 0 ? "+" : ""}` +
+    `${changePct.toFixed(2)}%`;
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      width="100%"
-      height="42"
-      preserveAspectRatio="none"
-      style={{ display: "block" }}
+    <article
+      className={styles.sparkCard}
+      data-tone={resolvedTone}
     >
-      <path
-        d={path}
-        fill="none"
-        stroke={stroke}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      <div className={styles.sparkHeader}>
+        <div>
+          <div className={styles.sparkSymbol}>
+            {label}
+          </div>
+
+          <div className={styles.sparkWindow}>
+            RECENT
+          </div>
+        </div>
+
+        <div className={styles.sparkReading}>
+          <div className={styles.sparkValue}>
+            {displayValue}
+          </div>
+
+          <div className={styles.sparkChange}>
+            {changeLabel}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.sparkChart}>
+        <svg
+          viewBox="0 0 100 34"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label={`${label} recent price movement`}
+        >
+          <path
+            className={styles.sparkGhost}
+            d={path}
+          />
+
+          <path
+            className={styles.sparkLine}
+            d={path}
+          />
+        </svg>
+      </div>
+
+      <div className={styles.sparkRange}>
+        <span>
+          Low{" "}
+          <strong>
+            {formatSparkValue(min, unit)}
+          </strong>
+        </span>
+
+        <span>
+          High{" "}
+          <strong>
+            {formatSparkValue(max, unit)}
+          </strong>
+        </span>
+      </div>
+    </article>
   );
+}
+
+function formatSparkValue(value: number, unit = "USD") {
+  if (!Number.isFinite(value)) return "—";
+
+  const abs = Math.abs(value);
+
+  let maximumFractionDigits = 2;
+
+  if (abs < 1) maximumFractionDigits = 6;
+  if (abs < 0.01) maximumFractionDigits = 8;
+
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits,
+  }).format(value);
+
+  return unit === "USD"
+    ? `$${formatted}`
+    : `${formatted} ${unit}`;
+}
+
+function sparkChangePct(points: Array<{ t?: string | null; v: number }>) {
+  if (points.length < 2) return 0;
+
+  const first = points[0]?.v;
+  const last = points[points.length - 1]?.v;
+
+  if (
+    !Number.isFinite(first) ||
+    !Number.isFinite(last) ||
+    first === 0
+  ) {
+    return 0;
+  }
+
+  return ((last - first) / first) * 100;
 }
 
 export function NexusSection({
@@ -238,130 +348,33 @@ export function NexusSection({
   }
 
   if (section.type === "sparkline") {
-    const items = Array.isArray(
-      section.items,
-    )
-      ? section.items
-      : [];
+  const items = Array.isArray(section.items)
+    ? section.items
+    : [];
 
-    return (
-      <div
-        style={{
-          display: "grid",
-          gap: 8,
-        }}
-      >
-        {section.title && (
-          <div
-            style={{
-              fontWeight: 900,
-              fontSize: 12,
-              opacity: 0.9,
-            }}
-          >
-            {section.title}
-          </div>
-        )}
-
-        <div
-          style={{
-            display: "grid",
-            gap: 10,
-          }}
-        >
-          {items.map((item, idx) => {
-            const points = Array.isArray(
-              item.points,
-            )
-              ? item.points
-              : [];
-
-            const values = points
-              .map((point) =>
-                Number(point?.v),
-              )
-              .filter((value) =>
-                Number.isFinite(value),
-              );
-
-            const last = values.length
-              ? values[values.length - 1]
-              : null;
-
-            const first = values.length
-              ? values[0]
-              : null;
-
-            const up =
-              last !== null &&
-              first !== null
-                ? last >= first
-                : null;
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 14,
-                  border:
-                    `1px solid ${EVILINK.border}`,
-                  background:
-                    "rgba(255,255,255,0.05)",
-                  boxShadow:
-                    "0 10px 30px rgba(0,0,0,0.18)",
-                  display: "grid",
-                  gap: 6,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent:
-                      "space-between",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 11,
-                      opacity: 0.72,
-                    }}
-                  >
-                    {String(
-                      item.label ?? "Serie",
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 900,
-                      color:
-                        up === null
-                          ? EVILINK.text
-                          : up
-                            ? "#2BFF88"
-                            : "#FF6B6B",
-                    }}
-                  >
-                    {last === null
-                      ? "N/D"
-                      : Number(
-                          last,
-                        ).toLocaleString()}
-                  </div>
-                </div>
-
-                <SparkMini points={points} />
-              </div>
-            );
-          })}
+  return (
+    <div className={styles.sectionBlock}>
+      {section.title && (
+        <div className={styles.sectionTitle}>
+          {section.title}
         </div>
+      )}
+
+      <div className={styles.sparkGrid}>
+        {items.map((item, idx) => (
+          <SparkMini
+            key={item.label ?? idx}
+            label={String(item.label ?? "Serie")}
+            value={item.value}
+            unit={item.unit}
+            tone={item.tone}
+            points={Array.isArray(item.points) ? item.points : []}
+          />
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (section.type === "text") {
     return (
