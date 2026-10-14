@@ -466,45 +466,26 @@ useEffect(() => {
 
   return (
     <>
-      {/* FAB */}
+      {/* FAB — Nexus Activity */}
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Cerrar Nexus" : "Abrir Nexus"}
-        style={{
-          position: "fixed",
-          right: 18,
-          bottom: 18,
-          width: 64,
-          height: 64,
-          borderRadius: 999,
-          background:
-            `radial-gradient(circle at 35% 25%, ${EVILINK.accent}22 0%, rgba(0,0,0,0) 42%),
-            linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-            linear-gradient(180deg, ${EVILINK.panel} 0%, ${EVILINK.bg} 100%)`,
-          border: `1px solid rgba(255,255,255,0.14)`,
-          boxShadow: `0 18px 55px rgba(0,0,0,0.58), 0 0 34px ${EVILINK.accent}2B`,
-          color: EVILINK.text,
-          cursor: "pointer",
-          zIndex: Z.fab,
-          display: "grid",
-          placeItems: "center",
-          overflow: "hidden",
-        }}
+        aria-expanded={open}
+        title={open ? "Close Nexus" : "Open Nexus"}
+        className={styles.fab}
+        data-activity={loading ? "processing" : "idle"}
+        style={{ zIndex: Z.fab }}
       >
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 999,
-            display: "grid",
-            placeItems: "center",
-            background: "rgba(255,255,255,0.055)",
-            border: `1px solid ${EVILINK.border}`,
-            boxShadow: `inset 0 0 18px rgba(255,255,255,0.04), 0 0 18px ${EVILINK.accent}22`,
-          }}
-        >
-          <img src="/nexus-bot-icon.png" width={34} height={34} alt="Nexus" />
-        </div>
+        <span className={styles.fabCore}>
+          <img
+            src="/nexus-bot-icon.png"
+            width={34}
+            height={34}
+            alt=""
+            className={styles.fabIcon}
+          />
+        </span>
       </button>
 
       {/* Teaser */}
