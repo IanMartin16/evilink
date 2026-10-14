@@ -1178,3 +1178,105 @@
   font-size: 12px;
   opacity: 0.9;
 }
+
+/* Nexus Activity — request lifecycle */
+
+.connectionStatus[data-activity="processing"] {
+  color: rgba(142, 255, 199, 0.92);
+}
+
+.connectionStatus[data-activity="processing"]
+.connectionDot {
+  animation: nxActivityPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes nxActivityPulse {
+  0%, 100% {
+    opacity: 0.65;
+    box-shadow: 0 0 0 0 rgba(43, 255, 136, 0);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 5px rgba(43, 255, 136, 0.07);
+  }
+}
+
+/* Subtle activity trace */
+
+.contextBar {
+  position: relative;
+  overflow: hidden;
+}
+
+.contextBar[data-activity="processing"]::after {
+  content: "";
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: 35%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(43, 255, 136, 0.42),
+    rgba(110, 220, 200, 0.24),
+    transparent
+  );
+
+  pointer-events: none;
+
+  animation: nxActivityTrace 2.8s linear infinite;
+}
+
+@keyframes nxActivityTrace {
+  from {
+    transform: translateX(-110%);
+  }
+
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connectionStatus[data-activity="processing"]
+  .connectionDot,
+  .contextBar[data-activity="processing"]::after {
+    animation: none;
+  }
+}
+
+.processingIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 8px 2px;
+
+  color: var(--nx-muted);
+
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.processingDot {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: rgba(103, 238, 173, 0.85);
+
+  animation: nxActivityPulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processingDot {
+    animation: none;
+  }
+}

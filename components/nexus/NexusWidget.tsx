@@ -424,29 +424,18 @@ useEffect(() => {
   function TypingIndicator() {
   return (
     <div
-      style={{
-        maxWidth: "70%",
-        padding: "10px 12px",
-        borderRadius: 14,
-        background: "rgba(255,255,255,0.08)",
-        color: "rgba(255,255,255,0.8)",
-        border: "1px solid rgba(255,255,255,0.10)",
-        fontSize: 13,
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-      }}
+      className={styles.processingIndicator}
+      role="status"
     >
-      <span>Nexus is typing</span>
-      <span className="nexus-dots">
-        <i />
-        <i />
-        <i />
-      </span>
+      <span
+        className={styles.processingDot}
+        aria-hidden="true"
+      />
+
+      <span>Processing request</span>
     </div>
   );
 }
-
 
 // ✅ desktop check (evita blur bug en iPhone)
   useEffect(() => {
@@ -642,10 +631,18 @@ useEffect(() => {
                     Nexus
                   </strong>
 
-                  <span className={styles.connectionStatus}>
-                    <span className={styles.connectionDot} />
-                      Connected
-                    </span>
+                  <span
+                    className={styles.connectionStatus}
+                    data-activity={loading ? "processing" : "idle"}
+                    aria-live="polite"
+                  >
+                    <span
+                      className={styles.connectionDot}
+                      aria-hidden="true"
+                    />
+
+                      {loading ? "Processing" : "Connected"}
+                  </span>
                   </div>
 
                   <span className={styles.headerSubtitle}>
@@ -675,7 +672,8 @@ useEffect(() => {
               </div>
 
             {/* Product row */}
-            <div className={styles.contextBar}>
+            <div  className={styles.contextBar}
+                  data-activity={loading ? "processing" : "idle"}>
               <span className={styles.contextPrimary}>
                 Ecosystem
               </span>
