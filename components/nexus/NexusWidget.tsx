@@ -45,6 +45,18 @@ const LS_SESSION_KEY = "nexus.sessionId";
 const LS_MSGS = (p: string) => `nexus_msgs_${p}`;
 const LS_LAST_PRODUCT = "nexus.product";
 
+const WELCOME_TEXT =
+  "Nexus está listo. Pregunta por productos, APIs y capacidades disponibles del ecosistema Evilink.";
+
+function createWelcome(product: string): Msg {
+  return {
+    id: "welcome",
+    role: "assistant",
+    text: WELCOME_TEXT,
+    ts: Date.now(),
+    product,
+  };
+}
 
 export default function NexusWidget() {
   const [open, setOpen] = useState(false);
@@ -72,59 +84,6 @@ const PRODUCT_LABEL: Record<string, string> = {
   evilink: "evi_link",
 };
 
-const SOFT_LAUNCH_PRODUCTS = [
-  {
-    id: "curpify",
-    name: "Curpify",
-    tag: "Identity API",
-    status: "Soft launch ready",
-    summary: "Validación CURP/RFC e identidad estructurada.",
-    pills: ["CURP", "RFC", "HR", "API"],
-  },
-  {
-    id: "data_link",
-    name: "Data_Link",
-    tag: "Data Processing",
-    status: "Soft launch ready",
-    summary: "Limpieza, deduplicación y transformación de CSV/JSON.",
-    pills: ["CSV", "JSON", "Dedupe", "Transform"],
-  },
-  {
-    id: "vsecrets",
-    name: "V-Secrets",
-    tag: "Security API",
-    status: "Soft launch ready",
-    summary: "Gestión segura de secretos por proyecto con cifrado y auditoría.",
-    pills: ["Secrets", "AES-256", "Audit", "API Keys"],
-  },
-];
-
-const QUICK_ACTIONS = [
-  {
-    label: "Productos",
-    prompt: "Muéstrame los productos disponibles de Evilink",
-  },
-  {
-    label: "APIs",
-    prompt: "Qué APIs tiene Evilink disponibles",
-  },
-  {
-    label: "Integraciones",
-    prompt: "Cómo puedo integrar productos de Evilink",
-  },
-  {
-    label: "Status",
-    prompt: "Cuál es el estado operativo del ecosistema Evilink",
-  },
-  {
-    label: "Docs",
-    prompt: "Dónde puedo consultar la documentación de Evilink",
-  },
-  {
-    label: "Contacto",
-    prompt: "Cómo puedo contactar a Evilink",
-  },
-];
 
 const msgsHydratedRef = useRef(false);
 const teaserStartedRef = useRef(false);
@@ -142,20 +101,12 @@ useEffect(() => {
     .filter((m) => m && typeof m.id === "string" && typeof m.text === "string")
     .map((m) => ({ ...m, product }));
 
-  const hasWelcome = savedMsgs.some((m) => m.id === "welcome");
-
-  const next: Msg[] = hasWelcome
-    ? savedMsgs
-    : [
-        {
-          id: "welcome",
-          role: "assistant",
-          text: `Listo ✅ Estás en Nexus. Puedo ayudarte a explorar productos, APIs, integraciones y estado del ecosistema Evilink`,
-          ts: Date.now(),
-          product,
-        },
-        ...savedMsgs,
-      ];
+  const next: Msg[] = [
+    createWelcome(product),
+    ...savedMsgs.filter(
+      (message) => message.id !== "welcome"
+    ),
+  ];
 
   setMsgs(next);
   msgsHydratedRef.current = true;
@@ -326,24 +277,29 @@ useEffect(() => {
 
   const text = input.trim();
     if (!text || loading) return;
-    lastPromptRef.current = text;
+
+    const BLOCKED_SECRET_TEXT =
+      "Por seguridad, Nexus no puede procesar credenciales o secretos. " +
+      "Elimina tokens, API keys o contraseñas del mensaje antes de volver a enviarlo. " +
+      "Si alguna credencial real fue expuesta, revócala o rótala.";
 
     if (looksSensitive(text)) {
+      lastPromptRef.current = "";
+
     const warn: Msg = {
       id: crypto.randomUUID(),
       role: "assistant",
-      text:
-        "⚠️ Por seguridad, no puedo procesar secretos. Borra tokens/llaves/passwords del mensaje y vuelve a intentarlo. " +
-        "Si ya lo expusiste, rota esa llave/token.",
+      text: BLOCKED_SECRET_TEXT,
       ts: Date.now(),
       product,
     };
 
-    // ✅ muestra el warning y corta el flujo (no llamar backend)
-    setMsgs((m) => [...m, warn]);
+    setMsgs((current) => [...current, warn]);
     setLoading(false);
     return;
   }
+
+  lastPromptRef.current = text;
 
    const sid = (sessionId && sessionId.trim()) ? sessionId : "web";
    const prod = (product && product.trim()) ? product : "curpify";
@@ -428,13 +384,7 @@ useEffect(() => {
     const label = PRODUCT_LABEL[product] ?? product;
 
     // 1) welcome + limpia UI
-    const welcome: Msg = {
-      id: "welcome",
-      role: "assistant",
-      text: `Listo ✅ Nuevo chat en Nexus. ¿Qué quieres explorar del ecosistema Evilink?`,
-      ts: Date.now(),
-      product,
-    };
+    const welcome = createWelcome(product);
 
     setMsgs([welcome]);
     setInput("");
@@ -497,145 +447,6 @@ useEffect(() => {
   );
 }
 
-function EcosystemIntro() {
-  return (
-    <div
-      style={{
-        padding: 12,
-        borderRadius: 18,
-        border: `1px solid ${EVILINK.border}`,
-        background:
-          `radial-gradient(120% 90% at 20% 0%, ${EVILINK.accent}1A 0%, rgba(0,0,0,0) 58%),
-           linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035))`,
-        boxShadow: "0 18px 45px rgba(0,0,0,0.24)",
-        display: "grid",
-        gap: 12,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-        <div style={{ minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 900,
-              letterSpacing: 0.8,
-              textTransform: "uppercase",
-              color: EVILINK.accent,
-              marginBottom: 5,
-            }}
-          >
-            Evilink ecosystem
-          </div>
-
-          <div style={{ fontSize: 18, fontWeight: 950, lineHeight: 1.05 }}>
-            Nexus
-          </div>
-
-          <div style={{ fontSize: 12, opacity: 0.72, marginTop: 4, lineHeight: 1.35 }}>
-            Explora productos, APIs, integraciones y estado operativo del ecosistema.
-          </div>
-        </div>
-
-        <div
-          style={{
-            alignSelf: "flex-start",
-            padding: "5px 8px",
-            borderRadius: 999,
-            border: `1px solid ${EVILINK.border}`,
-            background: "rgba(43,255,136,0.10)",
-            color: EVILINK.accent,
-            fontSize: 10,
-            fontWeight: 900,
-            whiteSpace: "nowrap",
-          }}
-        >
-          soft launch
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {QUICK_ACTIONS.map((a) => (
-          <button
-            key={a.label}
-            onClick={() => askQuick(a.prompt)}
-            style={{
-              border: `1px solid ${EVILINK.border}`,
-              background: "rgba(255,255,255,0.055)",
-              color: EVILINK.text,
-              borderRadius: 999,
-              padding: "7px 10px",
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: "pointer",
-            }}
-          >
-            {a.label}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gap: 8 }}>
-        <div style={{ fontSize: 11, opacity: 0.65, fontWeight: 800 }}>
-          Soft launch ready
-        </div>
-
-        {SOFT_LAUNCH_PRODUCTS.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              padding: 10,
-              borderRadius: 15,
-              border: `1px solid ${EVILINK.border}`,
-              background: "rgba(255,255,255,0.045)",
-              display: "grid",
-              gap: 7,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 950 }}>{p.name}</div>
-                <div style={{ fontSize: 11, opacity: 0.65 }}>{p.tag}</div>
-              </div>
-
-              <div
-                style={{
-                  fontSize: 10,
-                  fontWeight: 900,
-                  color: EVILINK.accent,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Ready
-              </div>
-            </div>
-
-            <div style={{ fontSize: 12, opacity: 0.78, lineHeight: 1.35 }}>
-              {p.summary}
-            </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {p.pills.map((pill) => (
-                <span
-                  key={pill}
-                  style={{
-                    fontSize: 10,
-                    padding: "3px 7px",
-                    borderRadius: 999,
-                    border: `1px solid ${EVILINK.border}`,
-                    background: "rgba(255,255,255,0.045)",
-                    opacity: 0.86,
-                  }}
-                >
-                  {pill}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ✅ desktop check (evita blur bug en iPhone)
   useEffect(() => {
@@ -884,7 +695,6 @@ function EcosystemIntro() {
               className={styles.conversation}
             >
               <div className={styles.messageList}>
-                {msgs.length <= 1 && <EcosystemIntro />}
                 {msgs.map((message) => (
                   <NexusMessage
                     key={message.id}
