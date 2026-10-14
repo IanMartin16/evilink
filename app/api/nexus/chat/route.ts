@@ -104,7 +104,9 @@ async function handleSlim(args: { sessionId: string; product: string; message: s
 
   const sections: any[] = [];
   let tokenText = "";
-  let doneOk = true;
+  let doneOk = false;
+  let doneSeen = false;
+  let streamError = false;
   let summary: string | null = null;
 
   try {
@@ -138,9 +140,14 @@ async function handleSlim(args: { sessionId: string; product: string; message: s
         } else if (event === "token" && typeof payload.delta === "string") {
           tokenText += payload.delta;
         } else if (event === "done") {
-          doneOk = payload.ok !== false;
-          summary = payload.summary ?? null;
+          doneSeen = true;
+          doneOk = payload.ok === true;
+          summary =
+            typeof payload.summary === "string"
+              ? payload.summary
+              : null;
         } else if (event === "error") {
+          streamError = true;
           doneOk = false;
         }
       }
@@ -152,13 +159,27 @@ async function handleSlim(args: { sessionId: string; product: string; message: s
     );
   }
 
-  const bubbleText = tokenText.trim() || summary || "";
-  const hasSomethingToShow = sections.length > 0 || bubbleText !== "";
+  const completedSuccessfully =
+    doneSeen && doneOk && !streamError;
+
+  if (!completedSuccessfully) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Nexus could not complete the request.",
+        traceId: sessionId,
+      },
+    { status: 502 }
+  );
+}
+
+const bubbleText = tokenText.trim() || summary || "";
 
   return NextResponse.json({
-    ok: hasSomethingToShow ? true : doneOk,
+    ok: true,
     answer: {
-      summary: bubbleText || (sections.length ? "" : "(sin respuesta)"),
+      summary:
+        bubbleText || (sections.length ? "" : "(sin respuesta)"),
       sections,
     },
     traceId: sessionId,
