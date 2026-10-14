@@ -257,95 +257,62 @@ export function NexusSection({
   }
 
   if (section.type === "kpi_grid") {
-    const items = Array.isArray(
-      section.items,
-    )
-      ? section.items
-      : [];
+  const items = Array.isArray(section.items)
+    ? section.items
+    : [];
 
-    const cols =
-      items.length === 1
-        ? "1fr"
-        : items.length === 2
-          ? "repeat(2, minmax(0, 1fr))"
-          : items.length === 3
-            ? "repeat(3, minmax(0, 1fr))"
-            : "repeat(2, minmax(0, 1fr))";
+  return (
+    <div className={styles.kpiSection}>
+      {section.title && (
+        <div className={styles.kpiTitle}>
+          {section.title}
+        </div>
+      )}
 
-    return (
       <div
-        style={{
-          display: "grid",
-          gap: 8,
-        }}
+        className={styles.kpiGrid}
+        data-count={items.length}
       >
-        {section.title && (
-          <div
-            style={{
-              fontWeight: 900,
-              fontSize: 12,
-              opacity: 0.9,
-            }}
-          >
-            {section.title}
-          </div>
-        )}
+        {items.map((item, idx) => {
+          const tone = String(
+            item.tone ?? ""
+          ).toLowerCase();
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: cols,
-            gap: 10,
-          }}
-        >
-          {items.map((item, idx) => {
-            const tone = String(
-              item.tone ?? "",
-            ).toLowerCase();
+          return (
+            <div
+              key={idx}
+              className={styles.kpiCard}
+            >
+              <span className={styles.kpiLabel}>
+                {String(item.label ?? "KPI")}
+              </span>
 
-            const toneColor =
-              tone === "up"
-                ? "#2BFF88"
-                : tone === "down"
-                  ? "#FF6B6B"
-                  : EVILINK.text;
+              <div className={styles.kpiReading}>
+                <strong
+                  className={styles.kpiValue}
+                  data-tone={tone || "neutral"}
+                >
+                  {item.value == null
+                    ? "—"
+                    : String(item.value)}
+                </strong>
 
-            return (
-              <div
-                key={idx}
-                className={styles.kpiCard}
-              >
-                <span className={styles.kpiLabel}>
-                  {String(item.label ?? "KPI")}
-                </span>
-
-                <div className={styles.kpiReading}>
-                  <strong
-                    className={styles.kpiValue}
+                {item.unit && (
+                  <span
+                    className={styles.kpiUnit}
                     data-tone={tone || "neutral"}
                   >
-                    {item.value === null ||
-                    item.value === undefined
-                      ? "—"
-                      : String(item.value)}
-                  </strong>
-
-                  {item.unit && (
-                    <span
-                      className={styles.kpiUnit}
-                      data-tone={tone || "neutral"}
-                    >
                     {String(item.unit)}
-                    </span>
-                  )}
-                </div>
+                  </span>
+                )}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (section.type === "sparkline") {
   const items = Array.isArray(section.items)
