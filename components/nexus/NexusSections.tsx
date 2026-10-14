@@ -367,8 +367,18 @@ export function NexusSection({
             label={String(item.label ?? "Serie")}
             value={item.value}
             unit={item.unit}
-            tone={item.tone}
-            points={Array.isArray(item.points) ? item.points : []}
+            tone={
+              item.tone === "up" || item.tone === "down"
+              ? item.tone
+              : "neutral"
+            }
+            points={(Array.isArray(item.points) ? item.points : []).flatMap(
+              (point) =>
+              typeof point?.v === "number" &&
+              Number.isFinite(point.v)
+                ? [{ t: point.t ?? null, v: point.v }]
+                : []
+            )}
           />
         ))}
       </div>
