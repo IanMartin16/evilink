@@ -127,14 +127,20 @@ box-shadow:
 
   background:
     radial-gradient(
-      100% 62% at 12% -8%,
-      rgba(43, 255, 136, 0.075),
-      transparent 62%
+      ellipse 88% 48% at 100% 0%,
+      rgba(53, 217, 208, 0.115),
+      transparent 72%
     ),
     radial-gradient(
-      70% 45% at 100% 0%,
-      rgba(53, 217, 208, 0.045),
-      transparent 70%
+      ellipse 72% 52% at 0% 100%,
+      rgba(43, 255, 136, 0.065),
+      transparent 76%
+    ),
+    linear-gradient(
+      125deg,
+      transparent 20%,
+      rgba(125, 255, 224, 0.026) 43%,
+      transparent 68%
     ),
     linear-gradient(
       180deg,
@@ -142,12 +148,15 @@ box-shadow:
       rgba(4, 9, 13, 0.995)
     );
 
-  border: 1px solid var(--nx-border);
-  border-radius: var(--nx-radius-lg);
-
   box-shadow:
     0 32px 90px rgba(0, 0, 0, 0.66),
-    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    inset 0 1px 0 rgba(175, 255, 230, 0.13),
+    inset 1px 0 0 rgba(53, 217, 208, 0.085),
+    inset -1px 0 0 rgba(43, 255, 136, 0.055),
+    0 0 28px rgba(53, 217, 208, 0.045);
+
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius-lg);
 
   isolation: isolate;
 
@@ -511,31 +520,47 @@ box-shadow:
 }
 
 .composerInput {
-  width: 100%;
+  display: block;
 
-  min-height: 54px;
+  width: 100%;
+  min-width: 0;
+  min-height: 72px;
+  max-height: 160px;
+
+  box-sizing: border-box;
 
   resize: none;
 
-  padding: 13px 46px 13px 13px;
+  padding: 13px 14px;
 
   border-radius: 15px;
   border: 1px solid var(--nx-border);
 
-  background:
-    rgba(255, 255, 255, 0.026);
+  background: rgba(255, 255, 255, 0.026);
 
   color: var(--nx-text);
 
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.4;
+
   outline: none;
 
-  line-height: 1.35;
-  font-size: 13.5px;
+  /* Scroll funcional, sin barra visible */
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
   transition:
     border-color 150ms ease,
     background 150ms ease,
     box-shadow 150ms ease;
+}
+
+.composerInput::-webkit-scrollbar {
+  display: none;
 }
 
 .composerInput:focus {
@@ -1635,5 +1660,28 @@ box-shadow:
   .shell[data-activity="processing"] .header::before {
     animation: none;
     opacity: 0.45;
+  }
+}
+
+/* Contextual holographic perimeter */
+
+.panel[data-activity="processing"] {
+  border-color: rgba(90, 230, 186, 0.25);
+
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.66),
+    inset 0 1px 0 rgba(175, 255, 230, 0.22),
+    inset 1px 0 0 rgba(53, 217, 208, 0.13),
+    inset -1px 0 0 rgba(43, 255, 136, 0.10),
+    0 0 34px rgba(53, 217, 208, 0.095);
+
+  transition:
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel[data-activity="processing"] {
+    transition: none;
   }
 }
