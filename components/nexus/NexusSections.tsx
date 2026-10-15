@@ -301,6 +301,11 @@ export function NexusSection({
                   <span
                     className={styles.kpiUnit}
                     data-tone={tone || "neutral"}
+                    data-description={
+                      String(item.unit).length > 35
+                        ? "true"
+                        : "false"
+                    }
                   >
                     {String(item.unit)}
                   </span>

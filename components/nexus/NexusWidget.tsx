@@ -616,13 +616,14 @@ useEffect(() => {
                     className={styles.connectionStatus}
                     data-activity={loading ? "processing" : "idle"}
                     aria-live="polite"
+                    title="Nexus interface status"
                   >
                     <span
                       className={styles.connectionDot}
                       aria-hidden="true"
                     />
 
-                      {loading ? "Processing" : "Connected"}
+                  {loading ? "Processing" : "Ready"}
                   </span>
                   </div>
 
@@ -664,7 +665,7 @@ useEffect(() => {
               </span>
 
               <span className={styles.contextItem}>
-                MCP-One active
+                MCP-One integration
               </span>
             </div>
 

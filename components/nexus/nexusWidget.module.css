@@ -1501,3 +1501,17 @@
   }
 }
 
+/* Long descriptive KPI units (e.g. Anomalies) */
+
+.kpiUnit[data-description="true"] {
+  display: block;
+  flex-basis: 100%;
+
+  min-width: 0;
+  max-width: 100%;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  line-height: 1.5;
+}
