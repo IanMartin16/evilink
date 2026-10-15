@@ -593,6 +593,7 @@ useEffect(() => {
           <div
             onClick={(e) => e.stopPropagation()}
             className={`${styles.shell} ${styles.panel}`}
+            data-activity={loading ? "processing" : "idle"}
             style={{
               fontFamily:
               `${geist.style.fontFamily}, system-ui, sans-serif`,
